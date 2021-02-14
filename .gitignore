@@ -4,3 +4,4 @@ dist
 poetry.lock
 !.gitignore
 !.travis.yml
+!tests/.coveragerc
