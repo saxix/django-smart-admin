@@ -13,10 +13,13 @@ with open(readme_path, 'rb') as stream:
 
 setup(
     long_description=readme,
+    long_description_content_type="text/x-rst",
     name='django-smart-admin',
     version='0.1.0',
     python_requires='==3.*,>=3.0.0,>=3.6',
-    project_urls={"homepage": "", "repository": ""},
+    project_urls={"homepage": "https://github.com/saxix/django-smart-admin",
+                  "repository": "https://github.com/saxix/django-smart-admin"
+                  },
     author='sax',
     author_email='s.apostolico@gmail.com',
     keywords='django',

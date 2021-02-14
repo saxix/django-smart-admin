@@ -26,11 +26,11 @@ Links
 +--------------------+----------------+--------------+-----------------------------+
 | Development        | |dev-build|    | |dev-cov|    |                             |
 +--------------------+----------------+--------------+-----------------------------+
-| Project home page: |https://github.com/saxix/django-smart-admin             |
+| Project home page: |https://github.com/saxix/django-smart-admin                  |
 +--------------------+---------------+---------------------------------------------+
-| Issue tracker:     |https://github.com/saxix/django-smart-admin/issues?sort |
+| Issue tracker:     |https://github.com/saxix/django-smart-admin/issues?sort      |
 +--------------------+---------------+---------------------------------------------+
-| Download:          |http://pypi.python.org/pypi/django-smart-admin/                |
+| Download:          |http://pypi.python.org/pypi/django-smart-admin/              |
 +--------------------+---------------+---------------------------------------------+
 
 
