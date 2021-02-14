@@ -1,0 +1,4 @@
+.*
+dist
+poetry.lock
+!.gitignore
