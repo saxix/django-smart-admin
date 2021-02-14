@@ -3,3 +3,4 @@
 dist
 poetry.lock
 !.gitignore
+!.travis.yml
