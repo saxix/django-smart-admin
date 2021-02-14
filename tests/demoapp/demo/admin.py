@@ -16,7 +16,7 @@ class Admin1(SmartMixin, admin.ModelAdmin):
                 "fields": (
                     "integer",
                     "logic",
-                    "null_logic",
+                    "decimal",
                     "date",
                 ),
             },
@@ -27,8 +27,7 @@ class Admin1(SmartMixin, admin.ModelAdmin):
 
 @register(DemoModel2)
 class Admin2(SmartMixin, admin.ModelAdmin):
-    readonly_fields = ('__all__',)
-
+    pass
 
 @register(DemoModel3)
 class Admin3(admin.ModelAdmin):

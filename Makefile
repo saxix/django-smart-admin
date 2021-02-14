@@ -4,7 +4,7 @@ develop:
 
 demo:
 	#cd tests && ./manage.py migrate && ./manage.py runserver
-	cd tests && ./manage.py testserver fixtures.json
+	cd tests/demoapp && ./manage.py testserver ../fixtures.json
 clean:
 	# cleaning
 	@rm -fr dist '~build' .pytest_cache .coverage src/smart_admin.egg-info
@@ -27,3 +27,8 @@ lint:
 .PHONY: build docs
 
 
+.build:
+	docker build \
+		-t saxix/smart-admin \
+		-f docker/Dockerfile .
+	docker images | grep ${DOCKER_IMAGE_NAME}

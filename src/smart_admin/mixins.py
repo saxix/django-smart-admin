@@ -1,4 +1,7 @@
+from itertools import chain
+
 from django.contrib import admin
+from django.contrib.admin.checks import BaseModelAdminChecks, must_be
 from django.contrib.admin.utils import flatten
 from django.db import models
 
@@ -35,8 +38,25 @@ class FieldsetMixin(admin.ModelAdmin):
         return fieldsets
 
 
+class SmartModelAdminChecks(BaseModelAdminChecks):
+    def _check_readonly_fields(self, obj):
+        """ Check that readonly_fields refers to proper attribute or field. """
+        if obj.readonly_fields == ('__all__',):
+            return []
+        if obj.readonly_fields == ():
+            return []
+        elif not isinstance(obj.readonly_fields, (list, tuple)):
+            return must_be('a list or tuple', option='readonly_fields', obj=obj, id='admin.E034')
+        else:
+            return list(chain.from_iterable(
+                self._check_readonly_fields_item(obj, field_name, "readonly_fields[%d]" % index)
+                for index, field_name in enumerate(obj.readonly_fields)
+            ))
+
+
 class ReadOnlyMixin:
-    readonly_fields = []
+    readonly_fields = ('__all__',)
+    checks_class = SmartModelAdminChecks
 
     def get_readonly_fields(self, request, obj=None):
         if self.readonly_fields and self.readonly_fields == ('__all__',):
@@ -48,4 +68,5 @@ class ReadOnlyMixin:
 
 
 class SmartMixin(ReadOnlyMixin, FieldsetMixin, DisplayAllMixin):
-    pass
+    readonly_fields = ()
+

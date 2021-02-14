@@ -6,7 +6,6 @@ class DemoModel1(models.Model):
     char = models.CharField('Chäř', max_length=255)
     integer = models.IntegerField(null=True, blank=True)
     logic = models.BooleanField(default=False)
-    null_logic = models.NullBooleanField(default=None)
     date = models.DateField(null=True, blank=True)
     datetime = models.DateTimeField(null=True, blank=True)
     time = models.TimeField(null=True, blank=True)
