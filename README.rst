@@ -35,13 +35,13 @@ Links
 
 
 .. |master-build| image:: https://secure.travis-ci.org/saxix/django-smart-admin.png?branch=master
-                    :target: http://travis-ci.org/saxix/django-smart-admin/
+                    :target: http://travis-ci.com/saxix/django-smart-admin/
 
 .. |master-cov| image:: https://codecov.io/gh/saxix/django-smart-admin/branch/master/graph/badge.svg
                     :target: https://codecov.io/gh/saxix/django-smart-admin
 
 .. |dev-build| image:: https://secure.travis-ci.org/saxix/django-smart-admin.png?branch=develop
-                  :target: http://travis-ci.org/saxix/django-smart-admin/
+                  :target: http://travis-ci.com/saxix/django-smart-admin/
 
 .. |dev-cov| image:: https://codecov.io/gh/saxix/django-smart-admin/branch/develop/graph/badge.svg
                     :target: https://codecov.io/gh/saxix/django-smart-admin
@@ -60,7 +60,7 @@ Links
     :alt: License
 
 .. |travis| image:: https://travis-ci.org/saxix/django-smart-admin.svg?branch=develop
-    :target: https://travis-ci.org/saxix/django-smart-admin
+    :target: https://travis-ci.com/saxix/django-smart-admin
 
 .. |django| image:: https://img.shields.io/badge/Django-1.8-orange.svg
     :target: http://djangoproject.com/
