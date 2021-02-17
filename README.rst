@@ -34,13 +34,13 @@ Links
 +--------------------+---------------+---------------------------------------------+
 
 
-.. |master-build| image:: https://secure.travis-ci.org/saxix/django-smart-admin.png?branch=master
+.. |master-build| image:: https://secure.travis-ci.com/saxix/django-smart-admin.png?branch=master
                     :target: http://travis-ci.com/saxix/django-smart-admin/
 
 .. |master-cov| image:: https://codecov.io/gh/saxix/django-smart-admin/branch/master/graph/badge.svg
                     :target: https://codecov.io/gh/saxix/django-smart-admin
 
-.. |dev-build| image:: https://secure.travis-ci.org/saxix/django-smart-admin.png?branch=develop
+.. |dev-build| image:: https://secure.travis-ci.com/saxix/django-smart-admin.png?branch=develop
                   :target: http://travis-ci.com/saxix/django-smart-admin/
 
 .. |dev-cov| image:: https://codecov.io/gh/saxix/django-smart-admin/branch/develop/graph/badge.svg
