@@ -1,6 +1,5 @@
 import pytest
 from django.contrib.admin.sites import site
-from pyquery import PyQuery as pq
 
 from demo.factories import get_factory_for_model
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
@@ -43,7 +42,7 @@ def test_index(app):
 
 @pytest.mark.django_db
 def test_applist(app):
-    url = reverse("admin:app_list", args=["demo"])
+    url = reverse("admin:index")
 
     res = app.get(url, user='sax')
     assert res.pyquery('a:contains("Smart Index")')

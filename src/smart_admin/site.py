@@ -1,5 +1,8 @@
 import time
 from collections import OrderedDict
+
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from functools import update_wrapper
 
 from django.conf import settings
@@ -16,9 +19,11 @@ cache = caches['default']
 
 
 class SmartAdminSite(AdminSite):
+    sysinfo_url = False
 
     def each_context(self, request):
         context = super().each_context(request)
+        context['sysinfo'] = self.sysinfo_url
         context['enable_switch'] = smart_settings.ENABLE_SWITCH
         context['quick_links'] = smart_settings.BOOKMARKS
         context['smart'] = self.is_smart_enabled(request)
@@ -37,9 +42,20 @@ class SmartAdminSite(AdminSite):
             return super(SmartAdminSite, self).index(request)
 
     def app_index(self, request, app_label, extra_context=None):
+        groups, __ = self._get_menu(request)
+        if app_label not in groups:
+            request.COOKIES['smart'] = "0"
         if self.is_smart_enabled(request):
             self.app_index_template = 'admin/group_index.html'
-        return super().app_index(request, app_label, extra_context)
+        response = super().app_index(request, app_label, extra_context)
+        response.set_cookie("smart", )
+        return response
+
+    def smart_toggle(self, request, on_off):
+        path = request.GET.get('from', request.path)
+        response = HttpResponseRedirect(path)
+        response.set_cookie('smart', int(as_bool(on_off)))
+        return response
 
     def get_urls(self):
         from django.urls import path
@@ -50,9 +66,17 @@ class SmartAdminSite(AdminSite):
 
             wrapper.admin_site = self
             return update_wrapper(wrapper, view)
-
-        urlpatterns = [path('~groups/<str:group>/', wrap(self.smart_section), name='group_list'), ]
+        urlpatterns = [path('~groups/<str:group>/', wrap(self.smart_section), name='group_list'),
+                       path('smart/<str:on_off>/', wrap(self.smart_toggle), name='smart_toggle'),
+                       ]
         urlpatterns += super(SmartAdminSite, self).get_urls()
+        try:
+            from django_sysinfo.views import admin_sysinfo
+            from django.urls import reverse_lazy
+            urlpatterns += [path('sysinfo/', wrap(admin_sysinfo), name='smart-sysinfo-admin'), ]
+            self.sysinfo_url = reverse_lazy('admin:smart-sysinfo-admin')
+        except ImportError:
+            pass
 
         return urlpatterns
 
