@@ -1,6 +1,6 @@
 dist: xenial
 language: python
-sudo: false
+sudo: true
 
 python:
   - 3.6
@@ -19,6 +19,7 @@ env:
 install:
   - pip install tox-travis
   - pip install "coverage<=4.0" codecov
+  - sudo apt-get install libboost-all-dev
 
 script:
   - tox -e "py${TRAVIS_PYTHON_VERSION//.}-d${DJANGO//.}"
