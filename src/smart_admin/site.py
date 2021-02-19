@@ -66,6 +66,7 @@ class SmartAdminSite(AdminSite):
 
             wrapper.admin_site = self
             return update_wrapper(wrapper, view)
+
         urlpatterns = [path('~groups/<str:group>/', wrap(self.smart_section), name='group_list'),
                        path('smart/<str:on_off>/', wrap(self.smart_toggle), name='smart_toggle'),
                        ]
