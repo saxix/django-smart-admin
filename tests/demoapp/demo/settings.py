@@ -14,6 +14,7 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.sites',
                   'django.contrib.messages',
                   'django.contrib.staticfiles',
+                  'django_sysinfo',
                   'smart_admin.templates',
                   'smart_admin',
                   'demo']

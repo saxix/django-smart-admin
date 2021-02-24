@@ -1,0 +1,2 @@
+# This file is only used by the Heroku sample app at https://django-smart-admin.herokuapp.com/
+django

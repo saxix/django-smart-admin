@@ -1,21 +1,53 @@
 from itertools import chain
 
-from django.contrib import admin
+from adminfilters.filters import ChoicesFieldComboFilter, AllValuesComboFilter, RelatedFieldComboFilter
+from django.contrib.admin import FieldListFilter
 from django.contrib.admin.checks import BaseModelAdminChecks, must_be
 from django.contrib.admin.utils import flatten
 from django.db import models
+from django.db.models import AutoField, TextField, ForeignKey, ManyToManyField
+from django.db.models.fields.related import RelatedField
+
+
+class SmartFilterMixin:
+    def __init__(self, model, admin_site):
+        FieldListFilter.register(lambda f: bool(f.choices), ChoicesFieldComboFilter, True)
+        FieldListFilter.register(lambda f: isinstance(f, models.BooleanField), AllValuesComboFilter, True)
+        FieldListFilter.register(lambda f: f.remote_field, RelatedFieldComboFilter, True)
+
+        super().__init__(model, admin_site)
+
+
+class SmartAutoFilterMixin(SmartFilterMixin):
+    def __init__(self, model, admin_site):
+        self.model = model
+        self.list_filter = self._get_list_filter()
+        super().__init__(model, admin_site)
+
+    def _get_list_filter(self):
+        if self.list_filter:
+            return self.list_filter
+        return [field.name for field in self.model._meta.fields
+                if field.db_index and not isinstance(field, (AutoField,
+                                                    RelatedField,
+                                                     # ManyToManyField,
+                                                    # ForeignKey,
+                                                    TextField))
+                ]
 
 
 class DisplayAllMixin:
     def get_list_display(self, request):  # pragma: no cover
         if self.list_display == ('__str__',):
             return [field.name for field in self.model._meta.fields
-                    if not isinstance(field, models.ForeignKey)]
+                    if not isinstance(field, (AutoField,
+                                              ForeignKey,
+                                              TextField, ManyToManyField))]
 
         return self.list_display
 
 
-class FieldsetMixin(admin.ModelAdmin):
+class FieldsetMixin:
 
     def get_fields(self, request, obj=None):
         return super().get_fields(request, obj)
@@ -69,4 +101,3 @@ class ReadOnlyMixin:
 
 class SmartMixin(ReadOnlyMixin, FieldsetMixin, DisplayAllMixin):
     readonly_fields = ()
-
