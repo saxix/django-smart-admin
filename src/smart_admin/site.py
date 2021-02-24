@@ -73,9 +73,10 @@ class SmartAdminSite(AdminSite):
         urlpatterns += super(SmartAdminSite, self).get_urls()
         try:
             from django_sysinfo.views import admin_sysinfo
-            from django.urls import reverse_lazy
-            urlpatterns += [path('sysinfo/', wrap(admin_sysinfo), name='smart-sysinfo-admin'), ]
-            self.sysinfo_url = reverse_lazy('admin:smart-sysinfo-admin')
+            if 'django_sysinfo' in settings.INSTALLED_APPS:
+                from django.urls import reverse_lazy
+                urlpatterns += [path('sysinfo/', wrap(admin_sysinfo), name='smart-sysinfo-admin'), ]
+                self.sysinfo_url = reverse_lazy('admin:smart-sysinfo-admin')
         except ImportError:
             pass
 

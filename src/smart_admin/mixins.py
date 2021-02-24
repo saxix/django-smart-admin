@@ -1,7 +1,6 @@
 from itertools import chain
 
 from adminfilters.filters import ChoicesFieldComboFilter, AllValuesComboFilter, RelatedFieldComboFilter
-from django.contrib import admin
 from django.contrib.admin import FieldListFilter
 from django.contrib.admin.checks import BaseModelAdminChecks, must_be
 from django.contrib.admin.utils import flatten
