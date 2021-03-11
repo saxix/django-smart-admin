@@ -13,7 +13,7 @@ Simply comment ``django.contrib.admin`` in your ``INSTALLED_APPS`` and add ``sma
 
    INSTALLED_APPS = [
        # "django.contrib.admin",
-       "smart_admin.template",
+       "smart_admin.templates",
        "smart_admin",
        .....
    ]
