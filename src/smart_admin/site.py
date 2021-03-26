@@ -2,7 +2,6 @@ import time
 from collections import OrderedDict
 
 from django.http import HttpResponseRedirect
-from django.urls import reverse
 from functools import update_wrapper
 
 from django.conf import settings
@@ -14,8 +13,19 @@ from django.views.decorators.cache import never_cache
 from . import get_full_version
 from . import settings as smart_settings
 from .templates.templatetags.smart import as_bool
+from .utils import SmartList
 
 cache = caches['default']
+
+
+def _parse_section():
+    base = smart_settings.SECTIONS
+    ret = {'_hidden_': []}
+    for name, entries in base.items():
+        ret[name] = SmartList(entries)
+    if 'Other' not in ret:
+        ret['Other'] = []
+    return ret
 
 
 class SmartAdminSite(AdminSite):
@@ -87,17 +97,14 @@ class SmartAdminSite(AdminSite):
             ver = time.time
         else:
             ver = get_full_version
-
-        sections = smart_settings.SECTIONS
-
-        key1 = f'{hash(str(sections))}:groups:{ver()}'
-        key2 = f'{hash(str(sections))}:models:{ver()}'
+        sections = _parse_section()
+        key1 = f'{hash(repr(sections))}:groups:{ver()}'
+        key2 = f'{hash(repr(sections))}:models:{ver()}'
 
         groups = cache.get(key1)
         model_to_section = cache.get(key2)
         if not (groups and model_to_section):
             model_to_section = {}
-            sections = smart_settings.SECTIONS
             groups = OrderedDict([(k, []) for k in sections.keys()])
             app_list = self.get_app_list(request)
 
@@ -111,7 +118,7 @@ class SmartAdminSite(AdminSite):
                     if fqn in models:
                         return sec
                     elif app['app_label'] in models:
-                        target = sec
+                        return sec
                 return target
 
             for app in app_list:

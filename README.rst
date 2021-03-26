@@ -18,6 +18,19 @@ Simply comment ``django.contrib.admin`` in your ``INSTALLED_APPS`` and add ``sma
        .....
    ]
 
+Configuration
+=============
+
+.. code-block::
+
+    from smart_admin.utils import match, regex
+
+    SMART_ADMIN_SECTIONS = {
+        "Security": [
+            "auth",
+        ],
+    }
+
 Links
 ~~~~~
 
