@@ -23,7 +23,7 @@ setup(
     author='sax',
     author_email='s.apostolico@gmail.com',
     keywords='django',
-    packages=['smart_admin', 'smart_admin.templates', 'smart_admin.templates.templatetags'],
+    packages=['smart_admin', 'smart_admin.logs', 'smart_admin.templates', 'smart_admin.templates.templatetags'],
     package_dir={"": "src"},
     package_data={"smart_admin.templates": ["templates/admin/*.html"]},
     extras_require={

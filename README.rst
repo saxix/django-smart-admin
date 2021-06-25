@@ -1,7 +1,7 @@
 django-smart-admin
 ==================
 
-SmartAdmin is a set of small Django Admin utilities that aims 
+SmartAdmin is a set of small Django Admin utilities that aims
 to remove some of the common annoying configuration issues:
 
 Install
@@ -13,6 +13,8 @@ Simply comment ``django.contrib.admin`` in your ``INSTALLED_APPS`` and add ``sma
 
    INSTALLED_APPS = [
        # "django.contrib.admin",
+       "adminfilters",
+       "smart_admin.logs",
        "smart_admin.templates",
        "smart_admin",
        .....
