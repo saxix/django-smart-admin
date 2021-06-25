@@ -15,7 +15,7 @@ setup(
     long_description=readme,
     long_description_content_type="text/x-rst",
     name='django-smart-admin',
-    version='0.5.0',
+    version='0.6.0',
     python_requires='==3.*,>=3.0.0,>=3.6',
     project_urls={"homepage": "https://github.com/saxix/django-smart-admin",
                   "repository": "https://github.com/saxix/django-smart-admin"
