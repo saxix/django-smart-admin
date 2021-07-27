@@ -1,4 +1,5 @@
 import factory
+from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import User
 from factory.base import FactoryMetaClass
 
@@ -21,8 +22,17 @@ class UserFactory(ModelFactory):
         model = User
 
 
+class LogEntryFactory(ModelFactory):
+    user = factory.SubFactory(UserFactory)
+    action_flag = 1
+    class Meta:
+        model = LogEntry
+
+
 def get_factory_for_model(_model):
     class Meta:
         model = _model
 
+    if _model in factories_registry:
+        return factories_registry[_model]
     return type("AAA", (ModelFactory,), {'Meta': Meta})

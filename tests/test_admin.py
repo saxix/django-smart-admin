@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.admin.models import LogEntry
 from django.contrib.admin.sites import site
 
 from demo.factories import get_factory_for_model
@@ -82,6 +83,20 @@ def test_changelist(app, modeladmin, record):
 def test_changeform(app, modeladmin, record):
     url = reverse(admin_urlname(modeladmin.model._meta, 'change'), args=[record.id])
     opts: Options = modeladmin.model._meta
+
+    res = app.get(url, user='sax')
+    assert str(opts.app_config.verbose_name) in str(res.content)
+    assert res.pyquery('a:contains("Smart Index")')
+
+    app.set_cookie('smart', "1")
+    res = app.get(url, user='sax')
+    assert res.pyquery('a:contains("Standard Index")')
+
+
+@pytest.mark.django_db
+def test_log(app):
+    url = reverse(admin_urlname(LogEntry._meta, 'changelist'))
+    opts: Options = LogEntry._meta
 
     res = app.get(url, user='sax')
     assert str(opts.app_config.verbose_name) in str(res.content)
