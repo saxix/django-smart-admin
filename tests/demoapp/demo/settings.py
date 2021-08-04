@@ -9,7 +9,7 @@ STATIC_URL = '/static/'
 SITE_ID = 1
 ROOT_URLCONF = 'demo.urls'
 SECRET_KEY = 'abc'
-
+ALLOWED_HOSTS = ['*']
 AUTHENTICATION_BACKENDS = ('demo.backends.AnyUserAuthBackend',
                            )
 

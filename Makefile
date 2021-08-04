@@ -36,8 +36,8 @@ lint:
 deploy:
 	git checkout heroku
 	git merge develop
-	git push heroku heroku:master
-	heroku run python manage.py migrate
-	heroku run python manage.py loaddata tests/fixtures.json
+	git push
+	heroku run python tests/demoapp/manage.py migrate
+	heroku run python tests/demoapp/manage.py loaddata tests/fixtures.json
 	git checkout develop
 
