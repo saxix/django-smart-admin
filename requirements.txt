@@ -2,3 +2,4 @@
 -e .[full]
 django
 gunicorn
+django-environ
