@@ -38,8 +38,8 @@ MIDDLEWARE = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
-        # 'NAME': 'demo.db',
+        # 'NAME': ':memory:',
+        'NAME': './demo.db',
         'HOST': '',
         'PORT': ''}}
 
