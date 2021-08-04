@@ -27,6 +27,8 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.messages',
                   'django.contrib.staticfiles',
                   'django_sysinfo',
+
+                  'adminactions',
                   'adminfilters',
                   'smart_admin.logs',
                   'smart_admin.templates',
@@ -40,6 +42,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 )
 
 DATABASES = {
