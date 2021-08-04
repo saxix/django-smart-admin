@@ -1,5 +1,4 @@
-from adminfilters.filters import ChoicesFieldComboFilter
-from django.contrib.admin import ModelAdmin, FieldListFilter
+from django.contrib.admin import ModelAdmin
 
 from smart_admin.changelist import SmartChangeListMixin
 from smart_admin.mixins import SmartMixin

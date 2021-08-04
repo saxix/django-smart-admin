@@ -7,7 +7,6 @@ from django.contrib import admin
 from smart_admin.mixins import SmartMixin
 
 
-
 @register(LogEntry)
 class LogEntryAdmin(SmartMixin, admin.ModelAdmin):
     list_display = ('action_time', 'user', 'action_flag', 'content_type', 'object_repr')

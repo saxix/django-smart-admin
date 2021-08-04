@@ -14,7 +14,6 @@ def section(model_to_section, opts):
     return model_to_section[f"{opts.app_label}.{opts.object_name}"]
 
 
-
 @register.simple_tag(takes_context=True)
 def smart_toggler(context):
     request = context['request']
