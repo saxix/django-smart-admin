@@ -32,6 +32,7 @@ setup(
                  "django-sysinfo",
                  ],
         'dev': ['django-webtest',
+                'django-environ',
                  'bump2version',
                  'factory-boy',
                  'tox',
