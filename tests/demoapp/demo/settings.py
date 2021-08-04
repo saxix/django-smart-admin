@@ -1,15 +1,18 @@
 import os
 from pathlib import Path
 import environ
-env = environ.Env(
-    DEBUG=(bool, False)
-)
 
-DEBUG = True
 BASE_DIR = Path(__file__).resolve(strict=True).parents[3]
 
+env = environ.Env(
+    DEBUG=(bool, False),
+    STATIC_ROOT=(str, str(BASE_DIR / '~build' / 'static'))
+)
+
+DEBUG = env('DEBUG')
+
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / '~build' / 'static'
+STATIC_ROOT = env('STATIC_ROOT')
 SITE_ID = 1
 ROOT_URLCONF = 'demo.urls'
 SECRET_KEY = 'abc'
