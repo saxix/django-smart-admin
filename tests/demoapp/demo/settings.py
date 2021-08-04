@@ -9,7 +9,7 @@ DEBUG = True
 BASE_DIR = Path(__file__).resolve(strict=True).parents[3]
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = BASE_DIR / '~build' / 'static'
 SITE_ID = 1
 ROOT_URLCONF = 'demo.urls'
 SECRET_KEY = 'abc'
@@ -72,4 +72,3 @@ SMART_ADMIN_SECTIONS = {
 }
 
 SMART_ADMIN_BOOKMARKS = ['--']
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
