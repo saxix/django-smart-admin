@@ -37,3 +37,5 @@ deploy:
 	git checkout heroku
 	git merge develop
 	git push heroku heroku
+	git checkout develop
+
