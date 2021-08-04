@@ -30,6 +30,7 @@ def _parse_section():
 
 class SmartAdminSite(AdminSite):
     sysinfo_url = False
+    index_template = 'admin/index.html'
 
     def each_context(self, request):
         context = super().each_context(request)
@@ -49,7 +50,7 @@ class SmartAdminSite(AdminSite):
         if self.is_smart_enabled(request):
             return self.smart_index(request)
         else:
-            return super(SmartAdminSite, self).index(request)
+            return super().index(request)
 
     def app_index(self, request, app_label, extra_context=None):
         groups, __ = self._get_menu(request)

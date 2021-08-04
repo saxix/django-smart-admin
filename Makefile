@@ -32,3 +32,8 @@ lint:
 		-t saxix/smart-admin \
 		-f docker/Dockerfile .
 	docker images | grep ${DOCKER_IMAGE_NAME}
+
+deploy:
+	git checkout heroku
+	git merge develop
+	git push heroku heroku
