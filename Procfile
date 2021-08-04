@@ -1,1 +1,1 @@
-web: cd tests/demoapp && gunicorn demo.wsgi
+web: cd tests/demoapp && python manage.py testserver ../fixtures.json
