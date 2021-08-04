@@ -37,6 +37,7 @@ deploy:
 	git checkout heroku
 	git merge develop
 	git push
+	heroku pg:reset
 	heroku run python tests/demoapp/manage.py migrate
 	heroku run python tests/demoapp/manage.py loaddata tests/fixtures.json
 	git checkout develop
