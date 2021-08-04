@@ -38,7 +38,7 @@ deploy:
 	git merge develop
 	git push heroku heroku:master
 	heroku pg:reset --confirm django-smart-admin
-	heroku run python tests/demoapp/manage.py collectstatic --noinout
+	heroku run python tests/demoapp/manage.py collectstatic --noinput
 	heroku run python tests/demoapp/manage.py migrate
 	heroku run python tests/demoapp/manage.py loaddata tests/fixtures.json
 	git checkout develop
