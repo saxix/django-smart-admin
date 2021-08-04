@@ -1,5 +1,9 @@
 import os
 from pathlib import Path
+import environ
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
 DEBUG = True
 BASE_DIR = Path(__file__).resolve(strict=True).parents[3]
@@ -36,12 +40,8 @@ MIDDLEWARE = (
 )
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': ':memory:',
-        'NAME': BASE_DIR / 'smart_admin.db',
-        'HOST': '',
-        'PORT': ''}}
+    'default': env.db()
+}
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
