@@ -36,6 +36,7 @@ lint:
 deploy:
 	git checkout heroku
 	git merge develop
-	git push heroku heroku
+	git push heroku heroku/develop
+	git push heroku heroku/master
 	git checkout develop
 
