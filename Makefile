@@ -36,7 +36,7 @@ lint:
 deploy:
 	git checkout heroku
 	git merge develop
-	git push heroku heroku:master
+	git push --force heroku heroku:master
 	heroku pg:reset
 	heroku run python tests/demoapp/manage.py collectstatic
 	heroku run python tests/demoapp/manage.py migrate
