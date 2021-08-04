@@ -29,6 +29,7 @@ setup(
     extras_require={
         'full': ["django-adminfilters>=1.4.1",
                  "django-admin-extra-urls>=3.5",
+                 "django-adminactions",
                  "django-sysinfo",
                  ],
         'dev': ['django-webtest',
