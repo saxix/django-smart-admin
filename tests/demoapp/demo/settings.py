@@ -1,3 +1,4 @@
+import django_heroku
 DEBUG = True
 STATIC_URL = '/static/'
 
@@ -67,3 +68,5 @@ SMART_ADMIN_SECTIONS = {
 }
 
 SMART_ADMIN_BOOKMARKS = ['--']
+
+django_heroku.settings(locals())
