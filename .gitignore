@@ -5,3 +5,4 @@ poetry.lock
 !.gitignore
 !.travis.yml
 !tests/.coveragerc
+smart_admin.db

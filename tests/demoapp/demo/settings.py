@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 DEBUG = True
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+BASE_DIR = Path(__file__).resolve(strict=True).parents[3]
 
 STATIC_URL = '/static/'
 
@@ -39,7 +39,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': ':memory:',
-        'NAME': './demo.db',
+        'NAME': BASE_DIR / 'smart_admin.db',
         'HOST': '',
         'PORT': ''}}
 
