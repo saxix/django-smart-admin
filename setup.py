@@ -27,8 +27,8 @@ setup(
     package_dir={"": "src"},
     package_data={"smart_admin.templates": ["templates/admin/*.html"]},
     extras_require={
-        'full': ["django-adminfilters",
-                 "django-admin-extra-urls",
+        'full': ["django-adminfilters>=1.4.1",
+                 "django-admin-extra-urls>=3.5",
                  "django-sysinfo",
                  ],
         'dev': ['django-webtest',

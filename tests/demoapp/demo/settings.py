@@ -1,5 +1,9 @@
-import django_heroku
+import os
+from pathlib import Path
+
 DEBUG = True
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+
 STATIC_URL = '/static/'
 
 SITE_ID = 1
@@ -68,5 +72,4 @@ SMART_ADMIN_SECTIONS = {
 }
 
 SMART_ADMIN_BOOKMARKS = ['--']
-
-django_heroku.settings(locals())
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
