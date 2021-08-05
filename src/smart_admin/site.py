@@ -3,6 +3,7 @@ from collections import OrderedDict
 
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse
 from functools import update_wrapper
 
@@ -64,7 +65,7 @@ class SmartAdminSite(AdminSite):
         context['smart_sections'], context['model_to_section'] = self._get_menu(request)
         context['adminsite'] = self
         if smart_settings.PROFILE_LINK and request.user.is_authenticated:
-            context['profile_link'] = reverse(admin_urlname(request.user._meta,'change'),
+            context['profile_link'] = reverse(admin_urlname(request.user._meta, 'change'),
                                               args=[request.user.pk])
 
         return context
@@ -78,6 +79,23 @@ class SmartAdminSite(AdminSite):
             return self.smart_index(request)
         else:
             return super().index(request)
+
+    def admin_sysinfo(self, request):
+        from django_sysinfo.api import get_sysinfo
+        infos = get_sysinfo(request)
+        infos.setdefault('extra', {})
+        infos.setdefault('checks', {})
+        from django.contrib.admin import site
+        context = self.each_context(request)
+        context.update({'title': 'sysinfo',
+                        'infos': infos,
+                        # 'site_title': site.site_title,
+                        # 'site_header': site.site_header,
+                        'enable_switch': True,
+                        'has_permission': True,
+                        # 'user': request.user,
+                        })
+        return render(request, 'admin/sysinfo/sysinfo.html', context)
 
     def app_index(self, request, app_label, extra_context=None):
         groups, __ = self._get_menu(request)
@@ -111,10 +129,9 @@ class SmartAdminSite(AdminSite):
                        ]
 
         try:
-            from django_sysinfo.views import admin_sysinfo
             if 'django_sysinfo' in settings.INSTALLED_APPS:
                 from django.urls import reverse_lazy
-                urlpatterns += [path('~sysinfo/', wrap(admin_sysinfo), name='smart-sysinfo-admin'), ]
+                urlpatterns += [path('~sysinfo/', wrap(self.admin_sysinfo), name='smart-sysinfo-admin'), ]
                 self.sysinfo_url = reverse_lazy('admin:smart-sysinfo-admin')
         except ImportError:
             pass
