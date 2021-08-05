@@ -1,7 +1,9 @@
 import time
 from collections import OrderedDict
 
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from functools import update_wrapper
 
 from django.conf import settings
@@ -12,7 +14,8 @@ from django.views.decorators.cache import never_cache
 
 from . import get_full_version
 from . import settings as smart_settings
-from .templates.templatetags.smart import as_bool
+from .settings import process_lazy
+from .templatetags.smart import as_bool
 from .utils import SmartList
 
 cache = caches['default']
@@ -32,14 +35,38 @@ class SmartAdminSite(AdminSite):
     sysinfo_url = False
     index_template = 'admin/index.html'
 
+    def get_bookmarks(self, request):
+        if smart_settings.BOOKMARKS_PERMISSION is None or request.user.has_permission(
+                smart_settings.BOOKMARKS_PERMISSION):
+            bookmarks = []
+            values = process_lazy('BOOKMARKS')
+
+            for entry in values:
+                if isinstance(entry, str):
+                    label, url, cls = entry, entry, 'viewlink'
+                elif len(entry) == 2:
+                    label, url, cls = entry[0], entry[1], 'viewlink'
+                elif len(entry) == 3:
+                    label, url, cls = entry
+                else:
+                    raise ValueError(f"Invalid entry '{entry}' for BOOKMARKS")
+                bookmarks.append([label, url, cls])
+            return bookmarks
+        return []
+
     def each_context(self, request):
         context = super().each_context(request)
         context['sysinfo'] = self.sysinfo_url
+        context['smart_settings'] = smart_settings
         context['enable_switch'] = smart_settings.ENABLE_SWITCH
-        context['quick_links'] = smart_settings.BOOKMARKS
+        context['bookmarks'] = self.get_bookmarks(request)
         context['smart'] = self.is_smart_enabled(request)
         context['smart_sections'], context['model_to_section'] = self._get_menu(request)
         context['adminsite'] = self
+        if smart_settings.PROFILE_LINK and request.user.is_authenticated:
+            context['profile_link'] = reverse(admin_urlname(request.user._meta,'change'),
+                                              args=[request.user.pk])
+
         return context
 
     def is_smart_enabled(self, request):

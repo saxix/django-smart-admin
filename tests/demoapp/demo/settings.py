@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import environ
 
@@ -6,7 +5,8 @@ BASE_DIR = Path(__file__).resolve(strict=True).parents[3]
 
 env = environ.Env(
     DEBUG=(bool, False),
-    STATIC_ROOT=(str, str(BASE_DIR / '~build' / 'static'))
+    STATIC_ROOT=(str, str(BASE_DIR / '~build' / 'static')),
+    DATABASE_URL=(str, "sqlite:///smart_admin.db")
 )
 
 DEBUG = env('DEBUG')
@@ -26,12 +26,15 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.sites',
                   'django.contrib.messages',
                   'django.contrib.staticfiles',
+
+                  'constance',
                   'django_sysinfo',
                   'adminactions',
                   'adminfilters',
+                  'admin_extra_urls',
 
                   'smart_admin.logs',
-                  'smart_admin.templates',
+                  'smart_admin.apps.SmartTemplateConfig',
                   'smart_admin',
 
                   'demo']
@@ -78,4 +81,26 @@ SMART_ADMIN_SECTIONS = {
     '_hidden_': ["sites"]
 }
 
-SMART_ADMIN_BOOKMARKS = ['--']
+SMART_ADMIN_BOOKMARKS = [('GitHub', 'https://github.com/saxix/django-smart-admin'),
+                         'https://github.com/saxix/django-adminactions',
+                         'https://github.com/saxix/django-sysinfo',
+                         'https://github.com/saxix/django-adminfilters',
+                         'https://github.com/saxix/django-admin-extra-urls',
+                         ]
+SMART_ADMIN_BOOKMARKS_PERMISSION = None
+SMART_ADMIN_PROFILE_LINK = True
+
+CONSTANCE_CONFIG = {
+    'SITE_NAME': ('My Title', 'Website title'),
+    'SITE_DESCRIPTION': ('', 'Website description'),
+    'THEME': ('light-blue', 'Website theme'),
+}
+
+CONSTANCE_CONFIG_FIELDSETS = {
+    'General Options': {
+        'fields': ('SITE_NAME', 'SITE_DESCRIPTION'),
+        'collapse': True
+    },
+    'Theme Options': ('THEME',),
+}
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'

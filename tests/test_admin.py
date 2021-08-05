@@ -7,7 +7,7 @@ from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.db.models.options import Options
 from django.urls import reverse
 
-EXCLUDED_MODELS = []
+EXCLUDED_MODELS = ['Config']
 
 
 def pytest_generate_tests(metafunc):

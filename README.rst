@@ -31,12 +31,37 @@ In your `settings.py`
       'django_sysinfo',  # optional
       'adminactions',  # optional
       'adminfilters',  # optional
+      'admin_extra_urls', # optional
 
       'smart_admin.logs',  # optional
       'smart_admin.templates',
       'smart_admin',
       .....
    ]
+   SMART_ADMIN_SECTIONS = {
+        'Demo': ['demo', ],
+        'Security': ['auth',
+                     'auth.User',
+                     ],
+
+        'Logs': ['admin.LogEntry',
+                 ],
+        'Other': [],
+        '_hidden_': ["sites"]
+    }
+
+    # add some bookmark
+    SMART_ADMIN_BOOKMARKS = [('GitHub', 'https://github.com/saxix/django-smart-admin')]
+
+    # no special permissions to see bookmarks
+    SMART_ADMIN_BOOKMARKS_PERMISSION = None
+
+    # add 'profile' link on the header
+    SMART_ADMIN_PROFILE_LINK = True
+
+    # display all users action log, not only logged user
+    SMART_ADMIN_ANYUSER_LOG = True
+
 
 In your `urls.py`
 
