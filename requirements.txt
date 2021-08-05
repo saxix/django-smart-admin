@@ -3,6 +3,7 @@
 django
 gunicorn
 django-environ
+django-constance
 psycopg2
 whitenoise
 
