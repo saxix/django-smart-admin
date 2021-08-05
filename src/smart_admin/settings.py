@@ -32,6 +32,7 @@ BOOKMARKS_PERMISSION = getattr(settings, 'SMART_ADMIN_BOOKMARKS_PERMISSION', Non
 ENABLE_SWITCH = getattr(settings, 'SMART_ADMIN_SWITCH', True)
 PROFILE_LINK = getattr(settings, 'SMART_ADMIN_PROFILE_LINK', True)
 ANYUSER_LOG = getattr(settings, 'SMART_ADMIN_ANYUSER_LOG', True)
+ISROOT = getattr(settings, 'SMART_ADMIN_ISROOT', lambda request, *a: request.user.is_superuser)
 
 
 @receiver(setting_changed)

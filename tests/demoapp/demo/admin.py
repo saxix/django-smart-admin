@@ -1,4 +1,5 @@
 import datetime
+import sys
 
 import factory
 import factory.fuzzy
@@ -13,6 +14,7 @@ from django.contrib.admin.models import DELETION, LogEntry
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.db import OperationalError
 from django.db.transaction import atomic
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -20,6 +22,7 @@ from django.utils.safestring import mark_safe
 from factory import SubFactory
 from factory.django import DjangoModelFactory
 
+import smart_admin.settings as smart_settings
 from smart_admin.mixins import SmartMixin
 
 from .models import DemoModel1, DemoModel2, DemoModel3, DemoModel4
@@ -34,22 +37,19 @@ class UserFactory(DjangoModelFactory):
 
     class Meta:
         model = User
+        django_get_or_create = ('username',)
 
 
 class DemoModel1Factory(DjangoModelFactory):
     name = factory.Faker('name')
     email = factory.Faker('email')
     char = factory.fuzzy.FuzzyText()
-    integer = factory.fuzzy.FuzzyInteger(1)
+    integer = factory.fuzzy.FuzzyInteger(100)
     date = factory.fuzzy.FuzzyDate(datetime.date(2008, 1, 1))
     user = SubFactory(UserFactory)
 
     class Meta:
         model = DemoModel1
-
-
-def is_root(request, obj):
-    return request.user.is_superuser and request.headers.get("x-root-token") == settings.ROOT_TOKEN
 
 
 @register(DemoModel1)
@@ -95,11 +95,11 @@ class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
     def create_100_records(self, request):
         DemoModel1Factory.create_batch(100)
 
-    @button(label="Truncate", css_class="btn-danger", permission=is_root)
+    @button(label="Truncate", css_class="btn-danger", permission=smart_settings.ISROOT)
     def truncate(self, request):
-        if not request.headers.get("x-root-access") == "XMLHttpRequest":
-            self.message_user(request, "You are not allowed to perform this action", messages.ERROR)
-            return
+        # if not request.headers.get("x-root-access") == "XMLHttpRequest":
+        #     self.message_user(request, "You are not allowed to perform this action", messages.ERROR)
+        #     return
         if request.method == "POST":
             with atomic():
                 LogEntry.objects.log_action(
@@ -112,9 +112,12 @@ class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
                 )
                 from django.db import connections
 
-                conn = connections[self.model.objects.db]
-                cursor = conn.cursor()
-                cursor.execute('TRUNCATE TABLE "{0}" RESTART IDENTITY CASCADE '.format(self.model._meta.db_table))
+                try:
+                    conn = connections[self.model.objects.db]
+                    cursor = conn.cursor()
+                    cursor.execute('TRUNCATE TABLE "{0}" RESTART IDENTITY CASCADE '.format(self.model._meta.db_table))
+                except OperationalError:
+                    self.get_queryset(request).delete()
         else:
             return _confirm_action(
                 self,
