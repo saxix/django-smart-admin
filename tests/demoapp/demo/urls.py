@@ -10,3 +10,10 @@ urlpatterns = [
     path('', admin.site.urls),
     path('adminactions/', include('adminactions.urls')),
 ]
+
+
+def get_link(request):
+    return get_link.LINKS
+
+
+get_link.LINKS = (['github', 'https://github.com', 'icon'], ['github', 'https://github.com'], ['https:///github.com'])

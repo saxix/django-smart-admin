@@ -29,10 +29,10 @@ class SmartAutoFilterMixin(SmartFilterMixin):
             return self.list_filter
         return [field.name for field in self.model._meta.fields
                 if field.db_index and not isinstance(field, (AutoField,
-                                                    RelatedField,
-                                                     # ManyToManyField,
-                                                    # ForeignKey,
-                                                    TextField))
+                                                             RelatedField,
+                                                             # ManyToManyField,
+                                                             # ForeignKey,
+                                                             TextField))
                 ]
 
 

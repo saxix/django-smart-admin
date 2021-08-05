@@ -1,4 +1,4 @@
-{% extends "admin/index.html" %}{% load i18n static %}
+{% extends "admin/index.html" %}{% load i18n static log %}
 {% block content %}
     <div id="content-main">
         <input type="text" style="width: 578px;padding:10px;margin-bottom:10px" id="filterInput"
@@ -32,10 +32,24 @@
 {% block sidebar %}
     <div id="content-related">
         <div class="module" id="recent-actions-module">
+            {% if bookmarks %}
+                <h2>{% trans 'Quick Links' %}</h2>
+                <ul class="actionlist">
+                    {% for label, url, cls in bookmarks %}
+                        <li class="{{ cls }}"><a target="_{{ label }}" href="{{ url }}">{{ label }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
             <h2>{% trans 'Recent actions' %}</h2>
-            <h3>{% trans 'My actions' %}</h3>
-            {% load log %}
-            {% get_admin_log 10 as admin_log for_user user %}
+
+            <h3>{% if smart_settings.ANYUSER_LOG %}
+                <a href="{% url "admin:admin_logentry_changelist" %}">{% trans 'Actions' %}</a>
+                {% get_admin_log 10 as admin_log %}
+            {% else %}
+                <a href="">{% trans 'My actions' %}</a>
+                {% get_admin_log 10 as admin_log for_user user %}
+            {% endif %}</h3>
             {% if not admin_log %}
                 <p>{% trans 'None available' %}</p>
             {% else %}
@@ -53,6 +67,9 @@
                                     {{ entry.content_type }}{% endfilter %}</span>
                             {% else %}
                                 <span class="mini quiet">{% trans 'Unknown content' %}</span>
+                            {% endif %}
+                            {% if smart_settings.ANYUSER_LOG %}
+                                (<a href="{% url "admin:admin_logentry_changelist" %}?user__id__exact={{ entry.user.pk }}">{{ entry.user }}</a>)
                             {% endif %}
                         </li>
                     {% endfor %}
