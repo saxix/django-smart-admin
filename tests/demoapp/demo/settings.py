@@ -1,4 +1,6 @@
 from pathlib import Path
+from uuid import uuid4
+
 import environ
 
 BASE_DIR = Path(__file__).resolve(strict=True).parents[3]
@@ -6,7 +8,8 @@ BASE_DIR = Path(__file__).resolve(strict=True).parents[3]
 env = environ.Env(
     DEBUG=(bool, False),
     STATIC_ROOT=(str, str(BASE_DIR / '~build' / 'static')),
-    DATABASE_URL=(str, "sqlite:///smart_admin.db")
+    DATABASE_URL=(str, "sqlite:///smart_admin.db"),
+    ROOT_TOKEN=(str, uuid4().hex),
 )
 
 DEBUG = env('DEBUG')
@@ -104,3 +107,4 @@ CONSTANCE_CONFIG_FIELDSETS = {
     'Theme Options': ('THEME',),
 }
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+ROOT_TOKEN = env('ROOT_TOKEN')
