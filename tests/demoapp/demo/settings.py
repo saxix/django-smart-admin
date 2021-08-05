@@ -92,6 +92,7 @@ SMART_ADMIN_BOOKMARKS = [('GitHub', 'https://github.com/saxix/django-smart-admin
                          ]
 SMART_ADMIN_BOOKMARKS_PERMISSION = None
 SMART_ADMIN_PROFILE_LINK = True
+SMART_ADMIN_ISROOT = lambda r, *a: r.user.is_superuser and r.headers.get("x-root-token") == env('ROOT_TOKEN')
 
 CONSTANCE_CONFIG = {
     'SITE_NAME': ('My Title', 'Website title'),
@@ -107,4 +108,3 @@ CONSTANCE_CONFIG_FIELDSETS = {
     'Theme Options': ('THEME',),
 }
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
-ROOT_TOKEN = env('ROOT_TOKEN')

@@ -43,6 +43,8 @@ class SmartAdminSite(AdminSite):
             values = process_lazy('BOOKMARKS')
 
             for entry in values:
+                if not entry:
+                    continue
                 if isinstance(entry, str):
                     label, url, cls = entry, entry, 'viewlink'
                 elif len(entry) == 2:
@@ -85,15 +87,11 @@ class SmartAdminSite(AdminSite):
         infos = get_sysinfo(request)
         infos.setdefault('extra', {})
         infos.setdefault('checks', {})
-        from django.contrib.admin import site
         context = self.each_context(request)
         context.update({'title': 'sysinfo',
                         'infos': infos,
-                        # 'site_title': site.site_title,
-                        # 'site_header': site.site_header,
                         'enable_switch': True,
                         'has_permission': True,
-                        # 'user': request.user,
                         })
         return render(request, 'admin/sysinfo/sysinfo.html', context)
 
@@ -125,7 +123,6 @@ class SmartAdminSite(AdminSite):
 
         urlpatterns = [path('~groups/<str:group>/', wrap(self.smart_section), name='group_list'),
                        path('smart/<str:on_off>/', wrap(self.smart_toggle), name='smart_toggle'),
-                       # path('sysinfo/', wrap(admin_sysinfo), name='222'),
                        ]
 
         try:
