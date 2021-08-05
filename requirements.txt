@@ -1,5 +1,5 @@
 # This file is only used by the Heroku sample app at https://django-smart-admin.herokuapp.com/
--e .[full]
+-e .[dev,full]
 django
 gunicorn
 django-environ
