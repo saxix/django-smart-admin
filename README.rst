@@ -4,21 +4,54 @@ django-smart-admin
 SmartAdmin is a set of small Django Admin utilities that aims
 to remove some of the common annoying configuration issues:
 
+Demo is available at https://django-smart-admin.herokuapp.com/.
+(Any user/passsword combinantion is acceppted)
+
+
 Install
 =======
 
-Simply comment ``django.contrib.admin`` in your ``INSTALLED_APPS`` and add ``smart_admin``
+.. code-block::
+
+    pip install django-smart-admin
+
+or (if you want to install extra admin features)
+
+.. code-block::
+
+    pip install django-smart-admin[full]
+
+
+In your `settings.py`
 
 .. code-block::
 
    INSTALLED_APPS = [
-       # "django.contrib.admin",
-       "adminfilters",
-       "smart_admin.logs",
-       "smart_admin.templates",
-       "smart_admin",
-       .....
+       # "django.contrib.admin",  # removes standard django admin
+      'django_sysinfo',  # optional
+      'adminactions',  # optional
+      'adminfilters',  # optional
+
+      'smart_admin.logs',  # optional
+      'smart_admin.templates',
+      'smart_admin',
+      .....
    ]
+
+In your `urls.py`
+
+.. code-block::
+
+    import adminactions.actions as actions
+    from django.contrib.admin import site
+
+    admin.autodiscover()
+    actions.add_to_site(site)
+
+    urlpatterns = [
+        ....
+        path('adminactions/', include('adminactions.urls')),
+    ]
 
 Configuration
 =============
@@ -32,6 +65,7 @@ Configuration
             "auth",
         ],
     }
+
 
 Links
 ~~~~~
