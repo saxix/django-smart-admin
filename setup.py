@@ -35,6 +35,7 @@ setup(
         'dev': ['django-webtest',
                 'django-environ',
                  'whitenoise',
+                'factory_boy',
                  'django-constance',
                  'django-picklefield',
                  'bump2version',

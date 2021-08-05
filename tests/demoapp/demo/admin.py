@@ -1,17 +1,65 @@
+import datetime
+
+import factory
+import factory.fuzzy
 from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
-from django.contrib import admin
+from adminfilters.autocomplete import AutoCompleteFilter
+from adminfilters.filters import MaxMinFilter, TextFieldFilter
+from django.conf import settings
+from django.contrib import admin, messages
 from django.contrib.admin import register
+from django.contrib.admin.models import DELETION, LogEntry
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.db.transaction import atomic
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils.safestring import mark_safe
+from factory import SubFactory
+from factory.django import DjangoModelFactory
 
 from smart_admin.mixins import SmartMixin
+
 from .models import DemoModel1, DemoModel2, DemoModel3, DemoModel4
+
+
+class UserFactory(DjangoModelFactory):
+    username = factory.Sequence(lambda i: f'username-{i}')
+    email = factory.Faker('email')
+    is_staff = False
+    is_active = False
+    is_superuser = False
+
+    class Meta:
+        model = User
+
+
+class DemoModel1Factory(DjangoModelFactory):
+    name = factory.Faker('name')
+    email = factory.Faker('email')
+    char = factory.fuzzy.FuzzyText()
+    integer = factory.fuzzy.FuzzyInteger(1)
+    date = factory.fuzzy.FuzzyDate(datetime.date(2008, 1, 1))
+    user = SubFactory(UserFactory)
+
+    class Meta:
+        model = DemoModel1
+
+
+def is_root(request, obj):
+    return request.user.is_superuser and request.headers.get("x-root-token") == settings.ROOT_TOKEN
 
 
 @register(DemoModel1)
 class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+    list_filter = (('user', AutoCompleteFilter),
+                   'date',
+                   ('integer', MaxMinFilter),
+                   TextFieldFilter.factory('user__email')
+                   )
+
     fieldsets = [
         (None, {"fields": (("name", "char"),)}),
         (
@@ -42,6 +90,46 @@ class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
 
         return _confirm_action(self, request, _action, "Confirm action",
                                "Successfully executed", )
+
+    @button()
+    def create_100_records(self, request):
+        DemoModel1Factory.create_batch(100)
+
+    @button(label="Truncate", css_class="btn-danger", permission=is_root)
+    def truncate(self, request):
+        if not request.headers.get("x-root-access") == "XMLHttpRequest":
+            self.message_user(request, "You are not allowed to perform this action", messages.ERROR)
+            return
+        if request.method == "POST":
+            with atomic():
+                LogEntry.objects.log_action(
+                    user_id=request.user.pk,
+                    content_type_id=ContentType.objects.get_for_model(self.model).pk,
+                    object_id=None,
+                    object_repr=f"truncate table {self.model._meta.verbose_name}",
+                    action_flag=DELETION,
+                    change_message="truncate table",
+                )
+                from django.db import connections
+
+                conn = connections[self.model.objects.db]
+                cursor = conn.cursor()
+                cursor.execute('TRUNCATE TABLE "{0}" RESTART IDENTITY CASCADE '.format(self.model._meta.db_table))
+        else:
+            return _confirm_action(
+                self,
+                request,
+                self.truncate,
+                mark_safe(
+                    """
+<h1 class="color-red"><b>This is a low level system feature</b></h1>                                      
+<h1 class="color-red"><b>Continuing irreversibly delete all table content</b></h1>
+                                       
+                                       """
+                ),
+                "Successfully executed",
+                title="Truncate table",
+            )
 
 
 @register(DemoModel2)
