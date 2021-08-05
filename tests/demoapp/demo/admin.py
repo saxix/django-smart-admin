@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.contrib.admin import ModelAdmin, register
+from django.contrib.admin import register
 
 from smart_admin.mixins import SmartMixin
 from .models import DemoModel1, DemoModel2, DemoModel3, DemoModel4
@@ -28,6 +28,7 @@ class Admin1(SmartMixin, admin.ModelAdmin):
 @register(DemoModel2)
 class Admin2(SmartMixin, admin.ModelAdmin):
     pass
+
 
 @register(DemoModel3)
 class Admin3(admin.ModelAdmin):

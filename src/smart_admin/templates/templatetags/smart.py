@@ -3,6 +3,7 @@ import urllib.parse
 from django import template
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
 
 from smart_admin.utils import as_bool
 
@@ -19,10 +20,10 @@ def smart_toggler(context):
     request = context['request']
     page = urllib.parse.quote(request.path)
     if as_bool(request.COOKIES.get('smart', "0")):
-        label = "Standard Index"
+        label = _("Standard Index")
         t = "on"
     else:
-        label = "Smart Index"
+        label = _("Smart Index")
         t = "off"
 
     toggler = reverse("admin:smart_toggle", args=[t])
