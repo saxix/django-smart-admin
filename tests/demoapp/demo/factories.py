@@ -25,6 +25,7 @@ class UserFactory(ModelFactory):
 class LogEntryFactory(ModelFactory):
     user = factory.SubFactory(UserFactory)
     action_flag = 1
+
     class Meta:
         model = LogEntry
 

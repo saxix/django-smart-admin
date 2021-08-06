@@ -4,21 +4,79 @@ django-smart-admin
 SmartAdmin is a set of small Django Admin utilities that aims
 to remove some of the common annoying configuration issues:
 
+Demo is available at https://django-smart-admin.herokuapp.com/.
+(Any user/passsword combinantion is acceppted)
+
+
 Install
 =======
 
-Simply comment ``django.contrib.admin`` in your ``INSTALLED_APPS`` and add ``smart_admin``
+.. code-block::
+
+    pip install django-smart-admin
+
+or (if you want to install extra admin features)
+
+.. code-block::
+
+    pip install django-smart-admin[full]
+
+
+In your `settings.py`
 
 .. code-block::
 
    INSTALLED_APPS = [
-       # "django.contrib.admin",
-       "adminfilters",
-       "smart_admin.logs",
-       "smart_admin.templates",
-       "smart_admin",
-       .....
+       # "django.contrib.admin",  # removes standard django admin
+      'django_sysinfo',  # optional
+      'adminactions',  # optional
+      'adminfilters',  # optional
+      'admin_extra_urls', # optional
+
+      'smart_admin.logs',  # optional
+      'smart_admin.templates',
+      'smart_admin',
+      .....
    ]
+   SMART_ADMIN_SECTIONS = {
+        'Demo': ['demo', ],
+        'Security': ['auth',
+                     'auth.User',
+                     ],
+
+        'Logs': ['admin.LogEntry',
+                 ],
+        'Other': [],
+        '_hidden_': ["sites"]
+    }
+
+    # add some bookmark
+    SMART_ADMIN_BOOKMARKS = [('GitHub', 'https://github.com/saxix/django-smart-admin')]
+
+    # no special permissions to see bookmarks
+    SMART_ADMIN_BOOKMARKS_PERMISSION = None
+
+    # add 'profile' link on the header
+    SMART_ADMIN_PROFILE_LINK = True
+
+    # display all users action log, not only logged user
+    SMART_ADMIN_ANYUSER_LOG = True
+
+
+In your `urls.py`
+
+.. code-block::
+
+    import adminactions.actions as actions
+    from django.contrib.admin import site
+
+    admin.autodiscover()
+    actions.add_to_site(site)
+
+    urlpatterns = [
+        ....
+        path('adminactions/', include('adminactions.urls')),
+    ]
 
 Configuration
 =============
@@ -32,6 +90,7 @@ Configuration
             "auth",
         ],
     }
+
 
 Links
 ~~~~~

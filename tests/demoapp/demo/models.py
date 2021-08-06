@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -11,6 +12,7 @@ class DemoModel1(models.Model):
     time = models.TimeField(null=True, blank=True)
     decimal = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True)
     email = models.EmailField()
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
 
 
 class DemoModel2(models.Model):
