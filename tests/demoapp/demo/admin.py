@@ -158,7 +158,6 @@ from django.contrib.auth.admin import UserAdmin as _UserAdmin
 class UserAdmin(_UserAdmin):
     list_filter = (
         TextFieldFilter.factory('email', 'Email'),
-        PermissionPrefixFilter,
         'is_staff', 'is_superuser', 'is_active', 'groups')
 
 
