@@ -6,13 +6,13 @@ import factory.fuzzy
 from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.filters import MaxMinFilter, TextFieldFilter
+from adminfilters.filters import MaxMinFilter, TextFieldFilter, PermissionPrefixFilter, AllValuesComboFilter
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin import register
 from django.contrib.admin.models import DELETION, LogEntry
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import OperationalError
 from django.db.transaction import atomic
@@ -23,6 +23,7 @@ from factory import SubFactory
 from factory.django import DjangoModelFactory
 
 import smart_admin.settings as smart_settings
+from smart_admin.decorators import smart_register
 from smart_admin.mixins import SmartMixin
 
 from .models import DemoModel1, DemoModel2, DemoModel3, DemoModel4
@@ -148,3 +149,29 @@ class Admin3(admin.ModelAdmin):
 @register(DemoModel4)
 class Admin4(admin.ModelAdmin):
     pass
+
+
+from django.contrib.auth.admin import UserAdmin as _UserAdmin
+
+
+@smart_register(User)
+class UserAdmin(_UserAdmin):
+    list_filter = (
+        TextFieldFilter.factory('email', 'Email'),
+        PermissionPrefixFilter,
+        'is_staff', 'is_superuser', 'is_active', 'groups')
+
+
+@smart_register(Permission)
+class PermissionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'content_type', 'codename')
+    search_fields = ('name',)
+    list_filter = (('content_type', AutoCompleteFilter),
+                   PermissionPrefixFilter,)
+
+
+@smart_register(ContentType)
+class ContentTypeAdmin(admin.ModelAdmin):
+    list_display = ('app_label', 'model')
+    search_fields = ('model',)
+    list_filter = (('app_label', AllValuesComboFilter),)
