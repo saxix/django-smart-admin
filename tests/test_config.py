@@ -1,9 +1,15 @@
 import pytest
-from smart_admin.settings import process_lazy
+from smart_admin.settings import get_bookmarks, process_setting
 from demo.urls import get_link
+
+
+
+@pytest.mark.parametrize("value", [10, lambda r: get_link.LINKS, 'demo.urls.get_link'])
+def test_process_settings(value):
+    assert process_setting(value, None)
 
 
 @pytest.mark.parametrize("value", [get_link.LINKS, lambda r: get_link.LINKS, 'demo.urls.get_link'])
 def test_bookmarks(value, settings):
     settings.SMART_ADMIN_BOOKMARKS = value
-    assert process_lazy('BOOKMARKS') == get_link.LINKS
+    assert get_bookmarks(None) == get_link.LINKS

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.signals import setting_changed
 from django.dispatch import receiver
+from django.utils.functional import lazy
 from django.utils.module_loading import import_string
 
 _SMART_ADMIN_SECTIONS = {
@@ -13,17 +14,21 @@ _SMART_ADMIN_SECTIONS = {
 }
 
 
-def process_lazy(name, request=None):
-    value = globals()[name]
-    if isinstance(value, (list, tuple)):
-        all_values = value
-    elif callable(value):
-        all_values = value(request)
-    elif isinstance(value, (str,)):
-        all_values = import_string(value)(request)
+def process_setting(value, request):
+    if callable(value):
+        return value(request)
+    elif isinstance(value, (str,)) and '.' in value:
+        return import_string(value)(request)
     else:
-        raise ValueError(f"Invalid value `{value}` for settings.SMART_ADMIN_{name}")
-    return all_values
+        return value
+
+
+def get_bookmarks(request=None):
+    raw_value = getattr(settings, 'SMART_ADMIN_BOOKMARKS', 'sysinfo/key')
+    values = process_setting(raw_value, request)
+    if not isinstance(values, (list, tuple)):
+        raise ValueError(f"Invalid value `{value}` for settings.SMART_ADMIN_BOOKMARKS")
+    return values
 
 
 SECTIONS = getattr(settings, 'SMART_ADMIN_SECTIONS', _SMART_ADMIN_SECTIONS)
@@ -33,6 +38,7 @@ ENABLE_SWITCH = getattr(settings, 'SMART_ADMIN_SWITCH', True)
 PROFILE_LINK = getattr(settings, 'SMART_ADMIN_PROFILE_LINK', True)
 ANYUSER_LOG = getattr(settings, 'SMART_ADMIN_ANYUSER_LOG', True)
 ISROOT = getattr(settings, 'SMART_ADMIN_ISROOT', lambda request, *a: request.user.is_superuser)
+SYSINFO_TTL = getattr(settings, 'SMART_ADMIN_SYSINFO_TTL', 60)
 
 
 @receiver(setting_changed)
