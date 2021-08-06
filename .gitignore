@@ -2,6 +2,7 @@
 *.egg-info
 dist
 poetry.lock
+!.github
 !.gitignore
 !.travis.yml
 !tests/.coveragerc
