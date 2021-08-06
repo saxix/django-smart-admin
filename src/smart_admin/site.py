@@ -11,11 +11,13 @@ from django.conf import settings
 from django.contrib.admin import AdminSite
 from django.core.cache import caches
 from django.template.response import TemplateResponse
-from django.views.decorators.cache import never_cache
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache, cache_page
+from django.views.decorators.vary import vary_on_cookie
 
 from . import get_full_version
 from . import settings as smart_settings
-from .settings import process_lazy
+# from .settings import process_bookmarks
 from .templatetags.smart import as_bool
 from .utils import SmartList
 
@@ -32,6 +34,7 @@ def _parse_section():
     return ret
 
 
+@method_decorator([vary_on_cookie, cache_page(smart_settings.SYSINFO_TTL)], name='admin_sysinfo')
 class SmartAdminSite(AdminSite):
     sysinfo_url = False
     index_template = 'admin/index.html'
@@ -40,7 +43,7 @@ class SmartAdminSite(AdminSite):
         if smart_settings.BOOKMARKS_PERMISSION is None or request.user.has_permission(
                 smart_settings.BOOKMARKS_PERMISSION):
             bookmarks = []
-            values = process_lazy('BOOKMARKS')
+            values = smart_settings.get_bookmarks(request)
 
             for entry in values:
                 if not entry:
