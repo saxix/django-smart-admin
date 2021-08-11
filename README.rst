@@ -33,8 +33,9 @@ In your `settings.py`
       'adminfilters',  # optional
       'admin_extra_urls', # optional
 
-      'smart_admin.logs',  # optional
-      'smart_admin.templates',
+      'smart_admin.apps.SmartLogsConfig',  # optional:  log application
+      'smart_admin.apps.SmartTemplateConfig',  # templates
+      'smart_admin.apps.SmartAuthConfig', # optional: django.contrib.auth enhancements
       'smart_admin',
       .....
    ]
