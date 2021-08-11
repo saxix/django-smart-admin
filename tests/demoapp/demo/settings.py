@@ -38,6 +38,7 @@ INSTALLED_APPS = ['django.contrib.auth',
 
                   'smart_admin.logs',
                   'smart_admin.apps.SmartTemplateConfig',
+                  'smart_admin.apps.SmartAuthConfig',
                   'smart_admin',
 
                   'demo']

@@ -6,10 +6,11 @@ import factory.fuzzy
 from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.filters import MaxMinFilter, TextFieldFilter, PermissionPrefixFilter, AllValuesComboFilter
+from adminfilters.filters import MaxMinFilter, TextFieldFilter, PermissionPrefixFilter, AllValuesComboFilter, \
+    ChoicesFieldRadioFilter, ChoicesFieldComboFilter, AllValuesRadioFilter, BooleanRadioFilter
 from django.conf import settings
 from django.contrib import admin, messages
-from django.contrib.admin import register
+from django.contrib.admin import register, AllValuesFieldListFilter
 from django.contrib.admin.models import DELETION, LogEntry
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.auth.models import User, Permission
@@ -53,11 +54,15 @@ class DemoModel1Factory(DjangoModelFactory):
         model = DemoModel1
 
 
+from django.contrib.admin.filters import BooleanFieldListFilter
+
+
 @register(DemoModel1)
 class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
     list_filter = (('user', AutoCompleteFilter),
                    'date',
                    ('integer', MaxMinFilter),
+                   ('logic', BooleanRadioFilter),
                    TextFieldFilter.factory('user__email')
                    )
 
@@ -149,28 +154,3 @@ class Admin3(admin.ModelAdmin):
 @register(DemoModel4)
 class Admin4(admin.ModelAdmin):
     pass
-
-
-from django.contrib.auth.admin import UserAdmin as _UserAdmin
-
-
-@smart_register(User)
-class UserAdmin(_UserAdmin):
-    list_filter = (
-        TextFieldFilter.factory('email', 'Email'),
-        'is_staff', 'is_superuser', 'is_active', 'groups')
-
-
-@smart_register(Permission)
-class PermissionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'content_type', 'codename')
-    search_fields = ('name',)
-    list_filter = (('content_type', AutoCompleteFilter),
-                   PermissionPrefixFilter,)
-
-
-@smart_register(ContentType)
-class ContentTypeAdmin(admin.ModelAdmin):
-    list_display = ('app_label', 'model')
-    search_fields = ('model',)
-    list_filter = (('app_label', AllValuesComboFilter),)

@@ -1,0 +1,6 @@
+{% extends "admin_extra_urls/action_page.html" %}{% load i18n admin_urls %}
+{% block action-content %}
+    <ul>{% for perm in permissions %}
+        <li><a href="">{{ perm }}</a></li>{% endfor %}
+    </ul>
+{% endblock %}
