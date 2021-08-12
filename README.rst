@@ -5,7 +5,7 @@ SmartAdmin is a set of small Django Admin utilities that aims
 to remove some of the common annoying configuration issues:
 
 Demo is available at https://django-smart-admin.herokuapp.com/.
-(Any user/passsword combinantion is acceppted)
+(Any user/passsword combination is accepted)
 
 
 Install
