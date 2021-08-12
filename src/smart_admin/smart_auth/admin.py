@@ -1,3 +1,6 @@
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin
 from adminfilters.autocomplete import AutoCompleteFilter
@@ -29,6 +32,7 @@ class ContentTypeAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
 
 @smart_register(Permission)
 class PermissionAdmin(ExtraUrlMixin, admin.ModelAdmin):
@@ -65,18 +69,19 @@ class UserAdmin(ExtraUrlMixin, _UserAdmin):
 
     @button()
     def permissions(self, request, pk):
-        # User = get_user_model()
         context = self.get_common_context(request, pk,
                                           title=_("Permissions"),
                                           aeu_groups=['1'])
         context['permissions'] = sorted(context['original'].get_all_permissions())
-        # group = context['original']
-        # users = User.objects.filter(groups=group).distinct()
-        # context['title'] = _('Users in group "%s"') % group.name
-        # context['user_opts'] = User._meta
-        # context['data'] = users
-
         return render(request, 'admin/auth/user/permissions.html', context)
+
+    @button(urls=['redir_to_perm/(?P<perm>.*)/'])
+    def redir_to_perm(self, request, perm):
+        app_label, codename = perm.split('.')
+        perm = Permission.objects.get(codename=codename, )
+        url = reverse("admin:auth_permission_change", args=[perm.pk])
+        return HttpResponseRedirect(url)
+
 
 @smart_register(Group)
 class GroupAdmin(ExtraUrlMixin, _GroupAdmin):
