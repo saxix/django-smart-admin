@@ -17,7 +17,7 @@ from django.views.decorators.vary import vary_on_cookie
 
 from . import get_full_version
 from . import settings as smart_settings
-# from .settings import process_bookmarks
+from .settings import get_setting_lazy
 from .templatetags.smart import as_bool
 from .utils import SmartList
 
@@ -38,6 +38,8 @@ def _parse_section():
 class SmartAdminSite(AdminSite):
     sysinfo_url = False
     index_template = 'admin/index.html'
+    site_title = get_setting_lazy('TITLE')
+    site_header = get_setting_lazy('HEADER')
 
     def get_bookmarks(self, request):
         if smart_settings.BOOKMARKS_PERMISSION is None or request.user.has_permission(

@@ -4,8 +4,15 @@ django-smart-admin
 SmartAdmin is a set of small Django Admin utilities that aims
 to remove some of the common annoying configuration issues:
 
+- easily group models by context instead by app
+- display admin logentry for any user
+- display group members
+- display user permissions
+- display permission owners
+- Display all columns ModelAdmin mixin
+
 Demo is available at https://django-smart-admin.herokuapp.com/.
-(Any user/passsword combinantion is acceppted)
+(Any user/password combination is accepted)
 
 
 Install
@@ -33,8 +40,9 @@ In your `settings.py`
       'adminfilters',  # optional
       'admin_extra_urls', # optional
 
-      'smart_admin.logs',  # optional
-      'smart_admin.templates',
+      'smart_admin.apps.SmartLogsConfig',  # optional:  log application
+      'smart_admin.apps.SmartTemplateConfig',  # templates
+      'smart_admin.apps.SmartAuthConfig', # optional: django.contrib.auth enhancements
       'smart_admin',
       .....
    ]

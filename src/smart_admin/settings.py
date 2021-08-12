@@ -3,6 +3,7 @@ from django.core.signals import setting_changed
 from django.dispatch import receiver
 from django.utils.functional import lazy
 from django.utils.module_loading import import_string
+from django.utils.translation import gettext as _
 
 _SMART_ADMIN_SECTIONS = {
     'Security': ['auth',
@@ -31,6 +32,9 @@ def get_bookmarks(request=None):
     return values
 
 
+TITLE = getattr(settings, 'SMART_ADMIN_TITLE', _('Django site admin'))
+HEADER = getattr(settings, 'SMART_ADMIN_HEADER', _('Django administration'))
+
 SECTIONS = getattr(settings, 'SMART_ADMIN_SECTIONS', _SMART_ADMIN_SECTIONS)
 BOOKMARKS = getattr(settings, 'SMART_ADMIN_BOOKMARKS', [])
 BOOKMARKS_PERMISSION = getattr(settings, 'SMART_ADMIN_BOOKMARKS_PERMISSION', None)
@@ -46,3 +50,10 @@ def update_settings(setting, value, **kwargs):
     if setting.startswith('SMART_ADMIN_'):
         attr = setting.replace('SMART_ADMIN_', '')
         globals()[attr] = value
+
+
+def get_setting(entry):
+    return globals()[entry]
+
+
+get_setting_lazy = lazy(get_setting, str)

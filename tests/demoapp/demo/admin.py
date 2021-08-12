@@ -6,13 +6,14 @@ import factory.fuzzy
 from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.filters import MaxMinFilter, TextFieldFilter
+from adminfilters.filters import MaxMinFilter, TextFieldFilter, PermissionPrefixFilter, AllValuesComboFilter, \
+    ChoicesFieldRadioFilter, ChoicesFieldComboFilter, AllValuesRadioFilter, BooleanRadioFilter
 from django.conf import settings
 from django.contrib import admin, messages
-from django.contrib.admin import register
+from django.contrib.admin import register, AllValuesFieldListFilter
 from django.contrib.admin.models import DELETION, LogEntry
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import OperationalError
 from django.db.transaction import atomic
@@ -23,6 +24,7 @@ from factory import SubFactory
 from factory.django import DjangoModelFactory
 
 import smart_admin.settings as smart_settings
+from smart_admin.decorators import smart_register
 from smart_admin.mixins import SmartMixin
 
 from .models import DemoModel1, DemoModel2, DemoModel3, DemoModel4
@@ -52,11 +54,15 @@ class DemoModel1Factory(DjangoModelFactory):
         model = DemoModel1
 
 
+from django.contrib.admin.filters import BooleanFieldListFilter
+
+
 @register(DemoModel1)
 class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
     list_filter = (('user', AutoCompleteFilter),
                    'date',
                    ('integer', MaxMinFilter),
+                   ('logic', BooleanRadioFilter),
                    TextFieldFilter.factory('user__email')
                    )
 
