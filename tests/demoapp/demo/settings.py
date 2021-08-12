@@ -62,7 +62,7 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [str(BASE_DIR / 'tests' / 'demoapp' / 'demo' / 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': ['django.contrib.messages.context_processors.messages',
@@ -72,6 +72,9 @@ TEMPLATES = [
         },
     },
 ]
+
+SMART_ADMIN_TITLE = 'Django Admin Site'
+SMART_ADMIN_HEADER = 'Django Smart Admin'
 
 SMART_ADMIN_SECTIONS = {
     'Demo': ['demo', ],

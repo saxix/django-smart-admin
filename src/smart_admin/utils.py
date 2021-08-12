@@ -1,6 +1,8 @@
 import re
 from fnmatch import fnmatchcase
 
+from django.utils.functional import lazy
+
 
 def as_bool(value):
     return value not in ["", "0", "None", 0, None, "on"]
