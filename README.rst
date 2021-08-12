@@ -4,8 +4,15 @@ django-smart-admin
 SmartAdmin is a set of small Django Admin utilities that aims
 to remove some of the common annoying configuration issues:
 
+- easily group models by context instead by app
+- display admin logentry for any user
+- display group members
+- display user permissions
+- display permission owners
+- Display all columns ModelAdmin mixin
+
 Demo is available at https://django-smart-admin.herokuapp.com/.
-(Any user/passsword combination is accepted)
+(Any user/password combination is accepted)
 
 
 Install

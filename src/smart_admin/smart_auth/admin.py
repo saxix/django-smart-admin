@@ -36,6 +36,7 @@ class ContentTypeAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+
 @smart_register(Permission)
 class PermissionAdmin(ExtraUrlMixin, admin.ModelAdmin):
     list_display = ('name', 'content_type', 'codename')
@@ -70,7 +71,9 @@ class PermissionAdmin(ExtraUrlMixin, admin.ModelAdmin):
 
 @smart_register(User)
 class UserAdmin(ExtraUrlMixin, _UserAdmin):
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
+    list_filter = ('is_staff', 'is_superuser', 'is_active',
+                   ('groups', AutoCompleteFilter),
+                   )
 
     @button()
     def permissions(self, request, pk):
@@ -94,12 +97,12 @@ class GroupAdmin(ExtraUrlMixin, _GroupAdmin):
     search_fields = ('name',)
 
     @button()
-    def users(self, request, pk):
+    def members(self, request, pk):
         User = get_user_model()
         context = self.get_common_context(request, pk, aeu_groups=['1'])
         group = context['original']
         users = User.objects.filter(groups=group).distinct()
-        context['title'] = _('Users in group "%s"') % group.name
+        context['title'] = _('Members')
         context['user_opts'] = User._meta
         context['data'] = users
 
