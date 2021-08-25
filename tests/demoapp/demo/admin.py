@@ -24,7 +24,6 @@ from factory import SubFactory
 from factory.django import DjangoModelFactory
 
 import smart_admin.settings as smart_settings
-from smart_admin.decorators import smart_register
 from smart_admin.mixins import SmartMixin
 
 from .models import DemoModel1, DemoModel2, DemoModel3, DemoModel4
@@ -59,11 +58,14 @@ from django.contrib.admin.filters import BooleanFieldListFilter
 
 @register(DemoModel1)
 class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+    list_display = ("name", "char", "integer", "useremail", "email")
+
     list_filter = (('user', AutoCompleteFilter),
                    'date',
                    ('integer', MaxMinFilter),
                    ('logic', BooleanRadioFilter),
-                   TextFieldFilter.factory('user__email')
+                   TextFieldFilter.factory('user__email'),
+                   TextFieldFilter.factory('email')
                    )
 
     fieldsets = [
@@ -80,8 +82,10 @@ class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
                 ),
             },
         ),
-        ("Others", {"classes": ("collapse",), "fields": ("__all__",)}),
+        ("Others", {"classes": ("collapse",), "fields": ("__others__",)}),
     ]
+    def useremail(self, obj):
+        return obj.user.email
 
     @button(label='Refresh', permission='demo.add_demomodel1')
     def refresh(self, request):

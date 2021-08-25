@@ -11,7 +11,7 @@ class DemoModel1(models.Model):
     datetime = models.DateTimeField(null=True, blank=True)
     time = models.TimeField(null=True, blank=True)
     decimal = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True)
-    email = models.EmailField()
+    email = models.EmailField(verbose_name='Other email')
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
 
 

@@ -1,5 +1,6 @@
 import django.contrib.admin
 from django.contrib.admin.apps import SimpleAdminConfig, AppConfig
+from django.contrib.auth import get_user_model
 
 from django.utils.translation import gettext_lazy as _
 
@@ -11,9 +12,34 @@ class SmartTemplateConfig(AppConfig):
 class SmartLogsConfig(AppConfig):
     name = 'smart_admin.logs'
 
+    def ready(self):
+        from django.contrib.admin.models import LogEntry
+        from django.contrib.contenttypes.models import ContentType
+        from django.contrib.auth.models import Permission
+
+        ct = ContentType.objects.get_for_model(LogEntry)
+        opts = LogEntry._meta
+        codename = '%s_%s' % ('truncate', opts.object_name.lower())
+        params = dict(codename=codename,
+                      content_type=ct,
+                      defaults={'name': 'Can truncate logs'})
+        Permission.objects.get_or_create(**params)
+
 
 class SmartAuthConfig(AppConfig):
     name = 'smart_admin.smart_auth'
+
+    def ready(self):
+        from smart_admin.smart_auth.admin import GroupAdmin, UserAdmin, PermissionAdmin, ContentTypeAdmin
+        from smart_admin.decorators import smart_register
+        from django.contrib.auth.models import Group, Permission
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+
+        smart_register(Group)(GroupAdmin)
+        smart_register(get_user_model())(UserAdmin)
+        smart_register(Permission)(PermissionAdmin)
+        smart_register(ContentType)(ContentTypeAdmin)
 
 
 class SmartConfig(SimpleAdminConfig):
