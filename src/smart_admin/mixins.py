@@ -1,3 +1,4 @@
+from admin_extra_urls.decorators import button
 from itertools import chain
 
 from adminfilters.filters import ChoicesFieldComboFilter, AllValuesComboFilter, RelatedFieldComboFilter
@@ -65,7 +66,7 @@ class FieldsetMixin:
             selected.extend(flatten(e[1]['fields']))
         __all = [e for e in all_fields if e not in selected]
         for e in fieldsets:
-            if e[1]['fields'] == ('__all__',):
+            if e[1]['fields'] == ('__others__',):
                 e[1]['fields'] = __all
         return fieldsets
 

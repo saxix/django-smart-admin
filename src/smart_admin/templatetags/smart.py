@@ -1,3 +1,4 @@
+import json
 import urllib.parse
 
 from django import template
@@ -28,3 +29,15 @@ def smart_toggler(context):
 
     toggler = reverse("admin:smart_toggle", args=[t])
     return mark_safe(f'<a href="{toggler}?from={page}">{label}</a>')
+
+
+@register.simple_tag()
+def get_changed(message, entry):
+    try:
+        change_message = json.loads(message)
+        # if isinstance(change_message, (list, tuple)) and change_message:
+        #     if 'changed' in change_message[0] and 'permissions' in change_message[0]['changed']:
+        return change_message[0]['changed'][entry]
+    except (json.JSONDecodeError, KeyError):
+        pass
+    return ""

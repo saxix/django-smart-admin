@@ -1,6 +1,0 @@
-{% extends "admin_extra_urls/action_page.html" %}{% load i18n admin_urls %}
-{% block action-content %}
-    <ul>{% for user in users %}
-        <li><a href="{% url user_opts|admin_urlname:'change' user.pk %}">{{ user }}</a></li>{% endfor %}
-    </ul>
-{% endblock %}

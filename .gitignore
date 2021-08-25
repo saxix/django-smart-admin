@@ -5,5 +5,8 @@ poetry.lock
 !.github
 !.gitignore
 !.travis.yml
+!.flake8
+!.isort.cfg
+!.bumpversion.cfg
 !tests/.coveragerc
 smart_admin.db
