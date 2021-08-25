@@ -93,8 +93,9 @@ class UserAdmin(ExtraUrlMixin, _UserAdmin):
         return set(self.get_object(request, object_id).user_permissions.values_list("codename", flat=True))
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
-        self.existing_perms = self._perms(request, object_id)
-        self.existing_groups = self._groups(request, object_id)
+        if object_id:
+            self.existing_perms = self._perms(request, object_id)
+            self.existing_groups = self._groups(request, object_id)
         return super().changeform_view(request, object_id, form_url, extra_context)
 
     def construct_change_message(self, request, form, formsets, add=False):
@@ -126,13 +127,14 @@ class GroupAdmin(ExtraUrlMixin, _GroupAdmin):
         context['title'] = _('Members')
         context['user_opts'] = User._meta
         context['data'] = users
-        return render(request, 'admin/auth/group/users.html', context)
+        return render(request, 'admin/auth/group/members.html', context)
 
     def _perms(self, request, object_id) -> set:
         return set(self.get_object(request, object_id).permissions.values_list("codename", flat=True))
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
-        self.existing_perms = self._perms(request, object_id)
+        if object_id:
+            self.existing_perms = self._perms(request, object_id)
         return super().changeform_view(request, object_id, form_url, extra_context)
 
     def construct_change_message(self, request, form, formsets, add=False):
