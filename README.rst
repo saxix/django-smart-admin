@@ -100,19 +100,6 @@ In your `urls.py`
         path('adminactions/', include('adminactions.urls')),
     ]
 
-Configuration
--------------
-
-.. code-block::
-
-    from smart_admin.utils import match, regex
-
-    SMART_ADMIN_SECTIONS = {
-        "Security": [
-            "auth",
-        ],
-    }
-
 
 Links
 ~~~~~
