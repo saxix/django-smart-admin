@@ -34,10 +34,11 @@ lint:
 	docker images | grep ${DOCKER_IMAGE_NAME}
 
 heroku:
-	git checkout heroku
-	git merge develop -m "merge develop"
-	git push heroku heroku:master
-	git checkout develop
+	@git checkout heroku
+	@git merge develop -m "merge develop"
+	@git push heroku heroku:master
+	@git checkout develop
+	@echo "check demo at https://django-smart-admin.herokuapp.com/"
 
 heroku-reset: heroku
 	heroku pg:reset --confirm django-smart-admin
