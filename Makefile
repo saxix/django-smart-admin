@@ -1,6 +1,7 @@
 
 develop:
-	pip install -e .[dev,full]
+	python -m venv .venv
+	.venv/bin/pip install -e .[dev,full]
 
 demo:
 	#cd tests && ./manage.py migrate && ./manage.py runserver
