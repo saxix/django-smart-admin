@@ -53,9 +53,6 @@ class DemoModel1Factory(DjangoModelFactory):
         model = DemoModel1
 
 
-from django.contrib.admin.filters import BooleanFieldListFilter
-
-
 @register(DemoModel1)
 class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
     list_display = ("name", "char", "integer", "useremail", "email")
@@ -85,7 +82,8 @@ class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
         ("Others", {"classes": ("collapse",), "fields": ("__others__",)}),
     ]
     def useremail(self, obj):
-        return obj.user.email
+        if obj.user:
+            return obj.user.email
 
     @button(label='Refresh', permission='demo.add_demomodel1')
     def refresh(self, request):

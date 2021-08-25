@@ -1,6 +1,7 @@
 
 develop:
-	pip install -e .[dev,full]
+	python -m venv .venv
+	.venv/bin/pip install -e .[dev,full]
 
 demo:
 	#cd tests && ./manage.py migrate && ./manage.py runserver
@@ -34,10 +35,11 @@ lint:
 	docker images | grep ${DOCKER_IMAGE_NAME}
 
 heroku:
-	git checkout heroku
-	git merge develop -m "merge develop"
-	git push heroku heroku:master
-	git checkout develop
+	@git checkout heroku
+	@git merge develop -m "merge develop"
+	@git push heroku heroku:master
+	@git checkout develop
+	@echo "check demo at https://django-smart-admin.herokuapp.com/"
 
 heroku-reset: heroku
 	heroku pg:reset --confirm django-smart-admin

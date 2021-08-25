@@ -4,6 +4,11 @@ django-smart-admin
 SmartAdmin is a set of small Django Admin utilities that aims
 to remove some of the common annoying configuration issues:
 
+It is not intended to be a fully replacement of the official Admin,
+but only offers a set of mixin/utilities the often (at least for me)
+need to be copy/paste in each project.
+
+
 Bonus
 -----
 - easily group models by context instead by app
@@ -94,19 +99,6 @@ In your `urls.py`
         ....
         path('adminactions/', include('adminactions.urls')),
     ]
-
-Configuration
--------------
-
-.. code-block::
-
-    from smart_admin.utils import match, regex
-
-    SMART_ADMIN_SECTIONS = {
-        "Security": [
-            "auth",
-        ],
-    }
 
 
 Links

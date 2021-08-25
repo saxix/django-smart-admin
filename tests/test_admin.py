@@ -26,7 +26,10 @@ def record(db, request):
     # TIPS: database access is forbidden in pytest_generate_tests
     modeladmin = request.getfixturevalue('modeladmin')
     factory = get_factory_for_model(modeladmin.model)
-    return factory()
+    try:
+        return factory()
+    except Exception as e:
+        raise Exception(f"Error creating fixture for {modeladmin.model}") from e
 
 
 @pytest.mark.django_db
