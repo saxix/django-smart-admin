@@ -1,6 +1,7 @@
 import factory
 from django.contrib.admin.models import LogEntry
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
+from django.contrib.contenttypes.models import ContentType
 from factory.base import FactoryMetaClass
 
 factories_registry = {}
@@ -20,6 +21,20 @@ class ModelFactory(factory.django.DjangoModelFactory, metaclass=AutoRegisterFact
 class UserFactory(ModelFactory):
     class Meta:
         model = User
+
+
+class ContentTypeFactory(ModelFactory):
+    class Meta:
+        model = ContentType
+
+
+class PermissionFactory(ModelFactory):
+    content_type = factory.SubFactory(ContentTypeFactory)
+    codename = 'perm1'
+    
+    class Meta:
+        model = Permission
+        django_get_or_create = ('codename',)
 
 
 class LogEntryFactory(ModelFactory):
