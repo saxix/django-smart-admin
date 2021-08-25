@@ -12,19 +12,6 @@ class SmartTemplateConfig(AppConfig):
 class SmartLogsConfig(AppConfig):
     name = 'smart_admin.logs'
 
-    def ready(self):
-        from django.contrib.admin.models import LogEntry
-        from django.contrib.contenttypes.models import ContentType
-        from django.contrib.auth.models import Permission
-
-        ct = ContentType.objects.get_for_model(LogEntry)
-        opts = LogEntry._meta
-        codename = '%s_%s' % ('truncate', opts.object_name.lower())
-        params = dict(codename=codename,
-                      content_type=ct,
-                      defaults={'name': 'Can truncate logs'})
-        Permission.objects.get_or_create(**params)
-
 
 class SmartAuthConfig(AppConfig):
     name = 'smart_admin.smart_auth'
