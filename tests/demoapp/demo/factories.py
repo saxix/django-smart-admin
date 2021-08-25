@@ -31,7 +31,7 @@ class ContentTypeFactory(ModelFactory):
 class PermissionFactory(ModelFactory):
     content_type = factory.SubFactory(ContentTypeFactory)
     codename = 'perm1'
-    
+
     class Meta:
         model = Permission
         django_get_or_create = ('codename',)
