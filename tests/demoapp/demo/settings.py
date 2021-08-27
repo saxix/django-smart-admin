@@ -1,3 +1,4 @@
+import smart_admin
 from pathlib import Path
 from uuid import uuid4
 
@@ -74,7 +75,7 @@ TEMPLATES = [
 ]
 
 SMART_ADMIN_TITLE = 'Django Admin Site'
-SMART_ADMIN_HEADER = 'Django Smart Admin'
+SMART_ADMIN_HEADER = 'Django Smart Admin ' + smart_admin.VERSION
 
 SMART_ADMIN_SECTIONS = {
     'Demo': ['demo', ],

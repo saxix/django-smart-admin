@@ -1,27 +1,23 @@
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-
 from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.filters import (AllValuesComboFilter,
-                                  PermissionPrefixFilter, TextFieldFilter, )
+from adminfilters.filters import AllValuesComboFilter, PermissionPrefixFilter
 from django.contrib import admin
+from django.contrib.admin.utils import construct_change_message
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import (GroupAdmin as _GroupAdmin,
                                        UserAdmin as _UserAdmin, )
 from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.translation import gettext as _
-
-from smart_admin.decorators import smart_register
 
 User = get_user_model()
 
 
-@smart_register(ContentType)
+# @smart_register(ContentType)
 class ContentTypeAdmin(admin.ModelAdmin):
     list_display = ('app_label', 'model')
     search_fields = ('model',)
@@ -37,7 +33,7 @@ class ContentTypeAdmin(admin.ModelAdmin):
         return False
 
 
-@smart_register(Permission)
+# @smart_register(Permission)
 class PermissionAdmin(ExtraUrlMixin, admin.ModelAdmin):
     list_display = ('name', 'content_type', 'codename')
     search_fields = ('name',)
@@ -69,7 +65,7 @@ class PermissionAdmin(ExtraUrlMixin, admin.ModelAdmin):
         return render(request, 'admin/auth/permission/users.html', context)
 
 
-@smart_register(User)
+# @smart_register(User)
 class UserAdmin(ExtraUrlMixin, _UserAdmin):
     list_filter = ('is_staff', 'is_superuser', 'is_active',
                    ('groups', AutoCompleteFilter),
@@ -90,8 +86,34 @@ class UserAdmin(ExtraUrlMixin, _UserAdmin):
         url = reverse("admin:auth_permission_change", args=[perm.pk])
         return HttpResponseRedirect(url)
 
+    def _groups(self, request, object_id) -> set:
+        return set(self.get_object(request, object_id).groups.values_list("name", flat=True))
 
-@smart_register(Group)
+    def _perms(self, request, object_id) -> set:
+        return set(self.get_object(request, object_id).user_permissions.values_list("codename", flat=True))
+
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        if object_id:
+            self.existing_perms = self._perms(request, object_id)
+            self.existing_groups = self._groups(request, object_id)
+        return super().changeform_view(request, object_id, form_url, extra_context)
+
+    def construct_change_message(self, request, form, formsets, add=False):
+        change_message = construct_change_message(form, formsets, add)
+        if not add and 'user_permissions' in form.changed_data:
+            new_perms = self._perms(request, form.instance.id)
+            change_message[0]['changed']['permissions'] = {"added": sorted(new_perms.difference(self.existing_perms)),
+                                                           "removed": sorted(self.existing_perms.difference(new_perms)),
+                                                           }
+        if not add and 'groups' in form.changed_data:
+            new_groups = self._groups(request, form.instance.id)
+            change_message[0]['changed']['groups'] = {"added": sorted(new_groups.difference(self.existing_groups)),
+                                                      "removed": sorted(self.existing_groups.difference(new_groups)),
+                                                      }
+        return change_message
+
+
+# @smart_register(Group)
 class GroupAdmin(ExtraUrlMixin, _GroupAdmin):
     list_display = ('name',)
     search_fields = ('name',)
@@ -105,5 +127,21 @@ class GroupAdmin(ExtraUrlMixin, _GroupAdmin):
         context['title'] = _('Members')
         context['user_opts'] = User._meta
         context['data'] = users
+        return render(request, 'admin/auth/group/members.html', context)
 
-        return render(request, 'admin/auth/group/users.html', context)
+    def _perms(self, request, object_id) -> set:
+        return set(self.get_object(request, object_id).permissions.values_list("codename", flat=True))
+
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        if object_id:
+            self.existing_perms = self._perms(request, object_id)
+        return super().changeform_view(request, object_id, form_url, extra_context)
+
+    def construct_change_message(self, request, form, formsets, add=False):
+        change_message = construct_change_message(form, formsets, add)
+        if not add and 'permissions' in form.changed_data:
+            new_perms = self._perms(request, form.instance.id)
+            change_message[0]['changed']['permissions'] = {"added": sorted(new_perms.difference(self.existing_perms)),
+                                                           "removed": sorted(self.existing_perms.difference(new_perms)),
+                                                           }
+        return change_message

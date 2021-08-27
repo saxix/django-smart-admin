@@ -4,19 +4,33 @@ django-smart-admin
 SmartAdmin is a set of small Django Admin utilities that aims
 to remove some of the common annoying configuration issues:
 
+It is not intended to be a fully replacement of the official Admin,
+but only offers a set of mixin/utilities the often (at least for me)
+need to be copy/paste in each project.
+
+
+Bonus
+-----
 - easily group models by context instead by app
 - display admin logentry for any user
 - display group members
 - display user permissions
 - display permission owners
 - Display all columns ModelAdmin mixin
+- log added/removed permissions for User/Group
+- log added/removed groups for User
+- ability to set `readonly_fields = ('__all__',)` (ReadOnlyMixin)
+- display all model fields in `changelist` (DisplayAllMixin)
+- automatically creates filter for each indexed field (SmartAutoFilterMixin)
+- improved fieldset allows the use of `__others__` to include any field not included in others fieldsets (FieldsetMixin)
+
 
 Demo is available at https://django-smart-admin.herokuapp.com/.
 (Any user/password combination is accepted)
 
 
 Install
-=======
+-------
 
 .. code-block::
 
@@ -85,19 +99,6 @@ In your `urls.py`
         ....
         path('adminactions/', include('adminactions.urls')),
     ]
-
-Configuration
-=============
-
-.. code-block::
-
-    from smart_admin.utils import match, regex
-
-    SMART_ADMIN_SECTIONS = {
-        "Security": [
-            "auth",
-        ],
-    }
 
 
 Links
