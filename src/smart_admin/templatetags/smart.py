@@ -38,6 +38,6 @@ def get_changed(message, entry):
         # if isinstance(change_message, (list, tuple)) and change_message:
         #     if 'changed' in change_message[0] and 'permissions' in change_message[0]['changed']:
         return change_message[0]['changed'][entry]
-    except (json.JSONDecodeError, KeyError):
+    except (json.JSONDecodeError, KeyError, IndexError):
         pass
     return ""
