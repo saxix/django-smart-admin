@@ -1,19 +1,15 @@
 import datetime
-import sys
 
-import factory
 import factory.fuzzy
 from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.filters import MaxMinFilter, TextFieldFilter, PermissionPrefixFilter, AllValuesComboFilter, \
-    ChoicesFieldRadioFilter, ChoicesFieldComboFilter, AllValuesRadioFilter, BooleanRadioFilter
-from django.conf import settings
-from django.contrib import admin, messages
-from django.contrib.admin import register, AllValuesFieldListFilter
+from adminfilters.filters import MaxMinFilter, TextFieldFilter, BooleanRadioFilter
+from django.contrib import admin
+from django.contrib.admin import register
 from django.contrib.admin.models import DELETION, LogEntry
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db import OperationalError
 from django.db.transaction import atomic
@@ -81,6 +77,7 @@ class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
         ),
         ("Others", {"classes": ("collapse",), "fields": ("__others__",)}),
     ]
+
     def useremail(self, obj):
         if obj.user:
             return obj.user.email
@@ -131,13 +128,11 @@ class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
                 self,
                 request,
                 self.truncate,
-                mark_safe(
-                    """
-<h1 class="color-red"><b>This is a low level system feature</b></h1>                                      
+                mark_safe("""
+<h1 class="color-red"><b>This is a low level system feature</b></h1>
 <h1 class="color-red"><b>Continuing irreversibly delete all table content</b></h1>
-                                       
-                                       """
-                ),
+
+                                       """),
                 "Successfully executed",
                 title="Truncate table",
             )

@@ -1,22 +1,20 @@
 import time
 from collections import OrderedDict
-
-from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import reverse
 from functools import update_wrapper
 
 from django.conf import settings
 from django.contrib.admin import AdminSite
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.core.cache import caches
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.template.response import TemplateResponse
+from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import never_cache, cache_page
+from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.vary import vary_on_cookie
 
-from . import get_full_version
-from . import settings as smart_settings
+from . import get_full_version, settings as smart_settings
 from .settings import get_setting_lazy
 from .templatetags.smart import as_bool
 from .utils import SmartList

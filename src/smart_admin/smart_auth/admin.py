@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.contrib.admin.utils import construct_change_message
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import (GroupAdmin as _GroupAdmin,
-                                       UserAdmin as _UserAdmin, )
+                                       UserAdmin as _UserAdmin,)
 from django.contrib.auth.models import Group, Permission
 from django.db.models import Q
 from django.http import HttpResponseRedirect

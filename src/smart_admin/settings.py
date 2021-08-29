@@ -28,7 +28,7 @@ def get_bookmarks(request=None):
     raw_value = getattr(settings, 'SMART_ADMIN_BOOKMARKS', 'sysinfo/key')
     values = process_setting(raw_value, request)
     if not isinstance(values, (list, tuple)):
-        raise ValueError(f"Invalid value `{value}` for settings.SMART_ADMIN_BOOKMARKS")
+        raise ValueError(f"Invalid value `{values}` for settings.SMART_ADMIN_BOOKMARKS")
     return values
 
 
@@ -44,6 +44,7 @@ ANYUSER_LOG = getattr(settings, 'SMART_ADMIN_ANYUSER_LOG', True)
 ISROOT = getattr(settings, 'SMART_ADMIN_ISROOT', lambda request, *a: request.user.is_superuser)
 SYSINFO_TTL = getattr(settings, 'SMART_ADMIN_SYSINFO_TTL', 60)
 LOGS_RETENTION_DAYS = getattr(settings, 'SMART_LOGS_RETENTION_DAYS', 365)
+
 
 @receiver(setting_changed)
 def update_settings(setting, value, **kwargs):

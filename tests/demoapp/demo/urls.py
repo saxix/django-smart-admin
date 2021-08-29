@@ -15,9 +15,9 @@ urlpatterns = [
 def get_link(request):
     return get_link.LINKS
 
+
 get_link.LINKS = (['github', 'https://github.com', 'icon'], ['github', 'https://github.com'], ['https:///github.com'])
 
 
 def get_sysinfo_key(request):
     return 'key1'
-

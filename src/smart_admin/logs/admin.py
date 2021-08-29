@@ -28,6 +28,7 @@ class LogEntryAdmin(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
     def archive(self, request):
         offset = datetime.date.today() - datetime.timedelta(days=365)
         offset_label = offset.strftime("%a, %b %d %Y")
+
         def _doit(request):
             LogEntry.objects.filter(action_time__lt=offset).delete()
             self.message_user(request, _("Records before %s have been removed") % offset_label)
