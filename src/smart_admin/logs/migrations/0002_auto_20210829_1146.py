@@ -5,7 +5,7 @@ from django.db import migrations
 
 def create_permission(apps, schema_editor):
     Permission = apps.get_model('auth', 'Permission')
-    ContentType = apps.get_model('my_app', 'ContentType')
+    ContentType = apps.get_model('contenttypes', 'ContentType')
     LogEntry = apps.get_model('admin', 'LogEntry')
 
     ct = ContentType.objects.get_for_model(LogEntry)
@@ -19,7 +19,7 @@ def create_permission(apps, schema_editor):
 
 def remove_permission(apps, schema_editor):
     Permission = apps.get_model('auth', 'Permission')
-    ContentType = apps.get_model('my_app', 'ContentType')
+    ContentType = apps.get_model('contenttypes', 'ContentType')
     LogEntry = apps.get_model('admin', 'LogEntry')
 
     ct = ContentType.objects.get_for_model(LogEntry)

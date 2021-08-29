@@ -1,6 +1,6 @@
 import factory
 from django.contrib.admin.models import LogEntry
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User, Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from factory.base import FactoryMetaClass
 
@@ -19,8 +19,11 @@ class ModelFactory(factory.django.DjangoModelFactory, metaclass=AutoRegisterFact
 
 
 class UserFactory(ModelFactory):
+    username = factory.Sequence(lambda d: "username-%s" % d)
+
     class Meta:
         model = User
+        django_get_or_create = ('username',)
 
 
 class ContentTypeFactory(ModelFactory):
@@ -43,6 +46,13 @@ class LogEntryFactory(ModelFactory):
 
     class Meta:
         model = LogEntry
+
+
+class GroupFactory(ModelFactory):
+    name = factory.Sequence(lambda d: "Group %s" % d)
+
+    class Meta:
+        model = Group
 
 
 def get_factory_for_model(_model):
