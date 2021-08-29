@@ -28,7 +28,10 @@ setup(
               'smart_admin.smart_auth',
               'smart_admin.templatetags'],
     package_dir={"": "src"},
-    package_data={"smart_admin": ["templates/admin/*.html"]},
+    package_data={"smart_admin": ["templates/admin/*.html",
+                                  "templates/admin/*/*.html",
+                                  "templates/admin/*/*/*.html",
+                                  ]},
     extras_require={
         'full': ["django-adminfilters>=1.6.1",
                  "django-admin-extra-urls>=3.5.1",

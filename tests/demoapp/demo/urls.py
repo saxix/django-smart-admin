@@ -1,7 +1,7 @@
+import adminactions.actions as actions
 from django.contrib import admin
 from django.contrib.admin import site
-from django.urls import path, include
-import adminactions.actions as actions
+from django.urls import include, path
 
 admin.autodiscover()
 actions.add_to_site(site)

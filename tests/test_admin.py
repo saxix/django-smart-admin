@@ -1,12 +1,12 @@
 import datetime
 
 import pytest
+from demo.factories import (GroupFactory, LogEntryFactory,
+                            UserFactory, get_factory_for_model,)
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.sites import site
-from django.contrib.auth.models import Group, Permission
-
-from demo.factories import get_factory_for_model, LogEntryFactory, GroupFactory, UserFactory
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
+from django.contrib.auth.models import Group, Permission
 from django.db.models.options import Options
 from django.urls import reverse
 
