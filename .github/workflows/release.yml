@@ -1,0 +1,51 @@
+name: Release
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  create_tag:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set tag version
+        run: |
+          echo TAG_VERSION=${GITHUB_HEAD_REF##*\/} >> $GITHUB_ENV
+
+      - name: Create Tag
+        uses: negz/create-tag@v1
+        with:
+          version: ${{ env.TAG_VERSION }}
+          message: "Release ${{env.TAG_VERSION}}"
+          token: ${{ github.token }}
+
+      - uses: Logerfo/gitflow-action@0.0.4
+        with:
+          github-token: ${{ github.token }} # The `GITHUB_TOKEN` secret.
+          release: release # The `release` branch.
+          dev: develop # The `dev` branch.
+          master: master # The `master` branch.
+#          label: gitflow # The pull request label.
+#          auto-merge: pull_request_review # If `true`, will try to automatically merge pull requests. Can also be set to `pull_request_review`, `check_run`, `push`, or a comma-separated combination of these values to only merge when handling the named events.
+          require-merge: true # If an attempted merge fails, the action is considered to have failed.
+
+      - name: Merge to develop
+        uses: devmasx/merge-branch@v1.3.1
+        with:
+          type: now
+          from_branch: master
+          target_branch: develop
+          github_token: ${{ github.token }}
+
+  delete_merged_release_branche:
+#    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Delete merged branch
+        uses: dawidd6/action-delete-branch@v3
+        with:
+          github_token: ${{github.token}}
+          numbers: ${{github.event.pull_request.number}}

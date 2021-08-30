@@ -1,9 +1,8 @@
-from django.contrib.admin.decorators import register
 
 
 def smart_register(*models, site=None, force=True):
     from django.contrib.admin import ModelAdmin
-    from django.contrib.admin.sites import site as default_site, AdminSite
+    from django.contrib.admin.sites import AdminSite, site as default_site
 
     def _model_admin_wrapper(admin_class):
         if not models:
