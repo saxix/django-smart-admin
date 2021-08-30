@@ -1,6 +1,6 @@
 import factory
 from django.contrib.admin.models import LogEntry
-from django.contrib.auth.models import User, Permission, Group
+from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 from factory.base import FactoryMetaClass
 

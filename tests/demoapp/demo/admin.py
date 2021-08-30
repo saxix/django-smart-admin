@@ -4,7 +4,8 @@ import factory.fuzzy
 from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.filters import MaxMinFilter, TextFieldFilter, BooleanRadioFilter
+from adminfilters.filters import (BooleanRadioFilter,
+                                  MaxMinFilter, TextFieldFilter,)
 from django.contrib import admin
 from django.contrib.admin import register
 from django.contrib.admin.models import DELETION, LogEntry

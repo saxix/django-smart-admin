@@ -1,8 +1,9 @@
-import smart_admin
 from pathlib import Path
 from uuid import uuid4
 
 import environ
+
+import smart_admin
 
 BASE_DIR = Path(__file__).resolve(strict=True).parents[3]
 
@@ -37,7 +38,7 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'adminfilters',
                   'admin_extra_urls',
 
-                  'smart_admin.logs',
+                  'smart_admin.apps.SmartLogsConfig',
                   'smart_admin.apps.SmartTemplateConfig',
                   'smart_admin.apps.SmartAuthConfig',
                   'smart_admin',

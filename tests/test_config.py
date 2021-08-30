@@ -1,7 +1,7 @@
 import pytest
-from smart_admin.settings import get_bookmarks, process_setting
 from demo.urls import get_link
 
+from smart_admin.settings import get_bookmarks, process_setting
 
 
 @pytest.mark.parametrize("value", [10, lambda r: get_link.LINKS, 'demo.urls.get_link'])
