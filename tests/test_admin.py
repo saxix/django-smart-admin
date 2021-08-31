@@ -1,11 +1,16 @@
+import datetime
+
 import pytest
+from demo.factories import (GroupFactory, LogEntryFactory,
+                            UserFactory, get_factory_for_model,)
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.sites import site
-
-from demo.factories import get_factory_for_model
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
+from django.contrib.auth.models import Group, Permission
 from django.db.models.options import Options
 from django.urls import reverse
+
+from smart_admin.smart_auth.admin import User
 
 EXCLUDED_MODELS = ['Config']
 
@@ -108,3 +113,60 @@ def test_log(app):
     app.set_cookie('smart', "1")
     res = app.get(url, user='sax')
     assert res.pyquery('a:contains("Standard Index")')
+
+
+@pytest.mark.django_db
+def test_truncate_log(app):
+    url = reverse(admin_urlname(LogEntry._meta, 'changelist'))
+    LogEntryFactory()
+
+    res = app.get(url, user='sax')
+    res = res.click("Truncate")
+    res = res.form.submit()
+    assert res.status_code == 302
+    assert not LogEntry.objects.all().exists()
+
+
+@pytest.mark.django_db
+def test_archive_log(app, settings):
+    settings.SMART_LOGS_RETENTION_DAYS = 1
+    url = reverse(admin_urlname(LogEntry._meta, 'changelist'))
+    LogEntryFactory()
+    LogEntryFactory(action_time=datetime.date(2000, 1, 1))
+    res = app.get(url, user='sax')
+    res = res.click("Archive")
+    res = res.form.submit()
+    assert res.status_code == 302
+    assert LogEntry.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_group_history(app, settings):
+    settings.SMART_LOGS_RETENTION_DAYS = 1
+    g = GroupFactory()
+    url = reverse(admin_urlname(Group._meta, 'change'), args=[g.id])
+    res = app.get(url, user='sax')
+    res.form['permissions'] = [Permission.objects.first().pk]
+    res.form.submit()
+
+    res = app.get(url, user='sax')
+    res = res.click("History")
+    assert "Added permissions" in res.content.decode()
+
+
+@pytest.mark.django_db
+def test_user_history(app, settings):
+    settings.SMART_LOGS_RETENTION_DAYS = 1
+    g = GroupFactory()
+    u = UserFactory(is_staff=True, is_active=True, is_superuser=True)
+    url = reverse(admin_urlname(User._meta, 'change'), args=[u.id])
+
+    res = app.get(url, user='sax')
+    res.form['user_permissions'] = [Permission.objects.first().pk]
+    res.form['groups'] = [g.pk]
+    res.form.submit()
+
+    res = app.get(url, user='sax')
+    res = res.click("History")
+    assert "Added permissions" in res.content.decode()
+    assert "Added groups" in res.content.decode()

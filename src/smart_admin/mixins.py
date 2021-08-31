@@ -1,12 +1,12 @@
-from admin_extra_urls.decorators import button
 from itertools import chain
 
-from adminfilters.filters import ChoicesFieldComboFilter, AllValuesComboFilter, RelatedFieldComboFilter
+from adminfilters.filters import (AllValuesComboFilter, ChoicesFieldComboFilter,
+                                  RelatedFieldComboFilter,)
 from django.contrib.admin import FieldListFilter
 from django.contrib.admin.checks import BaseModelAdminChecks, must_be
 from django.contrib.admin.utils import flatten
 from django.db import models
-from django.db.models import AutoField, TextField, ForeignKey, ManyToManyField
+from django.db.models import AutoField, ForeignKey, ManyToManyField, TextField
 from django.db.models.fields.related import RelatedField
 
 

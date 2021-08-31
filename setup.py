@@ -15,7 +15,7 @@ setup(
     long_description=readme,
     long_description_content_type="text/x-rst",
     name='django-smart-admin',
-    version='1.2.0',
+    version='1.3.0',
     python_requires='==3.*,>=3.0.0,>=3.6',
     project_urls={"homepage": "https://github.com/saxix/django-smart-admin",
                   "repository": "https://github.com/saxix/django-smart-admin"
@@ -28,7 +28,10 @@ setup(
               'smart_admin.smart_auth',
               'smart_admin.templatetags'],
     package_dir={"": "src"},
-    package_data={"smart_admin": ["templates/admin/*.html"]},
+    package_data={"smart_admin": ["templates/admin/*.html",
+                                  "templates/admin/*/*.html",
+                                  "templates/admin/*/*/*.html",
+                                  ]},
     extras_require={
         'full': ["django-adminfilters>=1.6.1",
                  "django-admin-extra-urls>=3.5.1",
