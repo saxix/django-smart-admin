@@ -30,11 +30,10 @@
 <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
 {% if smart %}
     &rsaquo; <a href="{% url 'admin:group_list' model_to_section|section:opts  %}">{{ model_to_section|section:opts }}</a>
-    &rsaquo; {{ cl.opts.app_config.verbose_name }}
+    &rsaquo; ({{ cl.opts.app_config.verbose_name }}) {{ cl.opts.verbose_name_plural|capfirst }}
 {% else %}
 &rsaquo; <a href="{% url 'admin:app_list' app_label=cl.opts.app_label %}">{{ cl.opts.app_config.verbose_name }}</a>
 {% endif %}
-&rsaquo; {{ cl.opts.verbose_name_plural|capfirst }}
 </div>
 {% endblock %}
 {% endif %}

@@ -1,5 +1,7 @@
 import time
 from collections import OrderedDict
+
+from django.utils.functional import cached_property
 from functools import update_wrapper
 
 from django.conf import settings
@@ -62,6 +64,7 @@ class SmartAdminSite(AdminSite):
 
     def each_context(self, request):
         context = super().each_context(request)
+        context['groups'] = dict(self._get_menu(request)[0])
         context['sysinfo'] = self.sysinfo_url
         context['smart_settings'] = smart_settings
         context['enable_switch'] = smart_settings.ENABLE_SWITCH
@@ -176,7 +179,10 @@ class SmartAdminSite(AdminSite):
                         {'app_label': str(app['app_label']),
                          'app_name': str(app['name']),
                          'app_url': app['app_url'],
-                         'label': '%s - %s' % (app['name'], model['name']),
+                         # 'label': '{app[name]} - ({model[name]})'.format(app=app, model=model),
+                         'label': smart_settings.MODEL_LABEL_FORMAT.format(app=app, model=model),
+                         # 'label': '{model[name]} ({app[name]})'.format(app=app, model=model),
+                         # 'label': '%s - %s' % (app['name'], model['name']),
                          'model_name': str(model['name']),
                          'admin_url': model['admin_url'],
                          'perms': model['perms']})
@@ -186,27 +192,26 @@ class SmartAdminSite(AdminSite):
             cache.set(key2, model_to_section, 60 * 60)
         return groups, model_to_section
 
+    def get_smart_menu(self, request, group):
+        groups, __ = self._get_menu(request)
+        return groups[group]
+
     @never_cache
     def smart_section(self, request, extra_context=None, group=None):
-        # app_list = self.get_app_list(request)
         groups, __ = self._get_menu(request)
         section = groups[group]
         context = {
             **self.each_context(request),
-            # 'smart': 1,
-            # 'title': self.index_title,
             'app_list': [group],
-            'groups': {group: section},
+            'section': (group, section),
             **(extra_context or {}),
         }
         return TemplateResponse(request, 'admin/group_index.html', context)
 
     @never_cache
     def smart_index(self, request, extra_context=None):
-        groups, __ = self._get_menu(request)
         context = {
             **self.each_context(request),
-            'groups': dict(groups),
             **(extra_context or {}),
         }
         request.current_app = self.name

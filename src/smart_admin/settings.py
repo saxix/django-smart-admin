@@ -43,8 +43,8 @@ PROFILE_LINK = getattr(settings, 'SMART_ADMIN_PROFILE_LINK', True)
 ANYUSER_LOG = getattr(settings, 'SMART_ADMIN_ANYUSER_LOG', True)
 ISROOT = getattr(settings, 'SMART_ADMIN_ISROOT', lambda request, *a: request.user.is_superuser)
 SYSINFO_TTL = getattr(settings, 'SMART_ADMIN_SYSINFO_TTL', 60)
-LOGS_RETENTION_DAYS = getattr(settings, 'SMART_LOGS_RETENTION_DAYS', 365)
-
+LOGS_RETENTION_DAYS = getattr(settings, 'SMART_ADMIN_LOGS_RETENTION_DAYS', 365)
+MODEL_LABEL_FORMAT = getattr(settings, 'SMART_ADMIN_MODEL_LABEL_FORMAT', '{model[name]} ({app[name]})')
 
 @receiver(setting_changed)
 def update_settings(setting, value, **kwargs):
