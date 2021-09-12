@@ -103,18 +103,10 @@ class InvoiceFactory(ModelFactory):
         model = models.Invoice
         django_get_or_create = ('number',)
 
-    @factory.post_generation
-    def details(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        InvoiceItemFactory(invoice=self)
-
 
 class InvoiceItemFactory(ModelFactory):
+    invoice = factory.SubFactory(InvoiceFactory)
     product = factory.SubFactory(ProductFactory)
-    # qty = factory.Int
 
     class Meta:
         model = models.InvoiceItem
