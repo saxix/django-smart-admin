@@ -91,6 +91,7 @@ SMART_ADMIN_SECTIONS = {
 }
 
 SMART_ADMIN_BOOKMARKS = [('GitHub', 'https://github.com/saxix/django-smart-admin'),
+                         ('PyPI', 'https://pypi.org/project/django-smart-admin/'),
                          ('adminactions', 'https://github.com/saxix/django-adminactions'),
                          ('sysinfo', 'https://github.com/saxix/django-sysinfo'),
                          ('adminfilters', 'https://github.com/saxix/django-adminfilters'),
