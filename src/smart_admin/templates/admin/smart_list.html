@@ -1,0 +1,26 @@
+{% load i18n %}
+
+{% if groups %}
+    {% for section, apps in groups.items %}
+        {% if section != '_hidden_' %}
+            <div class="module">
+                <table style="width: 100%">
+                    <caption>
+                        <a class="section" href="{% url "admin:group_list" section %}">{{ section }}</a>
+                    </caption>
+                    {% for model in apps %}
+                        <tr>
+                            {% if model.admin_url %}
+                                <td scope="row"><a href="{{ model.admin_url }}">{{ model.label }}</a></td>
+                            {% else %}
+                                <td scope="row">{{ model.model_name }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>{% trans "You don't have permission to view or edit anything." %}</p>
+{% endif %}

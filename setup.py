@@ -15,7 +15,7 @@ setup(
     long_description=readme,
     long_description_content_type="text/x-rst",
     name='django-smart-admin',
-    version='1.3.0',
+    version='1.4.0',
     python_requires='==3.*,>=3.0.0,>=3.6',
     project_urls={"homepage": "https://github.com/saxix/django-smart-admin",
                   "repository": "https://github.com/saxix/django-smart-admin"
@@ -33,7 +33,7 @@ setup(
                                   "templates/admin/*/*/*.html",
                                   ]},
     extras_require={
-        'full': ["django-adminfilters>=1.6.1",
+        'full': ["django-adminfilters>=1.7",
                  "django-admin-extra-urls>=3.5.1",
                  "django-adminactions>=1.13",
                  "django-sysinfo>=2.5.1",

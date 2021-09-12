@@ -1,9 +1,29 @@
 {% extends "admin/index.html" %}{% load i18n static log %}
+{% block nav-sidebar %}
+    {% include "admin/nav_sidebar.html" with groups=groups %}
+{% endblock %}
+
 {% block content %}
     <div id="content-main">
-        <input type="text" style="width: 578px;padding:10px;margin-bottom:10px" id="filterInput"
-               placeholder="Search for names..">
-        {% if groups %}
+        <input type="text" style="width: 578px;padding:10px;margin-bottom:10px" id="filterInput"  placeholder="Search for names..">
+        {% if section %}
+            <div class="module">
+                <table style="width: 100%" class="section">
+                    <caption>
+                        <a class="section" href="{% url "admin:group_list" section.0 %}">{{ section.0 }}</a>
+                    </caption>
+                    {% for model in section.1 %}
+                        <tr>
+                            {% if model.admin_url %}
+                                <td scope="row"><a href="{{ model.admin_url }}">{{ model.label }}</a></td>
+                            {% else %}
+                                <td scope="row">{{ model.model_name }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% elif groups %}
             {% for section, apps in groups.items %}
                 {% if section != '_hidden_' %}
                     <div class="module">

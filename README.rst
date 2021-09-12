@@ -28,6 +28,16 @@ Bonus
 Demo is available at https://django-smart-admin.herokuapp.com/.
 (Any user/password combination is accepted)
 
+Components
+----------
+ModelAdmin Mixins
+~~~~~~~~~~~~~~~~~
+ - LinkedObjectsMixin
+ - ReadOnlyMixin
+ - FieldsetMixin
+ - DisplayAllMixin
+
+
 
 Install
 -------

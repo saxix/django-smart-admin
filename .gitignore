@@ -2,6 +2,7 @@
 *.egg-info
 dist
 poetry.lock
+build
 !.github
 !.gitignore
 !.travis.yml
