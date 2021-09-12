@@ -25,7 +25,7 @@ def process_setting(value, request):
 
 
 def get_bookmarks(request=None):
-    raw_value = getattr(settings, 'SMART_ADMIN_BOOKMARKS', 'sysinfo/key')
+    raw_value = getattr(settings, 'SMART_ADMIN_BOOKMARKS', [])
     values = process_setting(raw_value, request)
     if not isinstance(values, (list, tuple)):
         raise ValueError(f"Invalid value `{values}` for settings.SMART_ADMIN_BOOKMARKS")

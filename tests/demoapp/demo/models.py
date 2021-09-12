@@ -2,29 +2,39 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-class DemoModel1(models.Model):
+class Customer(models.Model):
     name = models.CharField(max_length=255)
-    char = models.CharField('Chäř', max_length=255)
-    integer = models.IntegerField(null=True, blank=True)
-    logic = models.BooleanField(default=False)
-    date = models.DateField(null=True, blank=True)
-    datetime = models.DateTimeField(null=True, blank=True)
-    time = models.TimeField(null=True, blank=True)
-    decimal = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True)
     email = models.EmailField(verbose_name='Other email')
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
+    registration_date = models.DateField(auto_created=True)
+    active = models.BooleanField()
 
 
-class DemoModel2(models.Model):
+class ProductFamily(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return "DemoModel2 #%s" % self.pk
+        return self.name
 
 
-class DemoModel3(models.Model):
+class Product(models.Model):
     name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True)
+    family = models.ForeignKey(ProductFamily, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
 
-class DemoModel4(models.Model):
-    name = models.CharField(max_length=255)
+class Invoice(models.Model):
+    date = models.DateField(null=True, blank=True)
+    number = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Invoice #{self.number}"
+
+
+class InvoiceItem(models.Model):
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')
+    qty = models.IntegerField(default=1)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)

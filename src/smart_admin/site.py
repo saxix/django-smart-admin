@@ -101,12 +101,16 @@ class SmartAdminSite(AdminSite):
                         })
         return render(request, 'admin/sysinfo/sysinfo.html', context)
 
+    def autocomplete_view(self, request):
+        return super().autocomplete_view(request)
+
     def app_index(self, request, app_label, extra_context=None):
         groups, __ = self._get_menu(request)
         if app_label not in groups:
             request.COOKIES['smart'] = "0"
         if self.is_smart_enabled(request):
-            self.app_index_template = 'admin/group_index.html'
+            self.app_index_template = ['admin/%s/app_index.html' % app_label,
+                                       'admin/group_index.html']
         response = super().app_index(request, app_label, extra_context)
         response.set_cookie("smart", )
         return response

@@ -2,6 +2,7 @@ import json
 import urllib.parse
 
 from django import template
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
@@ -41,3 +42,10 @@ def get_changed(message, entry):
     except (json.JSONDecodeError, KeyError, IndexError):
         pass
     return ""
+
+
+@register.filter()
+def get_admin_link(record):
+    opts = record._meta
+    url_name = admin_urlname(opts, "change")
+    return reverse(url_name, args=[record.pk])

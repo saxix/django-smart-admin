@@ -33,7 +33,7 @@ setup(
                                   "templates/admin/*/*/*.html",
                                   ]},
     extras_require={
-        'full': ["django-adminfilters>=1.6.1",
+        'full': ["django-adminfilters>=1.7",
                  "django-admin-extra-urls>=3.5.1",
                  "django-adminactions>=1.13",
                  "django-sysinfo>=2.5.1",
