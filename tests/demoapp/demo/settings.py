@@ -43,7 +43,7 @@ INSTALLED_APPS = ['django.contrib.auth',
                   # 'smart_admin.apps.SmartAuthConfig',
                   'smart_admin',
 
-                  'demo']
+                  'demo.apps.Config']
 
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
