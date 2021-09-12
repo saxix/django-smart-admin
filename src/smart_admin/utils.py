@@ -1,6 +1,8 @@
 import re
 from fnmatch import fnmatchcase
 
+from django.core.exceptions import ObjectDoesNotExist
+
 
 def as_bool(value):
     return value not in ["", "0", "None", 0, None, "on"]
@@ -48,19 +50,24 @@ def get_related(user, field):
         "field_name": field.name,
     }
 
-    if field.related_name:
-        related_attr = getattr(user, field.related_name)
-    else:
-        related_attr = getattr(user, f"{field.name}_set")
+    try:
+        info["related_name"] = field.related_model._meta.verbose_name
+        if field.related_name:
+            related_attr = getattr(user, field.related_name)
+        else:
+            related_attr = getattr(user, f"{field.name}_set")
 
-    if hasattr(related_attr, 'all') and callable(related_attr.all):
-        related = related_attr.all()
-        opts = related_attr.model._meta
-        info["related_name"] = opts.verbose_name
-    else:
-        opts = related_attr._meta
-        related = [related_attr]
-        info["related_name"] = opts.verbose_name
-    info["data"] = related
+        if hasattr(related_attr, 'all') and callable(related_attr.all):
+            related = related_attr.all()
+            opts = related_attr.model._meta
+            # info["related_name"] = opts.verbose_name
+        else:
+            opts = related_attr._meta
+            related = [related_attr]
+            # info["related_name"] = opts.verbose_name
+        info["data"] = related
+    except ObjectDoesNotExist:
+        info["data"] = []
+        info["related_name"] = field.related_model._meta.verbose_name
 
     return info
