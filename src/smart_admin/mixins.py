@@ -1,13 +1,17 @@
+from django.template.response import TemplateResponse
 from itertools import chain
 
+from admin_extra_urls.decorators import button
 from adminfilters.filters import (AllValuesComboFilter, ChoicesFieldComboFilter,
-                                  RelatedFieldComboFilter,)
+                                  RelatedFieldComboFilter, )
 from django.contrib.admin import FieldListFilter
 from django.contrib.admin.checks import BaseModelAdminChecks, must_be
 from django.contrib.admin.utils import flatten
 from django.db import models
 from django.db.models import AutoField, ForeignKey, ManyToManyField, TextField
 from django.db.models.fields.related import RelatedField
+
+from smart_admin.utils import get_related
 
 
 class SmartFilterMixin:
@@ -102,3 +106,30 @@ class ReadOnlyMixin:
 
 class SmartMixin(ReadOnlyMixin, FieldsetMixin, DisplayAllMixin):
     readonly_fields = ()
+
+
+class LinkedObjectsMixin:
+    linked_objects_template = None
+
+    def get_ignored_linked_objects(self):
+        return []
+
+    @button()
+    def linked_objects(self, request, pk):
+        ignored = self.get_ignored_linked_objects()
+        opts = self.model._meta
+        app_label = opts.app_label
+        context = self.get_common_context(request, pk, title="linked objects")
+        reverse = []
+        for f in self.model._meta.get_fields():
+            if f.auto_created and not f.concrete and not f.name in ignored:
+                reverse.append(f)
+        # context["reverse"] = [get_related(user, f ) for f in reverse]
+        context["reverse"] = sorted([get_related(context['original'], f) for f in reverse],
+                                    key=lambda x: x['related_name'].lower())
+
+        return TemplateResponse(request, self.linked_objects_template or [
+            "admin/%s/%s/linked_objects.html" % (app_label, opts.model_name),
+            "admin/%s/linked_objects.html" % app_label,
+            "smart_admin/linked_objects.html"
+        ], context)

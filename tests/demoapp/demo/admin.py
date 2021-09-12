@@ -1,78 +1,54 @@
-import datetime
-
-import factory.fuzzy
 from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.filters import (BooleanRadioFilter,
-                                  MaxMinFilter, TextFieldFilter,)
+from adminfilters.filters import (TextFieldFilter, NumberFilter, )
 from django.contrib import admin
-from django.contrib.admin import register
+from django.contrib.admin import register, TabularInline
 from django.contrib.admin.models import DELETION, LogEntry
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db import OperationalError
 from django.db.transaction import atomic
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from factory import SubFactory
-from factory.django import DjangoModelFactory
+from smart_admin.smart_auth.admin import UserAdmin as SmartUserAdmin
 
 import smart_admin.settings as smart_settings
-from smart_admin.mixins import SmartMixin
+from smart_admin.mixins import SmartMixin, LinkedObjectsMixin
 
-from .models import DemoModel1, DemoModel2, DemoModel3, DemoModel4
-
-
-class UserFactory(DjangoModelFactory):
-    username = factory.Sequence(lambda i: f'username-{i}')
-    email = factory.Faker('email')
-    is_staff = False
-    is_active = False
-    is_superuser = False
-
-    class Meta:
-        model = User
-        django_get_or_create = ('username',)
+from . import models
+from .factories import get_factory_for_model
 
 
-class DemoModel1Factory(DjangoModelFactory):
-    name = factory.Faker('name')
-    email = factory.Faker('email')
-    char = factory.fuzzy.FuzzyText()
-    integer = factory.fuzzy.FuzzyInteger(100)
-    date = factory.fuzzy.FuzzyDate(datetime.date(2008, 1, 1))
-    user = SubFactory(UserFactory)
-
-    class Meta:
-        model = DemoModel1
+class FactoryMixin:
+    @button()
+    def create_sample_records(self, request):
+        factory = get_factory_for_model(self.model)
+        factory.create_batch(10)
 
 
-@register(DemoModel1)
-class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
-    list_display = ("name", "char", "integer", "useremail", "email")
+@register(models.Customer)
+class CustomerAdmin1(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+    list_display = ("name", "useremail", "email")
 
     list_filter = (('user', AutoCompleteFilter),
-                   'date',
-                   ('integer', MaxMinFilter),
-                   ('logic', BooleanRadioFilter),
+                   # ('integer', MaxMinFilter),
+                   # ('logic', BooleanRadioFilter),
                    TextFieldFilter.factory('user__email'),
                    TextFieldFilter.factory('email')
                    )
-
+    readonly_fields = ('user',)
     fieldsets = [
-        (None, {"fields": (("name", "char"),)}),
+        (None, {"fields": (("name", "email"),)}),
         (
             "Set 1",
             {
                 "classes": ("collapse",),
                 "fields": (
-                    "integer",
-                    "logic",
-                    "decimal",
-                    "date",
+                    "user",
+                    "active",
+                    "registration_date",
                 ),
             },
         ),
@@ -96,10 +72,6 @@ class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
 
         return _confirm_action(self, request, _action, "Confirm action",
                                "Successfully executed", )
-
-    @button()
-    def create_100_records(self, request):
-        DemoModel1Factory.create_batch(100)
 
     @button(label="Truncate", css_class="btn-danger", permission=smart_settings.ISROOT)
     def truncate(self, request):
@@ -139,16 +111,39 @@ class Admin1(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
             )
 
 
-@register(DemoModel2)
-class Admin2(SmartMixin, admin.ModelAdmin):
-    pass
+@register(models.Product)
+class ProductAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+    list_display = ('name', 'price', 'family')
+    list_filter = ('family',)
+    search_fields = ('name', )
 
 
-@register(DemoModel3)
-class Admin3(admin.ModelAdmin):
-    pass
+@register(models.ProductFamily)
+class ProductFamilyAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+    list_display = ('name',)
 
 
-@register(DemoModel4)
-class Admin4(admin.ModelAdmin):
+class InvoiceItemInline(TabularInline):
+    model = models.InvoiceItem
+    extra = 0
+
+
+@register(models.Invoice)
+class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+    list_display = ('number', 'date')
+    list_filter = (('number', NumberFilter),
+                   ('items__product', AutoCompleteFilter),
+                   )
+    search_fields = ('number',)
+    inlines = [InvoiceItemInline]
+
+
+@register(models.InvoiceItem)
+class InvoiceItemAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+    list_display = ('product', 'qty')
+    list_filter = (('invoice', AutoCompleteFilter),)
+    search_fields = ('qty',)
+
+
+class UserAdmin(LinkedObjectsMixin, FactoryMixin, SmartUserAdmin):
     pass

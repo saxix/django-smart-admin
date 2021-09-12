@@ -40,3 +40,27 @@ class SmartList(list):
             elif entry == target:
                 return True
         return False
+
+
+def get_related(user, field):
+    info = {
+        "to": field.model._meta.model_name,
+        "field_name": field.name,
+    }
+
+    if field.related_name:
+        related_attr = getattr(user, field.related_name)
+    else:
+        related_attr = getattr(user, f"{field.name}_set")
+
+    if hasattr(related_attr, 'all') and callable(related_attr.all):
+        related = related_attr.all()
+        opts = related_attr.model._meta
+        info["related_name"] = opts.verbose_name
+    else:
+        opts = related_attr._meta
+        related = [related_attr]
+        info["related_name"] = opts.verbose_name
+    info["data"] = related
+
+    return info

@@ -40,7 +40,7 @@ INSTALLED_APPS = ['django.contrib.auth',
 
                   'smart_admin.apps.SmartLogsConfig',
                   'smart_admin.apps.SmartTemplateConfig',
-                  'smart_admin.apps.SmartAuthConfig',
+                  # 'smart_admin.apps.SmartAuthConfig',
                   'smart_admin',
 
                   'demo']
@@ -91,10 +91,10 @@ SMART_ADMIN_SECTIONS = {
 }
 
 SMART_ADMIN_BOOKMARKS = [('GitHub', 'https://github.com/saxix/django-smart-admin'),
-                         'https://github.com/saxix/django-adminactions',
-                         'https://github.com/saxix/django-sysinfo',
-                         'https://github.com/saxix/django-adminfilters',
-                         'https://github.com/saxix/django-admin-extra-urls',
+                         ('adminactions', 'https://github.com/saxix/django-adminactions'),
+                         ('sysinfo', 'https://github.com/saxix/django-sysinfo'),
+                         ('adminfilters', 'https://github.com/saxix/django-adminfilters'),
+                         ('admin-extra-urls,', 'https://github.com/saxix/django-admin-extra-urls'),
                          ]
 SMART_ADMIN_BOOKMARKS_PERMISSION = None
 SMART_ADMIN_PROFILE_LINK = True
