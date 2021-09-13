@@ -27,6 +27,7 @@ class Product(models.Model):
 
 
 class Invoice(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     date = models.DateField(null=True, blank=True)
     number = models.IntegerField(null=True, blank=True)
 

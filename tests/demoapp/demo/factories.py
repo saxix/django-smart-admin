@@ -96,6 +96,7 @@ class ProductFactory(ModelFactory):
 
 
 class InvoiceFactory(ModelFactory):
+    customer = factory.SubFactory(CustomerFactory)
     number = factory.LazyFunction(lambda: random.choice(range(100)))
     date = factory.LazyFunction(timezone.now)
 
