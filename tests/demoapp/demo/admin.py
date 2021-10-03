@@ -29,9 +29,9 @@ class FactoryMixin:
 
 
 @register(models.Customer)
-class CustomerAdmin1(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
     list_display = ("name", "useremail", "email")
-
+    search_fields = ("name", )
     list_filter = (('user', AutoCompleteFilter),
                    # ('integer', MaxMinFilter),
                    # ('logic', BooleanRadioFilter),
@@ -130,8 +130,9 @@ class InvoiceItemInline(TabularInline):
 
 @register(models.Invoice)
 class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
-    list_display = ('number', 'date')
+    list_display = ('customer', 'number', 'date')
     list_filter = (('number', NumberFilter),
+                   ('customer', AutoCompleteFilter),
                    ('items__product', AutoCompleteFilter),
                    )
     search_fields = ('number',)
