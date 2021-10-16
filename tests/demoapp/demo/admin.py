@@ -15,7 +15,7 @@ from django.utils.safestring import mark_safe
 from smart_admin.smart_auth.admin import UserAdmin as SmartUserAdmin
 
 import smart_admin.settings as smart_settings
-from smart_admin.mixins import SmartMixin, LinkedObjectsMixin
+from smart_admin.mixins import SmartMixin, LinkedObjectsMixin, TruncateAdminMixin
 
 from . import models
 from .factories import get_factory_for_model
@@ -29,9 +29,9 @@ class FactoryMixin:
 
 
 @register(models.Customer)
-class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class CustomerAdmin(FactoryMixin, TruncateAdminMixin, LinkedObjectsMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
     list_display = ("name", "useremail", "email")
-    search_fields = ("name", )
+    search_fields = ("name",)
     list_filter = (('user', AutoCompleteFilter),
                    # ('integer', MaxMinFilter),
                    # ('logic', BooleanRadioFilter),
@@ -73,49 +73,12 @@ class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraUrlMixin,
         return _confirm_action(self, request, _action, "Confirm action",
                                "Successfully executed", )
 
-    @button(label="Truncate", css_class="btn-danger", permission=smart_settings.ISROOT)
-    def truncate(self, request):
-        # if not request.headers.get("x-root-access") == "XMLHttpRequest":
-        #     self.message_user(request, "You are not allowed to perform this action", messages.ERROR)
-        #     return
-        if request.method == "POST":
-            with atomic():
-                LogEntry.objects.log_action(
-                    user_id=request.user.pk,
-                    content_type_id=ContentType.objects.get_for_model(self.model).pk,
-                    object_id=None,
-                    object_repr=f"truncate table {self.model._meta.verbose_name}",
-                    action_flag=DELETION,
-                    change_message="truncate table",
-                )
-                from django.db import connections
-
-                try:
-                    conn = connections[self.model.objects.db]
-                    cursor = conn.cursor()
-                    cursor.execute('TRUNCATE TABLE "{0}" RESTART IDENTITY CASCADE '.format(self.model._meta.db_table))
-                except OperationalError:
-                    self.get_queryset(request).delete()
-        else:
-            return _confirm_action(
-                self,
-                request,
-                self.truncate,
-                mark_safe("""
-<h1 class="color-red"><b>This is a low level system feature</b></h1>
-<h1 class="color-red"><b>Continuing irreversibly delete all table content</b></h1>
-
-                                       """),
-                "Successfully executed",
-                title="Truncate table",
-            )
-
 
 @register(models.Product)
 class ProductAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
     list_display = ('name', 'price', 'family')
     list_filter = ('family',)
-    search_fields = ('name', )
+    search_fields = ('name',)
 
 
 @register(models.ProductFamily)

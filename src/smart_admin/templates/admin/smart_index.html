@@ -55,8 +55,8 @@
             {% if bookmarks %}
                 <h2>{% trans 'Quick Links' %}</h2>
                 <ul class="actionlist">
-                    {% for label, url, cls in bookmarks %}
-                        <li class="{{ cls }}"><a target="_{{ label }}" href="{{ url }}">{{ label }}</a></li>
+                    {% for entry in bookmarks %}
+                        {{ entry }}
                     {% endfor %}
                 </ul>
             {% endif %}

@@ -9,12 +9,12 @@ from django.contrib.admin import register
 from django.contrib.admin.models import LogEntry
 from django.utils.translation import gettext as _
 
-from smart_admin.mixins import SmartMixin
+from smart_admin.mixins import SmartMixin, TruncateAdminMixin
 from smart_admin.truncate import truncate_model_table
 
 
 @register(LogEntry)
-class LogEntryAdmin(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraUrlMixin, admin.ModelAdmin):
     list_display = ('action_time', 'user', 'action_flag', 'content_type', 'object_repr')
     readonly_fields = ('__all__',)
     search_fields = ('object_repr',)
@@ -34,6 +34,7 @@ class LogEntryAdmin(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
             self.message_user(request, _("Records before %s have been removed") % offset_label)
 
         ctx = self.get_common_context(request,
+                                      original=None,
                                       offset=offset_label,
                                       title="Removes old data")
 
@@ -41,15 +42,9 @@ class LogEntryAdmin(SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
                                extra_context=ctx,
                                template="admin/logentry/archive.html")
 
-    @button(permission="truncate_logentry")
+    @button(label="Truncate", css_class="btn-danger", permission="truncate_logentry")
     def truncate(self, request):
-        def _doit(request):
-            truncate_model_table(LogEntry)
-            self.message_user(request, _("All records have been removed"))
-
-        return _confirm_action(self, request, _doit, "", "",
-                               extra_context=self.get_common_context(request, title="Erase all data"),
-                               template="admin/logentry/truncate.html")
+        return super()._truncate(request)
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('user', 'content_type')

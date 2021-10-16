@@ -1,17 +1,24 @@
+from django.contrib.admin.models import LogEntry, DELETION
+from django.contrib.contenttypes.models import ContentType
+from django.db.transaction import atomic
 from django.template.response import TemplateResponse
+from django.utils.safestring import mark_safe
 from itertools import chain
 
 from admin_extra_urls.decorators import button
+from admin_extra_urls.mixins import _confirm_action
 from adminfilters.filters import (AllValuesComboFilter, ChoicesFieldComboFilter,
                                   RelatedFieldComboFilter, )
 from django.contrib.admin import FieldListFilter
 from django.contrib.admin.checks import BaseModelAdminChecks, must_be
 from django.contrib.admin.utils import flatten
-from django.db import models
+from django.db import models, OperationalError
 from django.db.models import AutoField, ForeignKey, ManyToManyField, TextField
 from django.db.models.fields.related import RelatedField
 
+from smart_admin.truncate import truncate_model_table
 from smart_admin.utils import get_related
+from smart_admin import settings as smart_settings
 
 
 class SmartFilterMixin:
@@ -133,3 +140,40 @@ class LinkedObjectsMixin:
             "admin/%s/linked_objects.html" % app_label,
             "smart_admin/linked_objects.html"
         ], context)
+
+
+class TruncateAdminMixin:
+    def _truncate(self, request):
+        if request.method == "POST":
+            with atomic():
+                LogEntry.objects.log_action(
+                    user_id=request.user.pk,
+                    content_type_id=ContentType.objects.get_for_model(self.model).pk,
+                    object_id=None,
+                    object_repr=f"truncate table {self.model._meta.verbose_name}",
+                    action_flag=DELETION,
+                    change_message="truncate table",
+                )
+                from django.db import connections
+
+                try:
+                    truncate_model_table(self.model)
+                    # conn = connections[self.model.objects.db]
+                    # cursor = conn.cursor()
+                    # cursor.execute('TRUNCATE TABLE "{0}" RESTART IDENTITY CASCADE '.format(self.model._meta.db_table))
+                except OperationalError:
+                    self.get_queryset(request).delete()
+        else:
+            return _confirm_action(
+                self,
+                request,
+                self.truncate,
+                mark_safe("""
+<h1 class="color-red"><b>This is a low level system feature</b></h1>
+<h1 class="color-red"><b>Continuing irreversibly delete all table content</b></h1>
+
+                                       """),
+                "Successfully executed",
+                title="Truncate table",
+                extra_context={"original": None, "add": False},
+            )

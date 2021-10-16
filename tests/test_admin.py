@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 from demo.factories import (GroupFactory, LogEntryFactory,
-                            UserFactory, get_factory_for_model,)
+                            UserFactory, get_factory_for_model, )
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.sites import site
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
@@ -11,6 +11,7 @@ from django.db.models.options import Options
 from django.urls import reverse
 
 from smart_admin.smart_auth.admin import User
+from smart_admin import settings as smart_settings
 
 EXCLUDED_MODELS = ['Config']
 
@@ -116,11 +117,11 @@ def test_log(app):
 
 
 @pytest.mark.django_db
-def test_truncate_log(app):
+def test_truncate_log(django_app, settings, monkeypatch):
     url = reverse(admin_urlname(LogEntry._meta, 'changelist'))
     LogEntryFactory()
-
-    res = app.get(url, user='sax')
+    user = UserFactory(is_superuser=True, is_active=True, is_staff=True)
+    res = django_app.get(url, user=user)
     res = res.click("Truncate")
     res = res.form.submit()
     assert res.status_code == 302
