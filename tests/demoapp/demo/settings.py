@@ -2,6 +2,8 @@ from pathlib import Path
 from uuid import uuid4
 
 import environ
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 import smart_admin
 
@@ -90,13 +92,19 @@ SMART_ADMIN_SECTIONS = {
     '_hidden_': ["sites"]
 }
 
-SMART_ADMIN_BOOKMARKS = [('GitHub', 'https://github.com/saxix/django-smart-admin'),
-                         ('PyPI', 'https://pypi.org/project/django-smart-admin/'),
-                         ('adminactions', 'https://github.com/saxix/django-adminactions'),
-                         ('sysinfo', 'https://github.com/saxix/django-sysinfo'),
-                         ('adminfilters', 'https://github.com/saxix/django-adminfilters'),
-                         ('admin-extra-urls,', 'https://github.com/saxix/django-admin-extra-urls'),
-                         ]
+
+def get_bookmarks(request):
+    return [mark_safe('<li><a target="{0}" class="viewlink" href="{1}">{0}</a></li>'.format(*e)) for e in
+            [('GitHub', 'https://github.com/saxix/django-smart-admin'),
+             ('PyPI', 'https://pypi.org/project/django-smart-admin/'),
+             ('adminactions', 'https://github.com/saxix/django-adminactions'),
+             ('sysinfo', 'https://github.com/saxix/django-sysinfo'),
+             ('adminfilters', 'https://github.com/saxix/django-adminfilters'),
+             ('admin-extra-urls,', 'https://github.com/saxix/django-admin-extra-urls'),
+             ]]
+
+
+SMART_ADMIN_BOOKMARKS = get_bookmarks
 SMART_ADMIN_BOOKMARKS_PERMISSION = None
 SMART_ADMIN_PROFILE_LINK = True
 SMART_ADMIN_ISROOT = lambda r, *a: r.user.is_superuser and r.headers.get("x-root-token") == env('ROOT_TOKEN')
