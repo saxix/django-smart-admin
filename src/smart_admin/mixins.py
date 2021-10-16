@@ -143,8 +143,7 @@ class LinkedObjectsMixin:
 
 
 class TruncateAdminMixin:
-    @button(label="Truncate", css_class="btn-danger", permission=smart_settings.ISROOT)
-    def truncate(self, request):
+    def _truncate(self, request):
         if request.method == "POST":
             with atomic():
                 LogEntry.objects.log_action(

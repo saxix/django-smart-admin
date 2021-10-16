@@ -118,15 +118,6 @@ def test_log(app):
 
 @pytest.mark.django_db
 def test_truncate_log(django_app, settings, monkeypatch):
-    settings.SMART_ADMIN_ISROOT = lambda request, *a: request.user.is_superuser
-    def aaa(request, *a):
-        # FIXME: remove this line (pdb)
-        breakpoint()
-        # FIXME: remove me (print)
-        print(111, "test_admin.py:126 (aaa)", 11111)
-        return request.user.is_superuser
-
-    monkeypatch.setattr(smart_settings, 'ISROOT', aaa)
     url = reverse(admin_urlname(LogEntry._meta, 'changelist'))
     LogEntryFactory()
     user = UserFactory(is_superuser=True, is_active=True, is_staff=True)
