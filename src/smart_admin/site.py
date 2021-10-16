@@ -1,6 +1,7 @@
 import time
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 
+from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
 from functools import update_wrapper
 
@@ -17,7 +18,7 @@ from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.vary import vary_on_cookie
 
 from . import get_full_version, settings as smart_settings
-from .settings import get_setting_lazy
+from .settings import get_setting_lazy, get_bookmarks
 from .templatetags.smart import as_bool
 from .utils import SmartList
 
@@ -41,34 +42,13 @@ class SmartAdminSite(AdminSite):
     site_title = get_setting_lazy('TITLE')
     site_header = get_setting_lazy('HEADER')
 
-    def get_bookmarks(self, request):
-        if smart_settings.BOOKMARKS_PERMISSION is None or request.user.has_permission(
-                smart_settings.BOOKMARKS_PERMISSION):
-            bookmarks = []
-            values = smart_settings.get_bookmarks(request)
-
-            for entry in values:
-                if not entry:
-                    continue
-                if isinstance(entry, str):
-                    label, url, cls = entry, entry, 'viewlink'
-                elif len(entry) == 2:
-                    label, url, cls = entry[0], entry[1], 'viewlink'
-                elif len(entry) == 3:
-                    label, url, cls = entry
-                else:
-                    raise ValueError(f"Invalid entry '{entry}' for BOOKMARKS")
-                bookmarks.append([label, url, cls])
-            return bookmarks
-        return []
-
     def each_context(self, request):
         context = super().each_context(request)
         context['groups'] = dict(self._get_menu(request)[0])
         context['sysinfo'] = self.sysinfo_url
         context['smart_settings'] = smart_settings
         context['enable_switch'] = smart_settings.ENABLE_SWITCH
-        context['bookmarks'] = self.get_bookmarks(request)
+        context['bookmarks'] = get_bookmarks(request)
         context['smart'] = self.is_smart_enabled(request)
         context['smart_sections'], context['model_to_section'] = self._get_menu(request)
         context['adminsite'] = self

@@ -37,3 +37,4 @@ class SmartConfig(SimpleAdminConfig):
     def ready(self):
         super().ready()
         django.contrib.admin.autodiscover()
+        from . import checks  # noqa
