@@ -1,3 +1,5 @@
+import inspect
+
 import time
 from collections import OrderedDict, namedtuple
 
@@ -33,6 +35,17 @@ def _parse_section():
     if 'Other' not in ret:
         ret['Other'] = []
     return ret
+
+
+def page():
+    def action_decorator(func):
+        def _inner(modeladmin, request, *args, **kwargs):
+            ret = func(modeladmin, request, *args, **kwargs)
+            return ret
+        _inner.is_page = True
+        return _inner
+
+    return action_decorator
 
 
 @method_decorator([vary_on_cookie, cache_page(smart_settings.SYSINFO_TTL)], name='admin_sysinfo')
@@ -114,6 +127,15 @@ class SmartAdminSite(AdminSite):
         urlpatterns = [path('~groups/<str:group>/', wrap(self.smart_section), name='group_list'),
                        path('smart/<str:on_off>/', wrap(self.smart_toggle), name='smart_toggle'),
                        ]
+
+        for c in inspect.getmro(self.__class__):
+            for method_name, method in c.__dict__.items():
+                if hasattr(method, 'is_page'):
+                    urlpatterns.append(
+                        path(f'{method_name}/',
+                             wrap(getattr(self, method_name)),
+                             name=f'page-{method_name}')
+                    )
 
         try:
             if 'django_sysinfo' in settings.INSTALLED_APPS:
