@@ -24,7 +24,7 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraUrlMixin, admin.ModelAd
                    'action_flag')
     date_hierarchy = 'action_time'
 
-    @button(permission="archive_logentry")
+    @button(permission="admin.archive_logentry")
     def archive(self, request):
         offset = datetime.date.today() - datetime.timedelta(days=365)
         offset_label = offset.strftime("%a, %b %d %Y")
@@ -42,7 +42,7 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraUrlMixin, admin.ModelAd
                                extra_context=ctx,
                                template="admin/logentry/archive.html")
 
-    @button(label="Truncate", css_class="btn-danger", permission="truncate_logentry")
+    @button(label="Truncate", css_class="btn-danger", permission="admin.truncate_logentry")
     def truncate(self, request):
         return super()._truncate(request)
 
