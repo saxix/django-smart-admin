@@ -42,7 +42,7 @@ class ContentTypeAdmin(ExtraUrlMixin, admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    @button()
+    @button(permission='contenttypes.delete_contenttype')
     def check_stale(self, request):
         context = self.get_common_context(request, title='Stale')
         to_remove = {}
