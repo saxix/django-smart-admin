@@ -1,5 +1,4 @@
 import re
-from collections import namedtuple
 from fnmatch import fnmatchcase
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -60,12 +59,8 @@ def get_related(user, field):
 
         if hasattr(related_attr, 'all') and callable(related_attr.all):
             related = related_attr.all()
-            opts = related_attr.model._meta
-            # info["related_name"] = opts.verbose_name
         else:
-            opts = related_attr._meta
             related = [related_attr]
-            # info["related_name"] = opts.verbose_name
         info["data"] = related
     except ObjectDoesNotExist:
         info["data"] = []

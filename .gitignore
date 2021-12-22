@@ -11,3 +11,4 @@ build
 !.bumpversion.cfg
 !tests/.coveragerc
 smart_admin.db
+__pycache__

@@ -1,8 +1,7 @@
 import datetime
 
 import pytest
-from demo.factories import (GroupFactory, LogEntryFactory,
-                            UserFactory, get_factory_for_model, )
+from demo.factories import GroupFactory, LogEntryFactory, UserFactory, get_factory_for_model
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.sites import site
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
@@ -11,7 +10,6 @@ from django.db.models.options import Options
 from django.urls import reverse
 
 from smart_admin.smart_auth.admin import User
-from smart_admin import settings as smart_settings
 
 EXCLUDED_MODELS = ['Config']
 

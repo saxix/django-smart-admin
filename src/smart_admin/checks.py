@@ -1,4 +1,4 @@
-from django.core.checks import Error, Warning, register
+from django.core.checks import Warning, register
 from django.http import HttpRequest
 
 from smart_admin.settings import get_bookmarks

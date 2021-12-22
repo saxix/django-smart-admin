@@ -1,11 +1,3 @@
-import operator
-
-from django.contrib.contenttypes.management import get_contenttypes_and_models
-from django.contrib.contenttypes.management.commands.remove_stale_contenttypes import NoFastDeleteCollector
-from django.contrib.contenttypes.models import ContentType
-from django.db import DEFAULT_DB_ALIAS
-from django.db.transaction import atomic
-
 from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin
 from adminfilters.autocomplete import AutoCompleteFilter
@@ -14,10 +6,14 @@ from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.utils import construct_change_message
 from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import (GroupAdmin as _GroupAdmin,
-                                       UserAdmin as _UserAdmin, )
+from django.contrib.auth.admin import GroupAdmin as _GroupAdmin, UserAdmin as _UserAdmin
 from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.management import get_contenttypes_and_models
+from django.contrib.contenttypes.management.commands.remove_stale_contenttypes import NoFastDeleteCollector
+from django.contrib.contenttypes.models import ContentType
+from django.db import DEFAULT_DB_ALIAS
 from django.db.models import Q
+from django.db.transaction import atomic
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.response import TemplateResponse
@@ -43,7 +39,7 @@ class ContentTypeAdmin(ExtraUrlMixin, admin.ModelAdmin):
         return False
 
     @button(permission='contenttypes.delete_contenttype')
-    def check_stale(self, request):
+    def check_stale(self, request):  # noqa
         context = self.get_common_context(request, title='Stale')
         to_remove = {}
         if request.method == 'POST':

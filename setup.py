@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 try:
     from setuptools import setup
 except ImportError:
@@ -15,8 +14,8 @@ setup(
     long_description=readme,
     long_description_content_type="text/x-rst",
     name='django-smart-admin',
-    version='1.7.0',
-    python_requires='==3.*,>=3.0.0,>=3.6',
+    version='1.8.0',
+    python_requires='==3.*,>=3.8',
     project_urls={"homepage": "https://github.com/saxix/django-smart-admin",
                   "repository": "https://github.com/saxix/django-smart-admin"
                   },

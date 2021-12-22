@@ -1,12 +1,12 @@
 import random
 
 import factory
+import factory.fuzzy
 from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from factory.base import FactoryMetaClass
-import factory.fuzzy
 
 from . import models
 
