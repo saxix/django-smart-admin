@@ -2,7 +2,6 @@ from pathlib import Path
 from uuid import uuid4
 
 import environ
-from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 import smart_admin

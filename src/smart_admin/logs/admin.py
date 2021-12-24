@@ -10,7 +10,6 @@ from django.contrib.admin.models import LogEntry
 from django.utils.translation import gettext as _
 
 from smart_admin.mixins import SmartMixin, TruncateAdminMixin
-from smart_admin.truncate import truncate_model_table
 
 
 @register(LogEntry)

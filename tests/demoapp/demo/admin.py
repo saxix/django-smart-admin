@@ -1,21 +1,15 @@
 from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.filters import (TextFieldFilter, NumberFilter, )
+from adminfilters.filters import NumberFilter, TextFieldFilter
 from django.contrib import admin
-from django.contrib.admin import register, TabularInline
-from django.contrib.admin.models import DELETION, LogEntry
+from django.contrib.admin import TabularInline, register
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.contrib.contenttypes.models import ContentType
-from django.db import OperationalError
-from django.db.transaction import atomic
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.utils.safestring import mark_safe
-from smart_admin.smart_auth.admin import UserAdmin as SmartUserAdmin
 
-import smart_admin.settings as smart_settings
-from smart_admin.mixins import SmartMixin, LinkedObjectsMixin, TruncateAdminMixin
+from smart_admin.mixins import LinkedObjectsMixin, SmartMixin, TruncateAdminMixin
+from smart_admin.smart_auth.admin import UserAdmin as SmartUserAdmin
 
 from . import models
 from .factories import get_factory_for_model
