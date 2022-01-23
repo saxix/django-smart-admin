@@ -5,22 +5,50 @@ from adminfilters.filters import AllValuesComboFilter, PermissionPrefixFilter
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.utils import construct_change_message
+from django.contrib.admin.views.autocomplete import AutocompleteJsonView
 from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import GroupAdmin as _GroupAdmin, UserAdmin as _UserAdmin
+from django.contrib.auth.admin import (GroupAdmin as _GroupAdmin,
+                                       UserAdmin as _UserAdmin,)
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.management import get_contenttypes_and_models
-from django.contrib.contenttypes.management.commands.remove_stale_contenttypes import NoFastDeleteCollector
+from django.contrib.contenttypes.management.commands.remove_stale_contenttypes import \
+    NoFastDeleteCollector
 from django.contrib.contenttypes.models import ContentType
 from django.db import DEFAULT_DB_ALIAS
 from django.db.models import Q
 from django.db.transaction import atomic
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 User = get_user_model()
+
+
+class SmartContentTypeJsonView(AutocompleteJsonView):
+    def get(self, request, *args, **kwargs):
+        if not self.model_admin.get_search_fields(request):
+            raise Http404(
+                '%s must have search_fields for the autocomplete_view.' %
+                type(self.model_admin).__name__
+            )
+        if not self.has_perm(request):
+            return JsonResponse({'error': '403 Forbidden'}, status=403)
+
+        self.term = request.GET.get('term', '')
+        self.paginator_class = self.model_admin.paginator
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+
+        return JsonResponse({
+            'results': [
+                {'id': str(obj.pk),
+                 'text': f'{obj.name.title()} ({obj.app_label})'}
+                for obj in context['object_list']
+            ],
+            'pagination': {'more': context['page_obj'].has_next()},
+        })
 
 
 # @smart_register(ContentType)
@@ -37,6 +65,9 @@ class ContentTypeAdmin(ExtraUrlMixin, admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def autocomplete_view(self, request):
+        return SmartContentTypeJsonView.as_view(model_admin=self)(request)
 
     @button(permission='contenttypes.delete_contenttype')
     def check_stale(self, request):  # noqa
@@ -83,7 +114,6 @@ class ContentTypeAdmin(ExtraUrlMixin, admin.ModelAdmin):
                                     context)
 
 
-# @smart_register(Permission)
 class PermissionAdmin(ExtraUrlMixin, admin.ModelAdmin):
     list_display = ('name', 'content_type', 'codename')
     search_fields = ('name',)

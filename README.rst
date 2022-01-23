@@ -23,7 +23,7 @@ Bonus
 - display all model fields in `changelist` (DisplayAllMixin)
 - automatically creates filter for each indexed field (SmartAutoFilterMixin)
 - improved fieldset allows the use of `__others__` to include any field not included in others fieldsets (FieldsetMixin)
-
+- ability to customise Autocomplete labels
 
 Demo is available at https://django-smart-admin.herokuapp.com/.
 (Any user/password combination is accepted)

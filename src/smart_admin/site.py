@@ -16,6 +16,8 @@ from django.views.decorators.vary import vary_on_cookie
 
 from . import get_full_version, settings as smart_settings
 from .settings import get_bookmarks, get_setting_lazy
+from .autocomplete import SmartAutocompleteJsonView
+from .settings import get_setting_lazy, get_bookmarks
 from .templatetags.smart import as_bool
 from .utils import SmartList
 
@@ -90,7 +92,7 @@ class SmartAdminSite(AdminSite):
         return render(request, 'admin/sysinfo/sysinfo.html', context)
 
     def autocomplete_view(self, request):
-        return super().autocomplete_view(request)
+        return SmartAutocompleteJsonView.as_view(admin_site=self)(request)
 
     def app_index(self, request, app_label, extra_context=None):
         groups, __ = self._get_menu(request)
