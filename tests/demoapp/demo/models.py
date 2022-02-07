@@ -9,6 +9,11 @@ class Customer(models.Model):
     registration_date = models.DateField(auto_created=True)
     active = models.BooleanField()
 
+    flags = models.JSONField(default=dict)
+
+    def __str__(self):
+        return self.name
+
 
 class ProductFamily(models.Model):
     name = models.CharField(max_length=255)

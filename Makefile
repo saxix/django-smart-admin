@@ -4,8 +4,8 @@ develop:
 	.venv/bin/pip install -e .[dev,full]
 
 demo:
-	#cd tests && ./manage.py migrate && ./manage.py runserver
 	cd tests/demoapp && ./manage.py testserver ../fixtures.json
+
 clean:
 	# cleaning
 	@rm -fr dist '~build' .pytest_cache .coverage src/smart_admin.egg-info build

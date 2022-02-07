@@ -74,6 +74,28 @@ class CustomerFactory(ModelFactory):
     class Meta:
         model = models.Customer
 
+    @factory.lazy_attribute
+    def flags(self):
+        # Convert to plain ascii text
+        f = lambda: random.choice([
+            ("int", random.randint(1, 100)),
+            ("chr", chr(random.randrange(65, 90))),
+            ("int", '__'),
+            ("chr", ""),
+            ("chr", None),
+            ("int", None),
+            ("chr", '__'),
+        ])
+        value = f()
+        if value[1] == '__':
+            base = {}
+        else:
+            base = dict([value])
+        value = f()
+        if value[1] != '__':
+            base.update(dict([value]))
+        return base
+
 
 class ProductFamilyFactory(ModelFactory):
     name = factory.LazyFunction(lambda: 'Family %s' % random.choice([0, 1, 3]))

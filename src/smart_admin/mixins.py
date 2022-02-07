@@ -1,3 +1,5 @@
+from django import forms
+from django.conf import settings
 from itertools import chain
 
 from admin_extra_urls.decorators import button
@@ -15,8 +17,10 @@ from django.db.transaction import atomic
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 
+from adminfilters.mixin import AdminFiltersMixin
 from smart_admin.truncate import truncate_model_table
 from smart_admin.utils import get_related
+from .changelist import SmartChangeListMixin
 
 
 class SmartFilterMixin:
@@ -109,7 +113,7 @@ class ReadOnlyMixin:
         return self.readonly_fields
 
 
-class SmartMixin(ReadOnlyMixin, FieldsetMixin, DisplayAllMixin):
+class SmartMixin(ReadOnlyMixin, FieldsetMixin, DisplayAllMixin, SmartChangeListMixin, AdminFiltersMixin):
     readonly_fields = ()
 
 

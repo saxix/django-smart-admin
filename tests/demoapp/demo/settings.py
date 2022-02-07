@@ -37,6 +37,7 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django_sysinfo',
                   'adminactions',
                   'adminfilters',
+                  'adminfilters.depot',
                   'admin_extra_urls',
 
                   'smart_admin.apps.SmartLogsConfig',

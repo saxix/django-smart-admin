@@ -18,7 +18,7 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraUrlMixin, admin.ModelAd
     readonly_fields = ('__all__',)
     search_fields = ('object_repr',)
     list_filter = (('user', AutoCompleteFilter),
-                   ('content_type', RelatedFieldComboFilter),
+                   ('content_type', AutoCompleteFilter),
                    'action_time',
                    'action_flag')
     date_hierarchy = 'action_time'

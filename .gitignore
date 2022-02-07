@@ -1,4 +1,5 @@
 .*
+~*
 *.egg-info
 dist
 poetry.lock
@@ -12,3 +13,4 @@ build
 !tests/.coveragerc
 smart_admin.db
 __pycache__
+/manage.py

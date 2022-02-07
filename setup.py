@@ -32,10 +32,10 @@ setup(
                                   "templates/*/*/*/*.html",
                                   ]},
     extras_require={
-        'full': ["django-adminfilters>=1.7.1",
-                 "django-admin-extra-urls>=3.5.1",
+        'full': ["django-adminfilters>=1.9",
+                 "django-admin-extra-urls>=4",
                  "django-adminactions>=1.13",
-                 "django-sysinfo>=2.5.1",
+                 "django-sysinfo>=2.6.2",
                  ],
         'dev': ['django-webtest',
                 'django-environ',

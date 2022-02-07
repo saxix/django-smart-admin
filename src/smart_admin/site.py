@@ -15,7 +15,6 @@ from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.vary import vary_on_cookie
 
 from . import get_full_version, settings as smart_settings
-from .settings import get_bookmarks, get_setting_lazy
 from .autocomplete import SmartAutocompleteJsonView
 from .settings import get_setting_lazy, get_bookmarks
 from .templatetags.smart import as_bool
