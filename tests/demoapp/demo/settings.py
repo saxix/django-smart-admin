@@ -5,6 +5,7 @@ import environ
 from django.utils.safestring import mark_safe
 
 import smart_admin
+from adminactions import consts
 
 BASE_DIR = Path(__file__).resolve(strict=True).parents[3]
 
@@ -42,8 +43,8 @@ INSTALLED_APPS = ['django.contrib.auth',
 
                   'smart_admin.apps.SmartLogsConfig',
                   'smart_admin.apps.SmartTemplateConfig',
-                  # 'smart_admin.apps.SmartAuthConfig',
-                  'smart_admin',
+                  'smart_admin.apps.SmartAuthConfig',
+                  'smart_admin.apps.SmartConfig',
 
                   'demo.apps.Config']
 
@@ -123,3 +124,4 @@ CONSTANCE_CONFIG_FIELDSETS = {
     'Theme Options': ('THEME',),
 }
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+AA_PERMISSION_HANDLER = consts.AA_PERMISSION_CREATE_USE_COMMAND

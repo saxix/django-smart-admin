@@ -7,7 +7,6 @@ from admin_extra_urls.mixins import _confirm_action
 from adminfilters.filters import AllValuesComboFilter, ChoicesFieldComboFilter, RelatedFieldComboFilter
 from django.contrib.admin import FieldListFilter
 from django.contrib.admin.checks import BaseModelAdminChecks, must_be
-from django.contrib.admin.models import DELETION, LogEntry
 from django.contrib.admin.utils import flatten
 from django.contrib.contenttypes.models import ContentType
 from django.db import OperationalError, models
@@ -147,6 +146,7 @@ class LinkedObjectsMixin:
 class TruncateAdminMixin:
     def _truncate(self, request):
         if request.method == "POST":
+            from django.contrib.admin.models import DELETION, LogEntry
             with atomic():
                 LogEntry.objects.log_action(
                     user_id=request.user.pk,

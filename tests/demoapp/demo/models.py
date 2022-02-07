@@ -1,6 +1,10 @@
 from django.contrib.auth.models import User
 from django.db import models
-
+import django
+if django.VERSION[0]== 2:
+    from django.contrib.postgres.fields import JSONField
+else:
+    from django.db.models import JSONField
 
 class Customer(models.Model):
     name = models.CharField(max_length=255)
@@ -9,7 +13,7 @@ class Customer(models.Model):
     registration_date = models.DateField(auto_created=True)
     active = models.BooleanField()
 
-    flags = models.JSONField(default=dict)
+    flags = JSONField(default=dict)
 
     def __str__(self):
         return self.name

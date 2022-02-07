@@ -1,6 +1,6 @@
 import django.contrib.admin
 from django.contrib.admin.apps import AppConfig, SimpleAdminConfig
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, get_permission_codename
 from django.utils.translation import gettext_lazy as _
 
 

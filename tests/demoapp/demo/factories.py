@@ -1,6 +1,5 @@
 import random
 
-import factory
 import factory.fuzzy
 from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import Group, Permission, User
@@ -51,6 +50,7 @@ class PermissionFactory(ModelFactory):
 
 class LogEntryFactory(ModelFactory):
     user = factory.SubFactory(UserFactory)
+    content_type = factory.Iterator(ContentType.objects.all())
     action_flag = 1
 
     class Meta:

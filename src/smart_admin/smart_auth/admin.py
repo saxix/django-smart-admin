@@ -129,7 +129,7 @@ class PermissionAdmin(ExtraUrlMixin, AdminFiltersMixin, admin.ModelAdmin):
 
 
 # @smart_register(User)
-class UserAdmin(ExtraUrlMixin, _UserAdmin):
+class UserAdmin(ExtraUrlMixin, AdminFiltersMixin, _UserAdmin):
     list_filter = ('is_staff', 'is_superuser', 'is_active',
                    ('groups', AutoCompleteFilter),
                    )
@@ -142,7 +142,7 @@ class UserAdmin(ExtraUrlMixin, _UserAdmin):
         context['permissions'] = sorted(context['original'].get_all_permissions())
         return render(request, 'admin/auth/user/permissions.html', context)
 
-    @button(urls=['redir_to_perm/(?P<perm>.*)/'])
+    @button(urls=['redir_to_perm/(?P<perm>.*)/$'])
     def redir_to_perm(self, request, perm):
         app_label, codename = perm.split('.')
         perm = Permission.objects.get(codename=codename, )

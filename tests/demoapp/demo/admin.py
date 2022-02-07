@@ -2,8 +2,8 @@ from admin_extra_urls.decorators import button
 from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.depot.selector import FilterDepotManager
-from adminfilters.filters import NumberFilter, TextFieldFilter, MaxMinFilter, BooleanRadioFilter, \
-    MultiValueTextFieldFilter
+from adminfilters.filters import NumberFilter, ValueFilter, MaxMinFilter, BooleanRadioFilter, \
+    MultiValueFilter
 from django.contrib import admin
 from django.contrib.admin import TabularInline, register, ModelAdmin
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from adminfilters.json import JsonFieldFilter
+from adminfilters.querystring import QueryStringFilter
 from smart_admin.mixins import LinkedObjectsMixin, SmartMixin, TruncateAdminMixin
 from smart_admin.smart_auth.admin import UserAdmin as SmartUserAdmin
 
@@ -27,16 +28,17 @@ class FactoryMixin(ModelAdmin):
 
 
 @register(models.Customer)
-class CustomerAdmin(FactoryMixin, TruncateAdminMixin, LinkedObjectsMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
     list_display = ("name", "useremail", "email", "flags")
     search_fields = ("name",)
     list_filter = (
         FilterDepotManager,
+        QueryStringFilter,
         ('user', AutoCompleteFilter),
         ('flags', JsonFieldFilter),
-        ('user__email', MultiValueTextFieldFilter),
+        ('user__email', MultiValueFilter),
         # TextFieldFilter.factory('user__email'),
-        ('email', TextFieldFilter)
+        ('email', ValueFilter)
     )
     readonly_fields = ('user',)
     fieldsets = [
