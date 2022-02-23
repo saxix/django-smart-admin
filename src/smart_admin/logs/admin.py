@@ -2,7 +2,6 @@ import datetime
 from admin_extra_buttons.api import ExtraButtonsMixin, button, confirm_action
 
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.filters import RelatedFieldComboFilter
 from django.contrib import admin
 from django.contrib.admin import register
 from django.contrib.admin.models import LogEntry
@@ -21,9 +20,11 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraButtonsMixin, admin.Mod
                    'action_time',
                    'action_flag')
     date_hierarchy = 'action_time'
+    
+    def has_add_permission(self, request):
+        return False
 
-    # @button(permission="admin.archive_logentry")
-    @button()
+    @button(permission="admin.archive_logentry", html_attrs={"class": "aeb-danger"})
     def archive(self, request):
         offset = datetime.date.today() - datetime.timedelta(days=365)
         offset_label = offset.strftime("%a, %b %d %Y")

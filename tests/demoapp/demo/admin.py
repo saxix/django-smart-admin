@@ -107,7 +107,7 @@ class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin
 class InvoiceItemAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('product', 'qty')
     list_filter = (('invoice', AutoCompleteFilter),)
-    search_fields = ('qty',)
+    search_fields = ('qty', "product__name")
     autocomplete_fields = ('product', 'invoice')
 
 
