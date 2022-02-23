@@ -1,7 +1,6 @@
-from admin_extra_urls.decorators import button
-from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
+from admin_extra_buttons.api import button, ExtraButtonsMixin, confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.depot.selector import FilterDepotManager
+from adminfilters.depot.widget import DepotManager
 from adminfilters.filters import NumberFilter, ValueFilter, MaxMinFilter, BooleanRadioFilter, \
     MultiValueFilter
 from django.contrib import admin
@@ -28,11 +27,11 @@ class FactoryMixin(ModelAdmin):
 
 
 @register(models.Customer)
-class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("name", "useremail", "email", "flags")
     search_fields = ("name",)
     list_filter = (
-        FilterDepotManager,
+        DepotManager,
         QueryStringFilter,
         ('user', AutoCompleteFilter),
         ('flags', JsonFieldFilter),
@@ -72,19 +71,19 @@ class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraUrlMixin,
         def _action(request):
             pass
 
-        return _confirm_action(self, request, _action, "Confirm action",
+        return confirm_action(self, request, _action, "Confirm action",
                                "Successfully executed", )
 
 
 @register(models.Product)
-class ProductAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class ProductAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('name', 'price', 'family')
     list_filter = ('family',)
     search_fields = ('name',)
 
 
 @register(models.ProductFamily)
-class ProductFamilyAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class ProductFamilyAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('name',)
 
 
@@ -94,7 +93,7 @@ class InvoiceItemInline(TabularInline):
 
 
 @register(models.Invoice)
-class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('customer', 'number', 'date')
     list_filter = (('number', NumberFilter),
                    ('customer', AutoCompleteFilter),
@@ -105,7 +104,7 @@ class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
 
 
 @register(models.InvoiceItem)
-class InvoiceItemAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class InvoiceItemAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('product', 'qty')
     list_filter = (('invoice', AutoCompleteFilter),)
     search_fields = ('qty',)

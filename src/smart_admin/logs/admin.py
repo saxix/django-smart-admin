@@ -1,7 +1,6 @@
 import datetime
+from admin_extra_buttons.api import ExtraButtonsMixin, button, confirm_action
 
-from admin_extra_urls.decorators import button
-from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.filters import RelatedFieldComboFilter
 from django.contrib import admin
@@ -13,7 +12,7 @@ from smart_admin.mixins import SmartMixin, TruncateAdminMixin
 
 
 @register(LogEntry)
-class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraUrlMixin, admin.ModelAdmin):
+class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('action_time', 'user', 'action_flag', 'content_type', 'object_repr')
     readonly_fields = ('__all__',)
     search_fields = ('object_repr',)
@@ -38,9 +37,9 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraUrlMixin, admin.ModelAd
                                       offset=offset_label,
                                       title="Removes old data")
 
-        return _confirm_action(self, request, _doit, "", "",
-                               extra_context=ctx,
-                               template="admin/logentry/archive.html")
+        return confirm_action(self, request, _doit, "", "",
+                              extra_context=ctx,
+                              template="admin/logentry/archive.html")
 
     @button(label="Truncate", html_attrs={"class": "btn-danger"})
     def truncate(self, request):

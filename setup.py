@@ -32,8 +32,8 @@ setup(
                                   "templates/*/*/*/*.html",
                                   ]},
     extras_require={
-        'full': ["django-adminfilters>=1.9",
-                 "django-admin-extra-urls>=4",
+        'full': ["django-adminfilters>=2",
+                 "django-admin-extra-buttons",
                  "django-adminactions>=1.13",
                  "django-sysinfo>=2.6.2",
                  ],
@@ -52,9 +52,9 @@ setup(
                 'pytest',
                 'pyquery',
                 'pytest-echo',
-                'pytest-cov==2.*,>=2.11.1',
-                'pytest-django==4.*,>=4.1.0',
-                'pytest-pythonpath==0.*,>=0.7.3',
+                'pytest-cov',
+                'pytest-django',
+                'pytest-pythonpath',
                 ]
     },
 )

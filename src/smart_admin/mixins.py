@@ -1,9 +1,7 @@
 from django import forms
 from django.conf import settings
 from itertools import chain
-
-from admin_extra_urls.decorators import button
-from admin_extra_urls.mixins import _confirm_action
+from admin_extra_buttons.api import ExtraButtonsMixin, button, confirm_action
 from adminfilters.filters import AllValuesComboFilter, ChoicesFieldComboFilter, RelatedFieldComboFilter
 from django.contrib.admin import FieldListFilter
 from django.contrib.admin.checks import BaseModelAdminChecks, must_be
@@ -162,7 +160,7 @@ class TruncateAdminMixin:
                 except OperationalError:
                     self.get_queryset(request).delete()
         else:
-            return _confirm_action(
+            return confirm_action(
                 self,
                 request,
                 self.truncate,

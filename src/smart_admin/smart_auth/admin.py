@@ -1,5 +1,4 @@
-from admin_extra_urls.decorators import button
-from admin_extra_urls.mixins import ExtraUrlMixin
+from admin_extra_buttons.api import ExtraButtonsMixin, button, confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.filters import AllValuesComboFilter, PermissionPrefixFilter
 from django.apps import apps
@@ -35,7 +34,7 @@ class SmartContentTypeJsonView(SmartAutocompleteJsonView):
 
 
 # @smart_register(ContentType)
-class ContentTypeAdmin(ExtraUrlMixin, admin.ModelAdmin):
+class ContentTypeAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('app_label', 'model')
     search_fields = ('model',)
     list_filter = (('app_label', AllValuesComboFilter),)
@@ -97,7 +96,7 @@ class ContentTypeAdmin(ExtraUrlMixin, admin.ModelAdmin):
                                     context)
 
 
-class PermissionAdmin(ExtraUrlMixin, AdminFiltersMixin, admin.ModelAdmin):
+class PermissionAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin):
     list_display = ('name', 'content_type', 'codename')
     search_fields = ('name',)
     list_filter = (('content_type', AutoCompleteFilter),
@@ -129,7 +128,7 @@ class PermissionAdmin(ExtraUrlMixin, AdminFiltersMixin, admin.ModelAdmin):
 
 
 # @smart_register(User)
-class UserAdmin(ExtraUrlMixin, AdminFiltersMixin, _UserAdmin):
+class UserAdmin(ExtraButtonsMixin, AdminFiltersMixin, _UserAdmin):
     list_filter = ('is_staff', 'is_superuser', 'is_active',
                    ('groups', AutoCompleteFilter),
                    )
@@ -177,7 +176,7 @@ class UserAdmin(ExtraUrlMixin, AdminFiltersMixin, _UserAdmin):
 
 
 # @smart_register(Group)
-class GroupAdmin(ExtraUrlMixin, _GroupAdmin):
+class GroupAdmin(ExtraButtonsMixin, _GroupAdmin):
     list_display = ('name',)
     search_fields = ('name',)
 
