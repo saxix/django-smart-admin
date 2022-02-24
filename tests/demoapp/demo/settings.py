@@ -2,10 +2,10 @@ from pathlib import Path
 from uuid import uuid4
 
 import environ
+from adminactions import consts
 from django.utils.safestring import mark_safe
 
 import smart_admin
-from adminactions import consts
 
 BASE_DIR = Path(__file__).resolve(strict=True).parents[3]
 

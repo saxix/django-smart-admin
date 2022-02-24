@@ -21,8 +21,8 @@ docs:
 	sphinx-build -n docs/ ~build/docs/
 
 lint:
-	@flake8 src/
-	@isort src/
+	@flake8 src/ tests/
+	@isort src/ tests/
 
 
 .PHONY: build docs

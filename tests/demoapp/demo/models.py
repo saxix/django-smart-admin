@@ -1,10 +1,12 @@
+import django
 from django.contrib.auth.models import User
 from django.db import models
-import django
-if django.VERSION[0]== 2:
+
+if django.VERSION[0] == 2:
     from django.contrib.postgres.fields import JSONField
 else:
     from django.db.models import JSONField
+
 
 class Customer(models.Model):
     name = models.CharField(max_length=255)
