@@ -6,13 +6,13 @@ except ImportError:
 import os.path
 
 here = os.path.abspath(os.path.dirname(__file__))
-readme_path = os.path.join(here, 'README.rst')
+readme_path = os.path.join(here, 'README.md')
 with open(readme_path, 'rb') as stream:
     readme = stream.read().decode('utf8')
 
 setup(
     long_description=readme,
-    long_description_content_type="text/x-rst",
+    long_description_content_type='text/markdown',
     name='django-smart-admin',
     version='1.8.0',
     python_requires='==3.*,>=3.8',
@@ -34,7 +34,7 @@ setup(
     extras_require={
         'full': ["django-adminfilters>=2",
                  "django-admin-extra-buttons",
-                 "django-adminactions>=1.13",
+                 "django-adminactions>=1.14",
                  "django-sysinfo>=2.6.2",
                  ],
         'dev': ['django-webtest',

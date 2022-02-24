@@ -3,7 +3,6 @@ import logging
 from django.contrib.admin.options import IncorrectLookupParameters
 from django.contrib.admin.views.main import ChangeList
 
-
 logger = logging.getLogger(__name__)
 
 

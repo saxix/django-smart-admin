@@ -1,8 +1,8 @@
-from django import forms
-from django.conf import settings
 from itertools import chain
+
 from admin_extra_buttons.api import ExtraButtonsMixin, button, confirm_action
 from adminfilters.filters import AllValuesComboFilter, ChoicesFieldComboFilter, RelatedFieldComboFilter
+from adminfilters.mixin import AdminFiltersMixin
 from django.contrib.admin import FieldListFilter
 from django.contrib.admin.checks import BaseModelAdminChecks, must_be
 from django.contrib.admin.utils import flatten
@@ -14,9 +14,9 @@ from django.db.transaction import atomic
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 
-from adminfilters.mixin import AdminFiltersMixin
 from smart_admin.truncate import truncate_model_table
 from smart_admin.utils import get_related
+
 from .changelist import SmartChangeListMixin
 
 
@@ -110,7 +110,8 @@ class ReadOnlyMixin:
         return self.readonly_fields
 
 
-class SmartMixin(ReadOnlyMixin, FieldsetMixin, DisplayAllMixin, SmartChangeListMixin, AdminFiltersMixin):
+class SmartMixin(ReadOnlyMixin, ExtraButtonsMixin, FieldsetMixin, DisplayAllMixin, SmartChangeListMixin,
+                 AdminFiltersMixin):
     readonly_fields = ()
 
 

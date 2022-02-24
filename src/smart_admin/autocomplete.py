@@ -1,7 +1,7 @@
 from django.apps import apps
+from django.contrib.admin.views.autocomplete import AutocompleteJsonView
 from django.core.exceptions import FieldDoesNotExist, PermissionDenied
 from django.http import Http404, JsonResponse
-from django.contrib.admin.views.autocomplete import AutocompleteJsonView
 
 
 class SmartAutocompleteJsonView(AutocompleteJsonView):
