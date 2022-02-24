@@ -1,30 +1,30 @@
 import datetime
 
-from admin_extra_urls.decorators import button
-from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
+from admin_extra_buttons.api import ExtraButtonsMixin, button, confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.filters import RelatedFieldComboFilter
 from django.contrib import admin
 from django.contrib.admin import register
 from django.contrib.admin.models import LogEntry
 from django.utils.translation import gettext as _
 
 from smart_admin.mixins import SmartMixin, TruncateAdminMixin
-from smart_admin.truncate import truncate_model_table
 
 
 @register(LogEntry)
-class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraUrlMixin, admin.ModelAdmin):
+class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('action_time', 'user', 'action_flag', 'content_type', 'object_repr')
     readonly_fields = ('__all__',)
     search_fields = ('object_repr',)
     list_filter = (('user', AutoCompleteFilter),
-                   ('content_type', RelatedFieldComboFilter),
+                   ('content_type', AutoCompleteFilter),
                    'action_time',
                    'action_flag')
     date_hierarchy = 'action_time'
 
-    @button(permission="admin.archive_logentry")
+    def has_add_permission(self, request):
+        return False
+
+    @button(permission="admin.archive_logentry", html_attrs={"class": "aeb-danger"})
     def archive(self, request):
         offset = datetime.date.today() - datetime.timedelta(days=365)
         offset_label = offset.strftime("%a, %b %d %Y")
@@ -38,11 +38,11 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraUrlMixin, admin.ModelAd
                                       offset=offset_label,
                                       title="Removes old data")
 
-        return _confirm_action(self, request, _doit, "", "",
-                               extra_context=ctx,
-                               template="admin/logentry/archive.html")
+        return confirm_action(self, request, _doit, "", "",
+                              extra_context=ctx,
+                              template="admin/logentry/archive.html")
 
-    @button(label="Truncate", css_class="btn-danger", permission="admin.truncate_logentry")
+    @button(label="Truncate", html_attrs={"class": "btn-danger"})
     def truncate(self, request):
         return super()._truncate(request)
 

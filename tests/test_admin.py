@@ -1,8 +1,7 @@
 import datetime
 
 import pytest
-from demo.factories import (GroupFactory, LogEntryFactory,
-                            UserFactory, get_factory_for_model, )
+from demo.factories import GroupFactory, LogEntryFactory, UserFactory, get_factory_for_model
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.sites import site
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
@@ -11,9 +10,8 @@ from django.db.models.options import Options
 from django.urls import reverse
 
 from smart_admin.smart_auth.admin import User
-from smart_admin import settings as smart_settings
 
-EXCLUDED_MODELS = ['Config']
+EXCLUDED_MODELS = ['Config', 'StoredFilter']
 
 
 def pytest_generate_tests(metafunc):
@@ -114,18 +112,6 @@ def test_log(app):
     app.set_cookie('smart', "1")
     res = app.get(url, user='sax')
     assert res.pyquery('a:contains("Standard Index")')
-
-
-@pytest.mark.django_db
-def test_truncate_log(django_app, settings, monkeypatch):
-    url = reverse(admin_urlname(LogEntry._meta, 'changelist'))
-    LogEntryFactory()
-    user = UserFactory(is_superuser=True, is_active=True, is_staff=True)
-    res = django_app.get(url, user=user)
-    res = res.click("Truncate")
-    res = res.form.submit()
-    assert res.status_code == 302
-    assert not LogEntry.objects.all().exists()
 
 
 @pytest.mark.django_db

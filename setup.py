@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 try:
     from setuptools import setup
 except ImportError:
@@ -7,16 +6,16 @@ except ImportError:
 import os.path
 
 here = os.path.abspath(os.path.dirname(__file__))
-readme_path = os.path.join(here, 'README.rst')
+readme_path = os.path.join(here, 'README.md')
 with open(readme_path, 'rb') as stream:
     readme = stream.read().decode('utf8')
 
 setup(
     long_description=readme,
-    long_description_content_type="text/x-rst",
+    long_description_content_type='text/markdown',
     name='django-smart-admin',
-    version='1.7.0',
-    python_requires='==3.*,>=3.0.0,>=3.6',
+    version='1.9.0',
+    python_requires='==3.*,>=3.8',
     project_urls={"homepage": "https://github.com/saxix/django-smart-admin",
                   "repository": "https://github.com/saxix/django-smart-admin"
                   },
@@ -33,10 +32,10 @@ setup(
                                   "templates/*/*/*/*.html",
                                   ]},
     extras_require={
-        'full': ["django-adminfilters>=1.7.1",
-                 "django-admin-extra-urls>=3.5.1",
-                 "django-adminactions>=1.13",
-                 "django-sysinfo>=2.5.1",
+        'full': ["django-adminfilters>=2",
+                 "django-admin-extra-buttons",
+                 "django-adminactions>=1.14",
+                 "django-sysinfo>=2.6.2",
                  ],
         'dev': ['django-webtest',
                 'django-environ',
@@ -46,15 +45,16 @@ setup(
                 'django-picklefield',
                 'bump2version',
                 'factory-boy',
+                'psycopg2',
                 'tox',
                 'flake8',
                 'isort',
                 'pytest',
                 'pyquery',
                 'pytest-echo',
-                'pytest-cov==2.*,>=2.11.1',
-                'pytest-django==4.*,>=4.1.0',
-                'pytest-pythonpath==0.*,>=0.7.3',
+                'pytest-cov',
+                'pytest-django',
+                'pytest-pythonpath',
                 ]
     },
 )

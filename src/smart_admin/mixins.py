@@ -1,24 +1,23 @@
-from django.contrib.admin.models import LogEntry, DELETION
-from django.contrib.contenttypes.models import ContentType
-from django.db.transaction import atomic
-from django.template.response import TemplateResponse
-from django.utils.safestring import mark_safe
 from itertools import chain
 
-from admin_extra_urls.decorators import button
-from admin_extra_urls.mixins import _confirm_action
-from adminfilters.filters import (AllValuesComboFilter, ChoicesFieldComboFilter,
-                                  RelatedFieldComboFilter, )
+from admin_extra_buttons.api import ExtraButtonsMixin, button, confirm_action
+from adminfilters.filters import AllValuesComboFilter, ChoicesFieldComboFilter, RelatedFieldComboFilter
+from adminfilters.mixin import AdminFiltersMixin
 from django.contrib.admin import FieldListFilter
 from django.contrib.admin.checks import BaseModelAdminChecks, must_be
 from django.contrib.admin.utils import flatten
-from django.db import models, OperationalError
+from django.contrib.contenttypes.models import ContentType
+from django.db import OperationalError, models
 from django.db.models import AutoField, ForeignKey, ManyToManyField, TextField
 from django.db.models.fields.related import RelatedField
+from django.db.transaction import atomic
+from django.template.response import TemplateResponse
+from django.utils.safestring import mark_safe
 
 from smart_admin.truncate import truncate_model_table
 from smart_admin.utils import get_related
-from smart_admin import settings as smart_settings
+
+from .changelist import SmartChangeListMixin
 
 
 class SmartFilterMixin:
@@ -111,7 +110,8 @@ class ReadOnlyMixin:
         return self.readonly_fields
 
 
-class SmartMixin(ReadOnlyMixin, FieldsetMixin, DisplayAllMixin):
+class SmartMixin(ReadOnlyMixin, ExtraButtonsMixin, FieldsetMixin, DisplayAllMixin, SmartChangeListMixin,
+                 AdminFiltersMixin):
     readonly_fields = ()
 
 
@@ -129,7 +129,7 @@ class LinkedObjectsMixin:
         context = self.get_common_context(request, pk, title="linked objects")
         reverse = []
         for f in self.model._meta.get_fields():
-            if f.auto_created and not f.concrete and not f.name in ignored:
+            if f.auto_created and not f.concrete and f.name not in ignored:
                 reverse.append(f)
         # context["reverse"] = [get_related(user, f ) for f in reverse]
         context["reverse"] = sorted([get_related(context['original'], f) for f in reverse],
@@ -145,6 +145,7 @@ class LinkedObjectsMixin:
 class TruncateAdminMixin:
     def _truncate(self, request):
         if request.method == "POST":
+            from django.contrib.admin.models import DELETION, LogEntry
             with atomic():
                 LogEntry.objects.log_action(
                     user_id=request.user.pk,
@@ -154,17 +155,13 @@ class TruncateAdminMixin:
                     action_flag=DELETION,
                     change_message="truncate table",
                 )
-                from django.db import connections
 
                 try:
                     truncate_model_table(self.model)
-                    # conn = connections[self.model.objects.db]
-                    # cursor = conn.cursor()
-                    # cursor.execute('TRUNCATE TABLE "{0}" RESTART IDENTITY CASCADE '.format(self.model._meta.db_table))
                 except OperationalError:
                     self.get_queryset(request).delete()
         else:
-            return _confirm_action(
+            return confirm_action(
                 self,
                 request,
                 self.truncate,

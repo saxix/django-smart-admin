@@ -1,10 +1,5 @@
-import inspect
-
 import time
-from collections import OrderedDict, namedtuple
-
-from django.utils.encoding import smart_str
-from django.utils.functional import cached_property
+from collections import OrderedDict
 from functools import update_wrapper
 
 from django.conf import settings
@@ -20,7 +15,8 @@ from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.vary import vary_on_cookie
 
 from . import get_full_version, settings as smart_settings
-from .settings import get_setting_lazy, get_bookmarks
+from .autocomplete import SmartAutocompleteJsonView
+from .settings import get_bookmarks, get_setting_lazy
 from .templatetags.smart import as_bool
 from .utils import SmartList
 
@@ -74,7 +70,7 @@ class SmartAdminSite(AdminSite):
     def is_smart_enabled(self, request):
         return as_bool(request.COOKIES.get('smart', "0"))
 
-    @never_cache
+    @method_decorator(never_cache)
     def index(self, request, extra_context=None):
         if self.is_smart_enabled(request):
             return self.smart_index(request)
@@ -95,7 +91,7 @@ class SmartAdminSite(AdminSite):
         return render(request, 'admin/sysinfo/sysinfo.html', context)
 
     def autocomplete_view(self, request):
-        return super().autocomplete_view(request)
+        return SmartAutocompleteJsonView.as_view(admin_site=self)(request)
 
     def app_index(self, request, app_label, extra_context=None):
         groups, __ = self._get_menu(request)
@@ -202,7 +198,7 @@ class SmartAdminSite(AdminSite):
         groups, __ = self._get_menu(request)
         return groups[group]
 
-    @never_cache
+    @method_decorator(never_cache)
     def smart_section(self, request, extra_context=None, group=None):
         groups, __ = self._get_menu(request)
         section = groups[group]
@@ -214,7 +210,7 @@ class SmartAdminSite(AdminSite):
         }
         return TemplateResponse(request, 'admin/group_index.html', context)
 
-    @never_cache
+    @method_decorator(never_cache)
     def smart_index(self, request, extra_context=None):
         context = {
             **self.each_context(request),

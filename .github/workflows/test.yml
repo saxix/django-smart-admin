@@ -3,28 +3,48 @@ name: Test
 on:
   push:
     branches:
-      #      - '*'         # matches every branch that doesn't contain a '/'
-      #      - '*/*'       # matches every branch containing a single '/'
-      - '**'        # matches every branch
-      - '!master'   # excludes master
-      - '!tags/*'   # excludes master
+      - master
+      - develop
+  pull_request:
 
 jobs:
-  test:
-    if: github.event_name == 'push'
+  lint:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip tox
+      - name: Lint with flake8
+        run: |
+          tox -e lint
+
+  test:
+    #        if: ${{github.event}} && ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: smart_admin
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ 3.8, 3.9 ]
-        django-version: [ 2.2, 3.1, 3.2 ]
+        python-version: [ "3.9", "3.10" ]
+        django-version: [ "2.2", "3.2", "4.0" ]
     env:
-      DJANGO_VERSION: ${{ matrix.django-version }}
-      PYTHON_VERSION: ${{ matrix.python-version }}
-
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/smart_admin
+      PY_VER: ${{ matrix.python-version}}
+      DJ_VER: ${{ matrix.django-version}}
     steps:
       - uses: actions/checkout@v2
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -34,32 +54,8 @@ jobs:
         run: python -m pip install --upgrade pip tox
 
       - name: Test with tox
-        run: tox -e py${PYTHON_VERSION//.}-d${DJANGO_VERSION//.}
+        run: tox -e d${DJ_VER//.}-py${PY_VER//.}
 
-
-  pull_request:
-    name: Create Pull Request
-    if: startsWith(github.ref, 'refs/heads/release/')
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Set tag version
-        run: |
-          echo TAG_VERSION=${GITHUB_REF##*\/} >> $GITHUB_ENV
-          echo BRANCH_NAME=${GITHUB_REF#*/*/} >> $GITHUB_ENV
-
-      - uses: actions/checkout@v2
-
-      - name: Create Pull Request
-        uses: repo-sync/pull-request@v2
+      - uses: codecov/codecov-action@v1
         with:
-          destination_branch: "master"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: "Release ${{ env.TAG_VERSION }}"
-          pr_label: "auto-pr"
-          pr_draft: false
-
-      - name: Check outputs
-        run: |
-          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+          verbose: true # optional (default = false)

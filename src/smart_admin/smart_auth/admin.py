@@ -1,34 +1,38 @@
-import operator
-
-from django.contrib.contenttypes.management import get_contenttypes_and_models
-from django.contrib.contenttypes.management.commands.remove_stale_contenttypes import NoFastDeleteCollector
-from django.contrib.contenttypes.models import ContentType
-from django.db import DEFAULT_DB_ALIAS
-from django.db.transaction import atomic
-
-from admin_extra_urls.decorators import button
-from admin_extra_urls.mixins import ExtraUrlMixin
+from admin_extra_buttons.api import ExtraButtonsMixin, button
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.filters import AllValuesComboFilter, PermissionPrefixFilter
+from adminfilters.mixin import AdminFiltersMixin
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.utils import construct_change_message
 from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import (GroupAdmin as _GroupAdmin,
-                                       UserAdmin as _UserAdmin, )
+from django.contrib.auth.admin import GroupAdmin as _GroupAdmin, UserAdmin as _UserAdmin
 from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.management import get_contenttypes_and_models
+from django.contrib.contenttypes.management.commands.remove_stale_contenttypes import NoFastDeleteCollector
+from django.contrib.contenttypes.models import ContentType
+from django.db import DEFAULT_DB_ALIAS
 from django.db.models import Q
+from django.db.transaction import atomic
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+from ..views import SmartAutocompleteJsonView
+
 User = get_user_model()
 
 
+class SmartContentTypeJsonView(SmartAutocompleteJsonView):
+
+    def get_label(self, obj):
+        return f'{obj.name.title()} ({obj.app_label})'
+
+
 # @smart_register(ContentType)
-class ContentTypeAdmin(ExtraUrlMixin, admin.ModelAdmin):
+class ContentTypeAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('app_label', 'model')
     search_fields = ('model',)
     list_filter = (('app_label', AllValuesComboFilter),)
@@ -42,8 +46,11 @@ class ContentTypeAdmin(ExtraUrlMixin, admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+    def autocomplete_view(self, request):
+        return SmartContentTypeJsonView.as_view(model_admin=self)(request)
+
     @button(permission='contenttypes.delete_contenttype')
-    def check_stale(self, request):
+    def check_stale(self, request):  # noqa
         context = self.get_common_context(request, title='Stale')
         to_remove = {}
         if request.method == 'POST':
@@ -87,8 +94,7 @@ class ContentTypeAdmin(ExtraUrlMixin, admin.ModelAdmin):
                                     context)
 
 
-# @smart_register(Permission)
-class PermissionAdmin(ExtraUrlMixin, admin.ModelAdmin):
+class PermissionAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin):
     list_display = ('name', 'content_type', 'codename')
     search_fields = ('name',)
     list_filter = (('content_type', AutoCompleteFilter),
@@ -120,7 +126,7 @@ class PermissionAdmin(ExtraUrlMixin, admin.ModelAdmin):
 
 
 # @smart_register(User)
-class UserAdmin(ExtraUrlMixin, _UserAdmin):
+class UserAdmin(ExtraButtonsMixin, AdminFiltersMixin, _UserAdmin):
     list_filter = ('is_staff', 'is_superuser', 'is_active',
                    ('groups', AutoCompleteFilter),
                    )
@@ -133,7 +139,7 @@ class UserAdmin(ExtraUrlMixin, _UserAdmin):
         context['permissions'] = sorted(context['original'].get_all_permissions())
         return render(request, 'admin/auth/user/permissions.html', context)
 
-    @button(urls=['redir_to_perm/(?P<perm>.*)/'])
+    @button(urls=['redir_to_perm/(?P<perm>.*)/$'])
     def redir_to_perm(self, request, perm):
         app_label, codename = perm.split('.')
         perm = Permission.objects.get(codename=codename, )
@@ -168,7 +174,7 @@ class UserAdmin(ExtraUrlMixin, _UserAdmin):
 
 
 # @smart_register(Group)
-class GroupAdmin(ExtraUrlMixin, _GroupAdmin):
+class GroupAdmin(ExtraButtonsMixin, _GroupAdmin):
     list_display = ('name',)
     search_fields = ('name',)
 

@@ -1,43 +1,43 @@
-from admin_extra_urls.decorators import button
-from admin_extra_urls.mixins import ExtraUrlMixin, _confirm_action
+from admin_extra_buttons.api import ExtraButtonsMixin, button, confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.filters import (TextFieldFilter, NumberFilter, )
+from adminfilters.depot.widget import DepotManager
+from adminfilters.filters import MultiValueFilter, NumberFilter, ValueFilter
+from adminfilters.json import JsonFieldFilter
+from adminfilters.querystring import QueryStringFilter
 from django.contrib import admin
-from django.contrib.admin import register, TabularInline
-from django.contrib.admin.models import DELETION, LogEntry
+from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.contrib.contenttypes.models import ContentType
-from django.db import OperationalError
-from django.db.transaction import atomic
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.utils.safestring import mark_safe
-from smart_admin.smart_auth.admin import UserAdmin as SmartUserAdmin
 
-import smart_admin.settings as smart_settings
-from smart_admin.mixins import SmartMixin, LinkedObjectsMixin, TruncateAdminMixin
+from smart_admin.mixins import LinkedObjectsMixin, SmartMixin
+from smart_admin.smart_auth.admin import UserAdmin as SmartUserAdmin
 
 from . import models
 from .factories import get_factory_for_model
 
 
-class FactoryMixin:
-    @button()
+class FactoryMixin(ModelAdmin):
+    @button(html_attrs={"style": "background-color:#DC6C6C"})
     def create_sample_records(self, request):
         factory = get_factory_for_model(self.model)
         factory.create_batch(10)
+        self.message_user(request, "#10 records created")
 
 
 @register(models.Customer)
-class CustomerAdmin(FactoryMixin, TruncateAdminMixin, LinkedObjectsMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
-    list_display = ("name", "useremail", "email")
+class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
+    list_display = ("name", "useremail", "email", "flags")
     search_fields = ("name",)
-    list_filter = (('user', AutoCompleteFilter),
-                   # ('integer', MaxMinFilter),
-                   # ('logic', BooleanRadioFilter),
-                   TextFieldFilter.factory('user__email'),
-                   TextFieldFilter.factory('email')
-                   )
+    list_filter = (
+        DepotManager,
+        QueryStringFilter,
+        ('user', AutoCompleteFilter),
+        ('flags', JsonFieldFilter),
+        ('user__email', MultiValueFilter),
+        # TextFieldFilter.factory('user__email'),
+        ('email', ValueFilter)
+    )
     readonly_fields = ('user',)
     fieldsets = [
         (None, {"fields": (("name", "email"),)}),
@@ -65,24 +65,24 @@ class CustomerAdmin(FactoryMixin, TruncateAdminMixin, LinkedObjectsMixin, SmartM
         self.message_user(request, 'refresh called')
         return HttpResponseRedirect(reverse(admin_urlname(opts, 'changelist')))
 
-    @button()
+    @button(html_attrs={"style": "background-color:#CAA61B;font-weight:bold"})
     def confirm(self, request):
         def _action(request):
             pass
 
-        return _confirm_action(self, request, _action, "Confirm action",
-                               "Successfully executed", )
+        return confirm_action(self, request, _action, "Confirm action",
+                              "Successfully executed", )
 
 
 @register(models.Product)
-class ProductAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class ProductAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('name', 'price', 'family')
     list_filter = ('family',)
     search_fields = ('name',)
 
 
 @register(models.ProductFamily)
-class ProductFamilyAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class ProductFamilyAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('name',)
 
 
@@ -92,7 +92,7 @@ class InvoiceItemInline(TabularInline):
 
 
 @register(models.Invoice)
-class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('customer', 'number', 'date')
     list_filter = (('number', NumberFilter),
                    ('customer', AutoCompleteFilter),
@@ -103,10 +103,11 @@ class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
 
 
 @register(models.InvoiceItem)
-class InvoiceItemAdmin(FactoryMixin, SmartMixin, ExtraUrlMixin, admin.ModelAdmin):
+class InvoiceItemAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('product', 'qty')
     list_filter = (('invoice', AutoCompleteFilter),)
-    search_fields = ('qty',)
+    search_fields = ('qty', "product__name")
+    autocomplete_fields = ('product', 'invoice')
 
 
 class UserAdmin(LinkedObjectsMixin, FactoryMixin, SmartUserAdmin):

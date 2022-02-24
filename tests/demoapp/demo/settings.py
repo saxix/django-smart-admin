@@ -2,7 +2,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import environ
-from django.utils.html import format_html
+from adminactions import consts
 from django.utils.safestring import mark_safe
 
 import smart_admin
@@ -38,12 +38,13 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django_sysinfo',
                   'adminactions',
                   'adminfilters',
-                  'admin_extra_urls',
+                  'adminfilters.depot',
+                  'admin_extra_buttons',
 
                   'smart_admin.apps.SmartLogsConfig',
                   'smart_admin.apps.SmartTemplateConfig',
-                  # 'smart_admin.apps.SmartAuthConfig',
-                  'smart_admin',
+                  'smart_admin.apps.SmartAuthConfig',
+                  'smart_admin.apps.SmartConfig',
 
                   'demo.apps.Config']
 
@@ -123,3 +124,4 @@ CONSTANCE_CONFIG_FIELDSETS = {
     'Theme Options': ('THEME',),
 }
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+AA_PERMISSION_HANDLER = consts.AA_PERMISSION_CREATE_USE_COMMAND
