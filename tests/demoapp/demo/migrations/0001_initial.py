@@ -3,8 +3,10 @@
 import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
-from django.db.models import JSONField
-
+try:
+    from django.db.models import JSONField
+except:
+    from django.contrib.postgres.fields import JSONField
 
 class Migration(migrations.Migration):
 
