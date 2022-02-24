@@ -20,8 +20,7 @@ class SmartAuthConfig(AppConfig):
         from django.contrib.contenttypes.models import ContentType
 
         from smart_admin.decorators import smart_register
-        from smart_admin.smart_auth.admin import (ContentTypeAdmin, GroupAdmin,
-                                                  PermissionAdmin, UserAdmin,)
+        from smart_admin.smart_auth.admin import ContentTypeAdmin, GroupAdmin, PermissionAdmin, UserAdmin
 
         smart_register(Group)(GroupAdmin)
         smart_register(get_user_model())(UserAdmin)
@@ -37,3 +36,4 @@ class SmartConfig(SimpleAdminConfig):
     def ready(self):
         super().ready()
         django.contrib.admin.autodiscover()
+        from . import checks  # noqa

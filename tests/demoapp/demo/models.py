@@ -1,5 +1,11 @@
+import django
 from django.contrib.auth.models import User
 from django.db import models
+
+if django.VERSION[0] == 2:
+    from django.contrib.postgres.fields import JSONField
+else:
+    from django.db.models import JSONField
 
 
 class Customer(models.Model):
@@ -8,6 +14,11 @@ class Customer(models.Model):
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     registration_date = models.DateField(auto_created=True)
     active = models.BooleanField()
+
+    flags = JSONField(default=dict)
+
+    def __str__(self):
+        return self.name
 
 
 class ProductFamily(models.Model):
@@ -27,6 +38,7 @@ class Product(models.Model):
 
 
 class Invoice(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     date = models.DateField(null=True, blank=True)
     number = models.IntegerField(null=True, blank=True)
 

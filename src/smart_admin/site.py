@@ -1,7 +1,5 @@
 import time
 from collections import OrderedDict
-
-from django.utils.functional import cached_property
 from functools import update_wrapper
 
 from django.conf import settings
@@ -17,7 +15,8 @@ from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.vary import vary_on_cookie
 
 from . import get_full_version, settings as smart_settings
-from .settings import get_setting_lazy
+from .autocomplete import SmartAutocompleteJsonView
+from .settings import get_bookmarks, get_setting_lazy
 from .templatetags.smart import as_bool
 from .utils import SmartList
 
@@ -34,6 +33,17 @@ def _parse_section():
     return ret
 
 
+def page():
+    def action_decorator(func):
+        def _inner(modeladmin, request, *args, **kwargs):
+            ret = func(modeladmin, request, *args, **kwargs)
+            return ret
+        _inner.is_page = True
+        return _inner
+
+    return action_decorator
+
+
 @method_decorator([vary_on_cookie, cache_page(smart_settings.SYSINFO_TTL)], name='admin_sysinfo')
 class SmartAdminSite(AdminSite):
     sysinfo_url = False
@@ -41,34 +51,13 @@ class SmartAdminSite(AdminSite):
     site_title = get_setting_lazy('TITLE')
     site_header = get_setting_lazy('HEADER')
 
-    def get_bookmarks(self, request):
-        if smart_settings.BOOKMARKS_PERMISSION is None or request.user.has_permission(
-                smart_settings.BOOKMARKS_PERMISSION):
-            bookmarks = []
-            values = smart_settings.get_bookmarks(request)
-
-            for entry in values:
-                if not entry:
-                    continue
-                if isinstance(entry, str):
-                    label, url, cls = entry, entry, 'viewlink'
-                elif len(entry) == 2:
-                    label, url, cls = entry[0], entry[1], 'viewlink'
-                elif len(entry) == 3:
-                    label, url, cls = entry
-                else:
-                    raise ValueError(f"Invalid entry '{entry}' for BOOKMARKS")
-                bookmarks.append([label, url, cls])
-            return bookmarks
-        return []
-
     def each_context(self, request):
         context = super().each_context(request)
         context['groups'] = dict(self._get_menu(request)[0])
         context['sysinfo'] = self.sysinfo_url
         context['smart_settings'] = smart_settings
         context['enable_switch'] = smart_settings.ENABLE_SWITCH
-        context['bookmarks'] = self.get_bookmarks(request)
+        context['bookmarks'] = get_bookmarks(request)
         context['smart'] = self.is_smart_enabled(request)
         context['smart_sections'], context['model_to_section'] = self._get_menu(request)
         context['adminsite'] = self
@@ -81,7 +70,7 @@ class SmartAdminSite(AdminSite):
     def is_smart_enabled(self, request):
         return as_bool(request.COOKIES.get('smart', "0"))
 
-    @never_cache
+    @method_decorator(never_cache)
     def index(self, request, extra_context=None):
         if self.is_smart_enabled(request):
             return self.smart_index(request)
@@ -102,7 +91,7 @@ class SmartAdminSite(AdminSite):
         return render(request, 'admin/sysinfo/sysinfo.html', context)
 
     def autocomplete_view(self, request):
-        return super().autocomplete_view(request)
+        return SmartAutocompleteJsonView.as_view(admin_site=self)(request)
 
     def app_index(self, request, app_label, extra_context=None):
         groups, __ = self._get_menu(request)
@@ -134,6 +123,15 @@ class SmartAdminSite(AdminSite):
         urlpatterns = [path('~groups/<str:group>/', wrap(self.smart_section), name='group_list'),
                        path('smart/<str:on_off>/', wrap(self.smart_toggle), name='smart_toggle'),
                        ]
+
+        # for c in inspect.getmro(self.__class__):
+        #     for method_name, method in c.__dict__.items():
+        #         if hasattr(method, 'is_page'):
+        #             urlpatterns.append(
+        #                 path(f'{method_name}/',
+        #                      wrap(getattr(self, method_name)),
+        #                      name=f'page-{method_name}')
+        #             )
 
         try:
             if 'django_sysinfo' in settings.INSTALLED_APPS:
@@ -200,7 +198,7 @@ class SmartAdminSite(AdminSite):
         groups, __ = self._get_menu(request)
         return groups[group]
 
-    @never_cache
+    @method_decorator(never_cache)
     def smart_section(self, request, extra_context=None, group=None):
         groups, __ = self._get_menu(request)
         section = groups[group]
@@ -212,7 +210,7 @@ class SmartAdminSite(AdminSite):
         }
         return TemplateResponse(request, 'admin/group_index.html', context)
 
-    @never_cache
+    @method_decorator(never_cache)
     def smart_index(self, request, extra_context=None):
         context = {
             **self.each_context(request),

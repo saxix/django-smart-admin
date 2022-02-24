@@ -1,5 +1,5 @@
 {% load i18n %}
-<button class="sticky toggle-nav-sidebar" id="toggle-nav-sidebar" aria-label="{% translate 'Toggle navigation' %}"></button>
+<button class="sticky toggle-nav-sidebar" id="toggle-nav-sidebar" aria-label="{% trans 'Toggle navigation' %}"></button>
 <nav class="sticky" id="nav-sidebar">
     {% if smart %}
         {% include "admin/smart_list.html" with groups=groups show_changelinks=False %}

@@ -3,7 +3,7 @@ from django.core.signals import setting_changed
 from django.dispatch import receiver
 from django.utils.functional import lazy
 from django.utils.module_loading import import_string
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 _SMART_ADMIN_SECTIONS = {
     'Security': ['auth',
@@ -45,6 +45,7 @@ ISROOT = getattr(settings, 'SMART_ADMIN_ISROOT', lambda request, *a: request.use
 SYSINFO_TTL = getattr(settings, 'SMART_ADMIN_SYSINFO_TTL', 60)
 LOGS_RETENTION_DAYS = getattr(settings, 'SMART_ADMIN_LOGS_RETENTION_DAYS', 365)
 MODEL_LABEL_FORMAT = getattr(settings, 'SMART_ADMIN_MODEL_LABEL_FORMAT', '{model[name]} ({app[name]})')
+
 
 @receiver(setting_changed)
 def update_settings(setting, value, **kwargs):

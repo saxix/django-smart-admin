@@ -1,24 +1,38 @@
-from admin_extra_urls.decorators import button
-from admin_extra_urls.mixins import ExtraUrlMixin
+from admin_extra_buttons.api import ExtraButtonsMixin, button
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.filters import AllValuesComboFilter, PermissionPrefixFilter
+from adminfilters.mixin import AdminFiltersMixin
+from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.utils import construct_change_message
 from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import (GroupAdmin as _GroupAdmin,
-                                       UserAdmin as _UserAdmin,)
+from django.contrib.auth.admin import GroupAdmin as _GroupAdmin, UserAdmin as _UserAdmin
 from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.management import get_contenttypes_and_models
+from django.contrib.contenttypes.management.commands.remove_stale_contenttypes import NoFastDeleteCollector
+from django.contrib.contenttypes.models import ContentType
+from django.db import DEFAULT_DB_ALIAS
 from django.db.models import Q
+from django.db.transaction import atomic
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
+
+from ..views import SmartAutocompleteJsonView
 
 User = get_user_model()
 
 
+class SmartContentTypeJsonView(SmartAutocompleteJsonView):
+
+    def get_label(self, obj):
+        return f'{obj.name.title()} ({obj.app_label})'
+
+
 # @smart_register(ContentType)
-class ContentTypeAdmin(admin.ModelAdmin):
+class ContentTypeAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ('app_label', 'model')
     search_fields = ('model',)
     list_filter = (('app_label', AllValuesComboFilter),)
@@ -32,9 +46,55 @@ class ContentTypeAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+    def autocomplete_view(self, request):
+        return SmartContentTypeJsonView.as_view(model_admin=self)(request)
 
-# @smart_register(Permission)
-class PermissionAdmin(ExtraUrlMixin, admin.ModelAdmin):
+    @button(permission='contenttypes.delete_contenttype')
+    def check_stale(self, request):  # noqa
+        context = self.get_common_context(request, title='Stale')
+        to_remove = {}
+        if request.method == 'POST':
+            cts = request.POST.getlist('ct')
+            with atomic():
+                ContentType.objects.filter(id__in=cts).delete()
+            self.message_user(request, f'Removed {len(cts)} stale ContentTypes')
+        else:
+            def _collect_linked(ct):
+                collector = NoFastDeleteCollector(using=DEFAULT_DB_ALIAS)
+                collector.collect([ct])
+                for obj_type, objs in collector.data.items():
+                    if objs == {ct}:
+                        continue
+                    for o in objs:
+                        try:
+                            to_remove[ct].append(f"{o.__class__.__name__} {o.pk} - {str(o)}")
+                        except AttributeError:
+                            to_remove[ct].append(f"{o.__class__.__name__} {o.pk}")
+
+            for app_config in apps.get_app_configs():
+                content_types, app_models = get_contenttypes_and_models(app_config, DEFAULT_DB_ALIAS,
+                                                                        ContentType)
+                if not app_models:
+                    continue
+                for (model_name, ct) in content_types.items():
+                    if model_name not in app_models:
+                        to_remove[ct] = []
+                        _collect_linked(ct)
+
+            for ct in ContentType.objects.all():
+                if ct.app_label not in apps.app_configs.keys():
+                    if ct not in to_remove:
+                        to_remove[ct] = []
+                        _collect_linked(ct)
+
+            context['to_remove'] = dict(sorted(to_remove.items(),
+                                               key=lambda x: f"{x[0].app_label} {x[0].model}"))
+            return TemplateResponse(request,
+                                    'smart_admin/smart_auth/contenttype/stale.html',
+                                    context)
+
+
+class PermissionAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin):
     list_display = ('name', 'content_type', 'codename')
     search_fields = ('name',)
     list_filter = (('content_type', AutoCompleteFilter),
@@ -66,7 +126,7 @@ class PermissionAdmin(ExtraUrlMixin, admin.ModelAdmin):
 
 
 # @smart_register(User)
-class UserAdmin(ExtraUrlMixin, _UserAdmin):
+class UserAdmin(ExtraButtonsMixin, AdminFiltersMixin, _UserAdmin):
     list_filter = ('is_staff', 'is_superuser', 'is_active',
                    ('groups', AutoCompleteFilter),
                    )
@@ -79,7 +139,7 @@ class UserAdmin(ExtraUrlMixin, _UserAdmin):
         context['permissions'] = sorted(context['original'].get_all_permissions())
         return render(request, 'admin/auth/user/permissions.html', context)
 
-    @button(urls=['redir_to_perm/(?P<perm>.*)/'])
+    @button(urls=['redir_to_perm/(?P<perm>.*)/$'])
     def redir_to_perm(self, request, perm):
         app_label, codename = perm.split('.')
         perm = Permission.objects.get(codename=codename, )
@@ -114,7 +174,7 @@ class UserAdmin(ExtraUrlMixin, _UserAdmin):
 
 
 # @smart_register(Group)
-class GroupAdmin(ExtraUrlMixin, _GroupAdmin):
+class GroupAdmin(ExtraButtonsMixin, _GroupAdmin):
     list_display = ('name',)
     search_fields = ('name',)
 

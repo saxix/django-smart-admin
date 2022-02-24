@@ -1,12 +1,11 @@
 import random
 
-import factory
+import factory.fuzzy
 from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from factory.base import FactoryMetaClass
-import factory.fuzzy
 
 from . import models
 
@@ -51,6 +50,7 @@ class PermissionFactory(ModelFactory):
 
 class LogEntryFactory(ModelFactory):
     user = factory.SubFactory(UserFactory)
+    content_type = factory.Iterator(ContentType.objects.all())
     action_flag = 1
 
     class Meta:
@@ -74,6 +74,28 @@ class CustomerFactory(ModelFactory):
     class Meta:
         model = models.Customer
 
+    @factory.lazy_attribute
+    def flags(self):
+        # Convert to plain ascii text
+        f = lambda: random.choice([
+            ("int", random.randint(1, 100)),
+            ("chr", chr(random.randrange(65, 90))),
+            ("int", '__'),
+            ("chr", ""),
+            ("chr", None),
+            ("int", None),
+            ("chr", '__'),
+        ])
+        value = f()
+        if value[1] == '__':
+            base = {}
+        else:
+            base = dict([value])
+        value = f()
+        if value[1] != '__':
+            base.update(dict([value]))
+        return base
+
 
 class ProductFamilyFactory(ModelFactory):
     name = factory.LazyFunction(lambda: 'Family %s' % random.choice([0, 1, 3]))
@@ -96,6 +118,7 @@ class ProductFactory(ModelFactory):
 
 
 class InvoiceFactory(ModelFactory):
+    customer = factory.SubFactory(CustomerFactory)
     number = factory.LazyFunction(lambda: random.choice(range(100)))
     date = factory.LazyFunction(timezone.now)
 
