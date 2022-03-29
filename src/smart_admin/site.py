@@ -161,7 +161,7 @@ class SmartAdminSite(AdminSite):
             app_list = self.get_app_list(request)
 
             def get_section(model, app):
-                fqn = '%s.%s' % (app['app_label'], model['object_name'])
+                fqn = '{}.{}'.format(app['app_label'], model['object_name'])
                 target = 'Other'
                 if fqn in sections['_hidden_'] or app['app_label'] in sections['_hidden_']:
                     return '_hidden_'
