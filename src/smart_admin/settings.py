@@ -32,6 +32,12 @@ def get_bookmarks(request=None):
     return values
 
 
+def check_logentry_archive_perm(request, perm):
+    if LOGENTRY_ARCHIVE_PERM:
+        return request.user.has_perm(LOGENTRY_ARCHIVE_PERM)
+    return True
+
+
 TITLE = getattr(settings, 'SMART_ADMIN_TITLE', _('Django site admin'))
 HEADER = getattr(settings, 'SMART_ADMIN_HEADER', _('Django administration'))
 
@@ -45,6 +51,7 @@ ISROOT = getattr(settings, 'SMART_ADMIN_ISROOT', lambda request, *a: request.use
 SYSINFO_TTL = getattr(settings, 'SMART_ADMIN_SYSINFO_TTL', 60)
 LOGS_RETENTION_DAYS = getattr(settings, 'SMART_ADMIN_LOGS_RETENTION_DAYS', 365)
 MODEL_LABEL_FORMAT = getattr(settings, 'SMART_ADMIN_MODEL_LABEL_FORMAT', '{model[name]} ({app[name]})')
+LOGENTRY_ARCHIVE_PERM = getattr(settings, 'LOGENTRY_ARCHIVE_PERM', None)
 
 
 @receiver(setting_changed)

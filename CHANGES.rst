@@ -1,6 +1,11 @@
+Release 1.9.1
+-----------
+* bug fixes
+
+
 Release 1.9
 -----------
-* move to  django-admin-extra-buttoons
+* move to  django-admin-extra-buttons
 * update deps
 
 

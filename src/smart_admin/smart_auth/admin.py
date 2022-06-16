@@ -32,7 +32,7 @@ class SmartContentTypeJsonView(SmartAutocompleteJsonView):
 
 
 # @smart_register(ContentType)
-class ContentTypeAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+class ContentTypeAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin):
     list_display = ('app_label', 'model')
     search_fields = ('model',)
     list_filter = (('app_label', AllValuesComboFilter),)
