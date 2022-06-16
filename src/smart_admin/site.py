@@ -124,15 +124,6 @@ class SmartAdminSite(AdminSite):
                        path('smart/<str:on_off>/', wrap(self.smart_toggle), name='smart_toggle'),
                        ]
 
-        # for c in inspect.getmro(self.__class__):
-        #     for method_name, method in c.__dict__.items():
-        #         if hasattr(method, 'is_page'):
-        #             urlpatterns.append(
-        #                 path(f'{method_name}/',
-        #                      wrap(getattr(self, method_name)),
-        #                      name=f'page-{method_name}')
-        #             )
-
         try:
             if 'django_sysinfo' in settings.INSTALLED_APPS:
                 from django.urls import reverse_lazy
