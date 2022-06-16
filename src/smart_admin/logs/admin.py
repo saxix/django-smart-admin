@@ -46,9 +46,7 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraButtonsMixin, admin.Mod
             LogEntry.objects.filter(action_time__lt=offset).delete()
             self.message_user(request, _("Records before %s have been removed") % offset_label)
 
-        ctx = self.get_common_context(request,
-                                      original=None,
-                                      offset=offset_label)
+        ctx = dict(original=None, offset=offset_label)
 
         return confirm_action(self, request, _doit, message="", success_message="",
                               extra_context=ctx,
