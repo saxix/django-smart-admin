@@ -1,5 +1,3 @@
-
-
 def smart_register(*models, site=None, force=True):
     from django.contrib.admin import ModelAdmin
     from django.contrib.admin.sites import AdminSite, site as default_site
