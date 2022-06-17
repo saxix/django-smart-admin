@@ -57,7 +57,7 @@ class SmartAutocompleteJsonView(AutocompleteJsonView):
             qs = qs.distinct()
         return qs
 
-    def process_request(self, request):
+    def process_request(self, request):  # noqa C901
         """
         Validate request integrity, extract and return request parameters.
 
