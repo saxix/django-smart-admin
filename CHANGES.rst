@@ -1,3 +1,6 @@
+Release 1.9.2
+-----------
+
 Release 1.9.1
 -----------
 * bug fixes

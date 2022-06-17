@@ -21,7 +21,7 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraButtonsMixin, admin.Mod
                    'action_time',
                    'action_flag')
     date_hierarchy = 'action_time'
-    change_form_template = "admin/logentry/change_form.html"
+    # change_form_template = "admin/logentry/change_form.html"
 
     def has_add_permission(self, request):
         return False
@@ -41,6 +41,7 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraButtonsMixin, admin.Mod
     def archive(self, request):
         offset = datetime.date.today() - datetime.timedelta(days=365)
         offset_label = offset.strftime("%a, %b %d %Y")
+        count = LogEntry.objects.filter(action_time__lt=offset).count()
 
         def _doit(request):
             LogEntry.objects.filter(action_time__lt=offset).delete()
@@ -48,7 +49,10 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraButtonsMixin, admin.Mod
 
         ctx = dict(original=None, offset=offset_label)
 
-        return confirm_action(self, request, _doit, message="", success_message="",
+        return confirm_action(self, request, _doit,
+                              message="",
+                              description=_("{count} log entries will be deleted").format(count=count),
+                              success_message="",
                               extra_context=ctx,
                               template="admin/logentry/archive.html")
 
