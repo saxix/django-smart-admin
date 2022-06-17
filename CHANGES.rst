@@ -1,3 +1,8 @@
+Release 1.9.2
+-----------
+* fixes LogEntryAdmin
+
+
 Release 1.9.1
 -----------
 * bug fixes
