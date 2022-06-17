@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'django_sysinfo',  # optional
     'adminactions',  # optional
     'adminfilters',  # optional
-    'admin_extra_urls',  # optional
+    'admin_extra_buttons',  # optional
 
     'smart_admin.apps.SmartTemplateConfig',  # templates
     'smart_admin',  # use this instead of 'django.contrib.admin'

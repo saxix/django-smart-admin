@@ -10,7 +10,7 @@ def create_permission(apps, schema_editor):
 
     ct = ContentType.objects.get_for_model(LogEntry)
     opts = LogEntry._meta
-    codename = '%s_%s' % ('archive', opts.object_name.lower())
+    codename = '{}_{}'.format('archive', opts.object_name.lower())
     params = dict(codename=codename,
                   content_type=ct,
                   defaults={'name': 'Can archive logs'})
@@ -24,7 +24,7 @@ def remove_permission(apps, schema_editor):
 
     ct = ContentType.objects.get_for_model(LogEntry)
     opts = LogEntry._meta
-    codename = '%s_%s' % ('archive', opts.object_name.lower())
+    codename = '{}_{}'.format('archive', opts.object_name.lower())
     params = dict(codename=codename,
                   content_type=ct)
     Permission.objects.filter(**params).delete()
