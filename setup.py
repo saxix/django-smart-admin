@@ -23,6 +23,7 @@ setup(
     author_email='s.apostolico@gmail.com',
     keywords='django',
     packages=['smart_admin',
+              'smart_admin.console',
               'smart_admin.logs',
               'smart_admin.smart_auth',
               'smart_admin.templatetags'],
