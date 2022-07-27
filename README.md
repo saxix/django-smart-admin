@@ -28,6 +28,8 @@ need to be copied/pasted in each project.
 - automatically creates filter for each indexed field (SmartAutoFilterMixin)
 - improved fieldset allows the use of `__others__` to include any field not included in others fieldsets (FieldsetMixin)
 - ability to customise Autocomplete labels
+- user defined "site panels"
+
 
 Demo is available at https://django-smart-admin.herokuapp.com/.
 (Any user/password combination is accepted)

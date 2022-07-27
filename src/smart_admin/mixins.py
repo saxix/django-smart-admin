@@ -117,13 +117,16 @@ class SmartMixin(ReadOnlyMixin, ExtraButtonsMixin, FieldsetMixin, DisplayAllMixi
 
 class LinkedObjectsMixin:
     linked_objects_template = None
+    linked_objects_hide_empty = True
+    linked_objects_max_records = 200
+    linked_objects_ignore = []
 
-    def get_ignored_linked_objects(self):
-        return []
+    def get_ignored_linked_objects(self, request):
+        return self.linked_objects_ignore
 
     @button()
     def linked_objects(self, request, pk):
-        ignored = self.get_ignored_linked_objects()
+        ignored = self.get_ignored_linked_objects(request)
         opts = self.model._meta
         app_label = opts.app_label
         context = self.get_common_context(request, pk, title="linked objects")
@@ -131,9 +134,18 @@ class LinkedObjectsMixin:
         for f in self.model._meta.get_fields():
             if f.auto_created and not f.concrete and f.name not in ignored:
                 reverse.append(f)
-        # context["reverse"] = [get_related(user, f ) for f in reverse]
-        context["reverse"] = sorted((get_related(context['original'], f) for f in reverse),
-                                    key=lambda x: x['related_name'].lower())
+        linked = []
+        empty = []
+        for f in reverse:
+            info = get_related(context['original'], f, max_records=self.linked_objects_max_records)
+            if info['count'] == 0 and self.linked_objects_hide_empty:
+                empty.append(info)
+            else:
+                linked.append(info)
+
+        context["empty"] = sorted(empty, key=lambda x: x['related_name'].lower())
+        context["linked"] = sorted(linked, key=lambda x: x['related_name'].lower())
+        context["reverse"] = reverse
 
         return TemplateResponse(request, self.linked_objects_template or [
             f"admin/{app_label}/{opts.model_name}/linked_objects.html",

@@ -44,7 +44,7 @@ class SmartList(list):
         return False
 
 
-def get_related(user, field):
+def get_related(user, field, max_records=200):
     info = {
         "to": field.model._meta.model_name,
         "field_name": field.name,
@@ -58,10 +58,13 @@ def get_related(user, field):
             related_attr = getattr(user, f"{field.name}_set")
 
         if hasattr(related_attr, 'all') and callable(related_attr.all):
-            related = related_attr.all()
+            related = related_attr.all()[:max_records or 200]
+            count = related_attr.all().count()
         else:
             related = [related_attr]
+            count = 1
         info["data"] = related
+        info["count"] = count
     except ObjectDoesNotExist:
         info["data"] = []
         info["related_name"] = field.related_model._meta.verbose_name

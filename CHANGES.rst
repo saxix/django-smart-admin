@@ -1,3 +1,8 @@
+Release 2.0
+-----------
+* enhanced LinkedObjectsMixin
+* add "Console/Panels"
+
 Release 1.9.2
 -----------
 * fixes LogEntryAdmin

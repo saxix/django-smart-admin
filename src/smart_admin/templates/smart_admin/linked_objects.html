@@ -1,21 +1,31 @@
 {% extends "admin_extra_buttons/action_page.html" %}{% load static smart %}
 {% block content_title %}<h1>{{ original }}</h1>{% endblock %}
 {% block content %}
-
-    {% for e in reverse %}
-{#        {% get_related original e as related %}#}
+    {% for e in linked %}
+        {#        {% get_related original e as related %}#}
         <fieldset class="module">
-            <h2 class="">{{ e.related_name }} ({{ e.field_name }})</h2>
+            <h2 class="">{{ e.related_name }} ({{ e.field_name }})
+
+            </h2>
             <table>
                 {% for row in e.data %}
                     <tr>
-                        <td><a href="{{ row|get_admin_link }}">{{ row.pk }}</a></td>
+{#                        <td><a href="{{ row|get_admin_link }}">{{ row.pk }}</a></td>#}
+                        <td>{% get_admin_href row 'pk' %}</td>
                         <td>{{ row }}</td>
                     </tr>
                 {% endfor %}
             </table>
         </fieldset>
     {% endfor %}
+    <fieldset class="module">
+        <h2 class="">Empty Relationships</h2>
+        <ul>
+            {% for e in empty %}
+                <li>{{ e.related_name }}</li>
+            {% endfor %}
+        </ul>
+    </fieldset>
 {% endblock content %}
 {% block footer %}
     <div id="footer"></div>

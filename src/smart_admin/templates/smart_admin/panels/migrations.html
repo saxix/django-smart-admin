@@ -1,0 +1,51 @@
+{% extends "smart_admin/console.html" %}{% load static i18n %}
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a> &rsaquo;
+        <a href="{% url 'admin:console' %}">{% translate 'Console' %}</a>
+        &rsaquo; Migrations
+    </div>
+{% endblock %}
+{% block left %}
+    <div id="changelist" class="project-versions">
+        <div>
+            <pre id="list" class="panel active"><h3>LIST</h3>{{ list }}</pre>
+            <pre id="plan" class="panel "><h3>PLAN</h3>{{ plan }}</pre>
+        </div>
+        <div id="changelist-filter" class="console-buttons"></div>
+    </div>
+{% endblock %}
+{% block buttons %}
+    <ul>
+        <li><a class="button toggler" data-toggler="#list" href="#">LIST</a></li>
+        <li><a class="button toggler" data-toggler="#plan" href="#">PLAN</a></li>
+    </ul>
+    {{ block.super }}
+{% endblock %}
+{% block footer %}
+    {{ block.super }}
+    <script>
+        $("a.toggler").on("click", function () {
+            $(this).toggleClass("selected");
+            {#$( this ).siblings().toggleClass("selected")#}
+            $("pre.panel").toggleClass("active");
+            {#$( this ).not('.selected').addClass('selected');#}
+            {#$( this ).siblings('.selected').removeClass("selected");#}
+
+            {#$( $( this ).data('toggler')).addClass('active');#}
+
+        });
+        {#$(".toolbar div.plan").on("click", function (){#}
+        {#    $(this).css({"font-weight": "normal"})#}
+        {#    $('#plan').toggle()#}
+        {#    $('#list').css({"font-weight": "bold"}).toggle()#}
+        {# });#}
+        {##}
+        {#$(".toolbar div.list").on("click", function (){#}
+        {#    $('#plan').css({"font-weight": "normal"}).toggle()#}
+        {#    $('#list').css({"font-weight": "bold"}).toggle()#}
+        {# });#}
+
+    </script>
+
+{% endblock %}

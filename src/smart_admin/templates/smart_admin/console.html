@@ -1,0 +1,42 @@
+{% extends "admin/base_site.html" %}{% load static i18n %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">
+{#    <link rel="stylesheet" href="{% static "admin/console.css" %}">#}
+    <script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.js" %}"></script>
+{% endblock %}
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a> &rsaquo;
+        <a href="{% url 'admin:console' %}">{% translate 'Console' %}</a> &rsaquo;
+        <a href=".">{{ title }}</a>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="console module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+        <div class="changelist-form-container {% block left-class %}{% endblock %}">
+            {% block left %}
+            {% endblock %}
+        </div>
+        {% block right %}
+            <div id="changelist-filter" class="console-buttons">
+                {% block buttons %}
+                    <ul class="submit-row">
+                        <li><a class="button" href="{% url "admin:constance_config_changelist" %}">Constance</a></li>
+                        <li><a class="button" href="{% url "admin:flags_flagstate_changelist" %}">Flags</a></li>
+                        <li><a class="button" href="{% url "admin:smart-sysinfo-admin" %}">System Infos</a></li>
+                        <li><a class="button" href="{% url "admin:redis_cli" %}">Redis CLI</a></li>
+                        <li><a class="button" href="{% url "admin:version" %}">Version</a></li>
+                        <li><a class="button" href="{% url "admin:sentry" %}">Sentry</a></li>
+                        <li><a class="button" href="{% url "admin:email" %}">Email</a></li>
+                        {% for panel in panels %}
+                            {% with "admin:"|add:panel.name as xx %}
+                            <li><a class="button" href="{% url xx %}{{ panel.url }}">{{ panel.label }}</a></li>
+                            {% endwith %}
+                        {% endfor %}
+                    </ul>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock content %}
