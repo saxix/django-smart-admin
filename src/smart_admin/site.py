@@ -9,7 +9,7 @@ from django.core.cache import caches
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.response import TemplateResponse
-from django.urls import path, reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.vary import vary_on_cookie
@@ -133,7 +133,6 @@ class SmartAdminSite(AdminSite):
     def console(self, request, extra_context=None):
         context = self.each_context(request)
         return TemplateResponse(request, "smart_admin/console.html", context)
-
 
     def get_urls(self):
         from django.urls import path
