@@ -3,7 +3,7 @@ import urllib.parse
 
 from django import template
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.urls import reverse, NoReverseMatch
+from django.urls import NoReverseMatch, reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
