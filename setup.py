@@ -14,7 +14,7 @@ setup(
     long_description=readme,
     long_description_content_type='text/markdown',
     name='django-smart-admin',
-    version='2.0.0',
+    version='2.0.1',
     python_requires='==3.*,>=3.8',
     project_urls={"homepage": "https://github.com/saxix/django-smart-admin",
                   "repository": "https://github.com/saxix/django-smart-admin"
@@ -23,6 +23,7 @@ setup(
     author_email='s.apostolico@gmail.com',
     keywords='django',
     packages=['smart_admin',
+              'smart_admin.console',
               'smart_admin.logs',
               'smart_admin.smart_auth',
               'smart_admin.templatetags'],
