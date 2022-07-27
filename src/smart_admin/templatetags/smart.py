@@ -3,7 +3,7 @@ import urllib.parse
 
 from django import template
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.urls import reverse
+from django.urls import reverse, NoReverseMatch
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
@@ -49,3 +49,19 @@ def get_admin_link(record):
     opts = record._meta
     url_name = admin_urlname(opts, "change")
     return reverse(url_name, args=[record.pk])
+
+
+@register.simple_tag()
+def get_admin_href(record, field=None):
+    opts = record._meta
+    url_name = admin_urlname(opts, "change")
+    if field:
+        label = getattr(record, field)
+    else:
+        label = str(record)
+    try:
+        url = reverse(url_name, args=[record.pk])
+        tag = f'<a href="{url}">{label}</a>'
+    except NoReverseMatch:
+        tag = label
+    return mark_safe(tag)
