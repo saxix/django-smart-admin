@@ -1,6 +1,6 @@
 import time
 from collections import OrderedDict
-from functools import update_wrapper
+from functools import partial, update_wrapper
 
 from django.conf import settings
 from django.contrib.admin import AdminSite
@@ -9,7 +9,7 @@ from django.core.cache import caches
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.response import TemplateResponse
-from django.urls import reverse
+from django.urls import path, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.vary import vary_on_cookie
@@ -50,6 +50,13 @@ class SmartAdminSite(AdminSite):
     index_template = 'admin/index.html'
     site_title = get_setting_lazy('TITLE')
     site_header = get_setting_lazy('HEADER')
+    panels = []
+
+    def __init__(self, name='admin'):
+        self.console_panels = []
+        for func in self.panels:
+            self.register_panel(func)
+        super().__init__(name)
 
     def each_context(self, request):
         context = super().each_context(request)
@@ -60,12 +67,22 @@ class SmartAdminSite(AdminSite):
         context['bookmarks'] = get_bookmarks(request)
         context['smart'] = self.is_smart_enabled(request)
         context['smart_sections'], context['model_to_section'] = self._get_menu(request)
-        context['adminsite'] = self
+        context["extra_pages"] = self.extra_pages
+        context["panels"] = self.console_panels
+        context["admin_site"] = self
         if smart_settings.PROFILE_LINK and request.user.is_authenticated:
             context['profile_link'] = reverse(admin_urlname(request.user._meta, 'change'),
                                               args=[request.user.pk])
 
         return context
+
+    def register_panel(self, callable, url_name=None, label=None):
+        if not label:
+            label = getattr(callable, 'verbose_name', callable.__name__.title())
+        if not url_name:
+            url_name = getattr(callable, 'url_name', callable.__name__.lower())
+        self.console_panels.append({"func": callable,
+                                    "label": str(label), "name": str(url_name)})
 
     def is_smart_enabled(self, request):
         return as_bool(request.COOKIES.get('smart', "0"))
@@ -110,6 +127,14 @@ class SmartAdminSite(AdminSite):
         response.set_cookie('smart', int(as_bool(on_off)))
         return response
 
+    def show_panel(self, func, request):
+        return func(self, request)
+
+    def console(self, request, extra_context=None):
+        context = self.each_context(request)
+        return TemplateResponse(request, "smart_admin/console.html", context)
+
+
     def get_urls(self):
         from django.urls import path
 
@@ -123,10 +148,14 @@ class SmartAdminSite(AdminSite):
         urlpatterns = [path('~groups/<str:group>/', wrap(self.smart_section), name='group_list'),
                        path('smart/<str:on_off>/', wrap(self.smart_toggle), name='smart_toggle'),
                        ]
+        for entry in self.console_panels:
+            urlpatterns.append(path(f"{entry['name']}/",
+                                    wrap(partial(self.show_panel, entry["func"])),
+                                    name=entry["name"]))
+        self.extra_pages = [("Console", reverse_lazy("admin:console"))]
 
         try:
             if 'django_sysinfo' in settings.INSTALLED_APPS:
-                from django.urls import reverse_lazy
                 urlpatterns += [path('~sysinfo/', wrap(self.admin_sysinfo), name='smart-sysinfo-admin'), ]
                 self.sysinfo_url = reverse_lazy('admin:smart-sysinfo-admin')
         except ImportError:
