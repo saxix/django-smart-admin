@@ -48,6 +48,7 @@ def get_related(user, field, max_records=200):
     info = {
         "to": field.model._meta.model_name,
         "field_name": field.name,
+        "count": 0,
     }
 
     try:
