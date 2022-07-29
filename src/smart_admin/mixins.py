@@ -120,6 +120,7 @@ class LinkedObjectsMixin:
     linked_objects_hide_empty = True
     linked_objects_max_records = 200
     linked_objects_ignore = []
+    linked_objects_link_to_changelist = True
 
     def get_ignored_linked_objects(self, request):
         return self.linked_objects_ignore

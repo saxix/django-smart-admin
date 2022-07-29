@@ -3,7 +3,12 @@
 {% block content %}
     {% for e in linked %}
         <fieldset class="module">
-            <h2 class="">{{ e.related_name }} ({{ e.field_name }}) | {{ e.count }} records</h2>
+            {% url e.link as changelist_url %}
+            <h2 class="">{{ e.related_name }} ({{ e.field_name }}) | {{ e.count }} records
+                {% if changelist_url %}
+                    <a href="{{ changelist_url }}?{{ e.filter }}">goto</a>
+            {% endif %}
+            </h2>
             <table>
                 {% for row in e.data %}
                     <tr>
