@@ -1,3 +1,17 @@
+Release (dev)
+-------------
+* Fixes `TruncateAdminMixin`
+
+
+Release 2.0.2
+-------------
+* bug fixes
+
+Release 2.0.1
+-------------
+* bug fixes
+
+
 Release 2.0
 -----------
 * enhanced LinkedObjectsMixin
