@@ -1,15 +1,14 @@
-{% extends "admin/base_site.html" %}{% load i18n sysinfo static %}
+{% extends "smart_admin/console.html" %}{% load i18n sysinfo static %}
 {% block extrahead %}
   {{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static "sysinfo/sysinfo.css" %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static "smart_admin.css" %}"/>
+
 {% endblock %}
 {% block userlinks %}<a name="top"/>{{ block.super }}{% endblock userlinks %}
-{#{% block breadcrumbs %} #}
-{#  {{ block.super }}#}
-{#{% endblock %}#}
 {% block content_title %}{% if title %}<h1>System Information</h1>{% endif %}{% endblock %}
 
-{% block content %}
+{% block left %}
   <input id="filterInput" type="text">
   <div>
     {% url "sys-info" as json %}
@@ -27,7 +26,7 @@
   {% section 'extra' %}
 {% endblock %}
 {% block footer %}
-  <script src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}"></script>
+{#  <script src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}"></script>#}
   <script src="{% static 'admin/js/jquery.init.js' %}"></script>
   <script>
     let $ = django.jQuery;

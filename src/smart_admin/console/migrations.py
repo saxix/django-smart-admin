@@ -18,4 +18,4 @@ def panel_migrations(self, request):
 
 
 panel_migrations.verbose_name = _("Migrations")
-panel_migrations.url_name = _("migrations")
+panel_migrations.url_name = "migrations"
