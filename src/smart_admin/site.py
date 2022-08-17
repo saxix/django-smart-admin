@@ -7,12 +7,10 @@ from django.contrib.admin import AdminSite
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.core.cache import caches
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page, never_cache
-from django.views.decorators.vary import vary_on_cookie
+from django.views.decorators.cache import never_cache
 
 from . import get_full_version, settings as smart_settings
 from .autocomplete import SmartAutocompleteJsonView

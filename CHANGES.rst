@@ -1,3 +1,7 @@
+Release 2.2.1
+-------------
+* Fixes packaging issue
+
 Release 2.2
 -------------
 * Improves "Console" and Panels management
