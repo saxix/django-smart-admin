@@ -1,20 +1,19 @@
-from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 from itertools import chain
 
-from admin_extra_buttons.api import ExtraButtonsMixin, button, confirm_action
+from admin_extra_buttons.api import ExtraButtonsMixin, button
 from adminfilters.filters import AllValuesComboFilter, ChoicesFieldComboFilter, RelatedFieldComboFilter
 from adminfilters.mixin import AdminFiltersMixin
 from django.contrib.admin import FieldListFilter
 from django.contrib.admin.checks import BaseModelAdminChecks, must_be
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.admin.utils import flatten
 from django.contrib.contenttypes.models import ContentType
-from django.db import OperationalError, models
+from django.db import OperationalError, models, transaction
 from django.db.models import AutoField, ForeignKey, ManyToManyField, TextField
 from django.db.models.fields.related import RelatedField
-from django.db import transaction
+from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
+from django.urls import reverse
 
 from smart_admin.truncate import truncate_model_table
 from smart_admin.utils import get_related

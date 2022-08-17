@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import cache_page
 
 
 def panel_sysinfo(self, request):
@@ -20,6 +20,7 @@ def panel_sysinfo(self, request):
                       'smart_admin/panels/sysinfo.html', context)
 
     return _sysinfo(request)
+
 
 panel_sysinfo.verbose_name = _("System Info")
 panel_sysinfo.url_name = "sysinfo"
