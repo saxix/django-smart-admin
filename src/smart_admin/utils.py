@@ -1,6 +1,7 @@
 import re
 from fnmatch import fnmatchcase
 
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -46,16 +47,20 @@ class SmartList(list):
 
 def get_related(user, field, max_records=200):
     info = {
+        "owner": user,
         "to": field.model._meta.model_name,
         "field_name": field.name,
+        "count": 0,
+        "link": admin_urlname(field.related_model._meta, "changelist"),
+        "filter": "",
     }
-
     try:
         info["related_name"] = field.related_model._meta.verbose_name
         if field.related_name:
             related_attr = getattr(user, field.related_name)
         else:
             related_attr = getattr(user, f"{field.name}_set")
+        info["filter"] = f"{field.field.name}={user.pk}"
 
         if hasattr(related_attr, 'all') and callable(related_attr.all):
             related = related_attr.all()[:max_records or 200]

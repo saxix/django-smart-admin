@@ -1,3 +1,6 @@
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from itertools import chain
 
 from admin_extra_buttons.api import ExtraButtonsMixin, button, confirm_action
@@ -10,9 +13,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import OperationalError, models
 from django.db.models import AutoField, ForeignKey, ManyToManyField, TextField
 from django.db.models.fields.related import RelatedField
-from django.db.transaction import atomic
+from django.db import transaction
 from django.template.response import TemplateResponse
-from django.utils.safestring import mark_safe
 
 from smart_admin.truncate import truncate_model_table
 from smart_admin.utils import get_related
@@ -120,6 +122,7 @@ class LinkedObjectsMixin:
     linked_objects_hide_empty = True
     linked_objects_max_records = 200
     linked_objects_ignore = []
+    linked_objects_link_to_changelist = True
 
     def get_ignored_linked_objects(self, request):
         return self.linked_objects_ignore
@@ -154,35 +157,47 @@ class LinkedObjectsMixin:
         ], context)
 
 
-class TruncateAdminMixin:
-    def _truncate(self, request):
-        if request.method == "POST":
-            from django.contrib.admin.models import DELETION, LogEntry
-            with atomic():
-                LogEntry.objects.log_action(
-                    user_id=request.user.pk,
-                    content_type_id=ContentType.objects.get_for_model(self.model).pk,
-                    object_id=None,
-                    object_repr=f"truncate table {self.model._meta.verbose_name}",
-                    action_flag=DELETION,
-                    change_message="truncate table",
-                )
+def log_truncate(request, model):
+    from django.contrib.admin.models import DELETION, LogEntry
+    LogEntry.objects.log_action(
+        user_id=request.user.pk,
+        content_type_id=ContentType.objects.get_for_model(model).pk,
+        object_id=None,
+        object_repr=f"truncate table {model._meta.verbose_name}",
+        action_flag=DELETION,
+        change_message="truncate table",
+    )
 
+
+class TruncateAdminMixin:
+    truncate_table_template = "smart_admin/truncate_table.html"
+
+    def _truncate(self, request):
+        opts = self.model._meta
+        context = self.get_common_context(request, opts=opts)
+
+        if request.method == "POST":
+            with transaction.atomic():  # Outer atomic, start a new transaction
+                transaction.on_commit(lambda: log_truncate(request, self.model))
                 try:
                     truncate_model_table(self.model)
                 except OperationalError:
                     self.get_queryset(request).delete()
+                url = reverse(admin_urlname(opts, "changelist"))
+                return HttpResponseRedirect(url)
         else:
-            return confirm_action(
-                self,
-                request,
-                self.truncate,
-                mark_safe("""
-<h1 class="color-red"><b>This is a low level system feature</b></h1>
-<h1 class="color-red"><b>Continuing irreversibly delete all table content</b></h1>
+            return TemplateResponse(request, self.truncate_table_template, context)
 
-                                       """),
-                "Successfully executed",
-                title="Truncate table",
-                extra_context={"original": None, "add": False},
-            )
+#             return confirm_action(
+#                 self,
+#                 request,
+#                 self.truncate,
+#                 mark_safe("""
+# <h1 class="color-red"><b>This is a low level system feature</b></h1>
+# <h1 class="color-red"><b>Continuing irreversibly delete all table content</b></h1>
+#
+#                                        """),
+#                 "Successfully executed",
+#                 title="Truncate table",
+#                 extra_context={"original": None, "add": False},
+#             )
