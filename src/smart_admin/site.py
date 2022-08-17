@@ -146,6 +146,7 @@ class SmartAdminSite(AdminSite):
 
         urlpatterns = [path('~groups/<str:group>/', wrap(self.smart_section), name='group_list'),
                        path('smart/<str:on_off>/', wrap(self.smart_toggle), name='smart_toggle'),
+                       path("console/", wrap(self.console), name="console"),
                        ]
         for entry in self.console_panels:
             urlpatterns.append(path(f"{entry['name']}/",

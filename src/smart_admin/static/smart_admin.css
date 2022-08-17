@@ -1,0 +1,15 @@
+.panel {
+  display: none;
+}
+.panel.active {
+  display: block;
+}
+
+.console-buttons .button {
+  background-color: #79aec8;
+}
+.console-buttons .button.selected {
+  background-color: #114e6c;
+}
+
+/*# sourceMappingURL=smart_admin.css.map */

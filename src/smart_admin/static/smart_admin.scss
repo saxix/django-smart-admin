@@ -1,0 +1,17 @@
+.panel{
+  display: none;
+  &.active{
+    display: block;
+  }
+}
+
+.console-buttons{
+  .button{
+    background-color: #79aec8;
+    &.selected{
+      background-color: #114e6c;
+
+    }
+  }
+
+}
