@@ -44,7 +44,6 @@ def page():
     return action_decorator
 
 
-@method_decorator([vary_on_cookie, cache_page(smart_settings.SYSINFO_TTL)], name='admin_sysinfo')
 class SmartAdminSite(AdminSite):
     sysinfo_url = False
     index_template = 'admin/index.html'
@@ -94,19 +93,6 @@ class SmartAdminSite(AdminSite):
         else:
             return super().index(request)
 
-    def admin_sysinfo(self, request):
-        from django_sysinfo.api import get_sysinfo
-        infos = get_sysinfo(request)
-        infos.setdefault('extra', {})
-        infos.setdefault('checks', {})
-        context = self.each_context(request)
-        context.update({'title': 'sysinfo',
-                        'infos': infos,
-                        'enable_switch': True,
-                        'has_permission': True,
-                        })
-        return render(request, 'admin/sysinfo/sysinfo.html', context)
-
     def autocomplete_view(self, request):
         return SmartAutocompleteJsonView.as_view(admin_site=self)(request)
 
@@ -154,12 +140,12 @@ class SmartAdminSite(AdminSite):
                                     name=entry["name"]))
         self.extra_pages = [("Console", reverse_lazy("admin:console"))]
 
-        try:
-            if 'django_sysinfo' in settings.INSTALLED_APPS:
-                urlpatterns += [path('~sysinfo/', wrap(self.admin_sysinfo), name='smart-sysinfo-admin'), ]
-                self.sysinfo_url = reverse_lazy('admin:smart-sysinfo-admin')
-        except ImportError:
-            pass
+        # try:
+        #     if 'django_sysinfo' in settings.INSTALLED_APPS:
+        #         urlpatterns += [path('~sysinfo/', wrap(self.admin_sysinfo), name='smart-sysinfo-admin'), ]
+        #         self.sysinfo_url = reverse_lazy('admin:smart-sysinfo-admin')
+        # except ImportError:
+        #     pass
         urlpatterns += super().get_urls()
 
         return urlpatterns
