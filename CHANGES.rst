@@ -1,4 +1,8 @@
-Release (dev)
+Release 2.2
+-------------
+* Improves "Console" and Panels management
+
+Release 2.1
 -------------
 * Fixes `TruncateAdminMixin`
 
