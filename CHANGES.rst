@@ -1,16 +1,24 @@
+Release 2.2.3
+-------------
+* uses setuptools
+* add MANIFEST.in
+
+
 Release 2.2.2
 -------------
 * do not set empty cookie
-
-
 * Fixes packaging issue
+
+
 Release 2.2.1
 -------------
 * Fixes packaging issue
 
+
 Release 2.2
 -------------
 * Improves "Console" and Panels management
+
 
 Release 2.1
 -------------
@@ -21,6 +29,7 @@ Release 2.0.2
 -------------
 * bug fixes
 
+
 Release 2.0.1
 -------------
 * bug fixes
@@ -30,6 +39,7 @@ Release 2.0
 -----------
 * enhanced LinkedObjectsMixin
 * add "Console/Panels"
+
 
 Release 1.9.2
 -----------
