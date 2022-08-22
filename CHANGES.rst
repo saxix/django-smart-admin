@@ -1,3 +1,9 @@
+Release 2.2.2
+-------------
+* do not set empty cookie
+
+
+* Fixes packaging issue
 Release 2.2.1
 -------------
 * Fixes packaging issue

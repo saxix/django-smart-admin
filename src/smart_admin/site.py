@@ -102,7 +102,7 @@ class SmartAdminSite(AdminSite):
             self.app_index_template = ['admin/%s/app_index.html' % app_label,
                                        'admin/group_index.html']
         response = super().app_index(request, app_label, extra_context)
-        response.set_cookie("smart", )
+        response.set_cookie("smart", "0")
         return response
 
     def smart_toggle(self, request, on_off):
