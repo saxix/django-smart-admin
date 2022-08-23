@@ -3,3 +3,11 @@ from django.apps import AppConfig
 
 class Config(AppConfig):
     name = 'demo'
+
+    def ready(self):
+        super().ready()
+        from django.contrib.admin import site
+        from smart_admin.console import panel_migrations, panel_sysinfo
+
+        site.register_panel(panel_migrations)
+        site.register_panel(panel_sysinfo)
