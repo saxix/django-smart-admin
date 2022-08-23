@@ -4,7 +4,7 @@ develop:
 	.venv/bin/pip install -e .[dev,full]
 
 demo:
-	cd tests/demoapp && ./manage.py testserver ../fixtures.json
+	cd tests/demoapp && ./manage.py testserver
 
 clean:
 	# cleaning

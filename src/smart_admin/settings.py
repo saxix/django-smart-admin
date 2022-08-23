@@ -32,7 +32,7 @@ def get_bookmarks(request=None):
     return values
 
 
-def check_logentry_archive_perm(request, perm):
+def check_logentry_archive_perm(request, perm, **kwargs):
     if LOGENTRY_ARCHIVE_PERM:
         return request.user.has_perm(LOGENTRY_ARCHIVE_PERM)
     return True

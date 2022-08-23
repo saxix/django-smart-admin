@@ -1,0 +1,23 @@
+// ADMIN
+#container {
+
+}
+.console-buttons{
+  a{
+    color: white!important;
+    text-align: center;
+  }
+}
+.redis-cli{
+  input[type=text]{
+    width: 100%;
+  }
+  .code{
+    padding-left: 2px;
+    padding-right: 2px;
+    background-color: black;
+    color: white;
+    height: 500px;
+    overflow-scrolling: auto;
+  }
+}

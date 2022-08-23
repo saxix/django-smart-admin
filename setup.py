@@ -1,7 +1,4 @@
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup, find_packages
 
 import os.path
 
@@ -14,23 +11,17 @@ setup(
     long_description=readme,
     long_description_content_type='text/markdown',
     name='django-smart-admin',
-    version='2.2.1',
+    version='2.3.0',
     python_requires='==3.*,>=3.8',
+    url="https://github.com/saxix/django-smart-admin",
     project_urls={"homepage": "https://github.com/saxix/django-smart-admin",
                   "repository": "https://github.com/saxix/django-smart-admin"
                   },
     author='sax',
     author_email='s.apostolico@gmail.com',
     keywords='django',
-    packages=['smart_admin',
-              'smart_admin.console',
-              'smart_admin.logs',
-              'smart_admin.smart_auth',
-              'smart_admin.templatetags'],
-    package_dir={"": "src"},
-    package_data={"smart_admin": ["templates/**/*.html",
-                                  "static/**/*.*",
-                                  ]},
+    package_dir={'': 'src'},
+    packages=find_packages('src'),
     extras_require={
         'full': ["django-adminfilters>=2",
                  "django-admin-extra-buttons",

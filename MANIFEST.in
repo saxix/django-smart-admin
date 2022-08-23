@@ -1,0 +1,8 @@
+include README.md
+include CHANGES.rst
+include MANIFEST.in
+include setup.py
+include tox.ini
+recursive-include src *
+recursive-include tests *.coveragerc
+recursive-include tests *.py

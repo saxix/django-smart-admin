@@ -75,3 +75,9 @@ def get_related(user, field, max_records=200):
         info["related_name"] = field.related_model._meta.verbose_name
 
     return info
+
+
+def masker(value, request):
+    if request.user.is_superuser:
+        return value
+    return "****"

@@ -17,7 +17,7 @@ env = environ.Env(
 )
 
 DEBUG = env('DEBUG')
-
+USE_TZ = False
 STATIC_URL = '/static/'
 STATIC_ROOT = env('STATIC_ROOT')
 SITE_ID = 1
