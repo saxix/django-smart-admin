@@ -4,7 +4,6 @@
 {% block userlinks %}{{ block.super }}
 {% if enable_switch %} / {% smart_toggler %}{% endif %}
 {#{% if sysinfo %} / <a href="{{ sysinfo }}">System Info</a> {% endif %}#}
-    333333
 {% if profile_link %} / <a href="{{ profile_link }}">Profile</a> {% endif %}
     {% for page in  extra_pages %}
         / <a href="{{ page.1 }}">{{ page.0 }}</a>
