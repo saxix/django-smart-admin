@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import cache_page
 
 
 def panel_sysinfo(self, request):

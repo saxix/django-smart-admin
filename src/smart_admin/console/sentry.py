@@ -89,7 +89,7 @@ def panel_sentry(self, request, extra_context=None):
                     logger.exception(e)
                     last_event_id = sentry_sdk.last_event_id()
             elif opt in ["400", "403", "404", "500"]:
-                from django.conf.urls import handler404, handler400, handler403, handler500
+                from django.conf.urls import handler400, handler403, handler404, handler500
                 mapping = {
                     "400": (ValidationError, handler400),
                     "403": (PermissionDenied, handler403),
