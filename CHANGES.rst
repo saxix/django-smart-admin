@@ -1,3 +1,7 @@
+Release 2.3
+-------------
+* add extra panels: email, redis, error pages, sentry
+
 Release 2.2.3
 -------------
 * uses setuptools
