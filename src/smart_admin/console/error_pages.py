@@ -1,15 +1,10 @@
 import logging
 from functools import partial
-from urllib.parse import ParseResult, urlparse
 
 from django import forms
-from django.conf import settings
-from django.contrib import messages
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import Http404
 from django.shortcuts import render
-from django.utils.html import urlize
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 logger = logging.getLogger(__name__)

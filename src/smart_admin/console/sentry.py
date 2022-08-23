@@ -44,6 +44,7 @@ def make_sentry_link(event_id):
             logger.exception(e)
     return event_id
 
+
 class SentryForm(forms.Form):
     ACTIONS = [
         ("capture_event", "capture_event()"),

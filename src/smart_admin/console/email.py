@@ -1,8 +1,6 @@
 import concurrent.futures
 import logging
 import threading
-import time
-from signal import SIGTSTP, pthread_kill
 
 from django.conf import settings
 from django.contrib import messages

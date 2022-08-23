@@ -41,6 +41,8 @@ def test_index(app):
     url = reverse("admin:index")
 
     res = app.get(url, user='sax')
+    # FIXME: remove me (res.showbrowser)
+    res.showbrowser()
     assert res.pyquery('a:contains("Smart Index")')
 
     app.set_cookie('smart', "1")
