@@ -11,7 +11,7 @@ setup(
     long_description=readme,
     long_description_content_type='text/markdown',
     name='django-smart-admin',
-    version='2.3.0',
+    version='2.3.1',
     python_requires='==3.*,>=3.8',
     url="https://github.com/saxix/django-smart-admin",
     project_urls={"homepage": "https://github.com/saxix/django-smart-admin",
@@ -22,6 +22,7 @@ setup(
     keywords='django',
     package_dir={'': 'src'},
     packages=find_packages('src'),
+    include_package_data=True,
     extras_require={
         'full': ["django-adminfilters>=2",
                  "django-admin-extra-buttons",
