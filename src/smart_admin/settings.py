@@ -65,4 +65,5 @@ def get_setting(entry):
     return globals()[entry]
 
 
-get_setting_lazy = lazy(get_setting, str)
+def get_setting_lazy(entry):
+    return lazy(str, str)(get_setting(entry))

@@ -64,7 +64,8 @@
             <h2>{% trans 'Recent actions' %}</h2>
 
             <h3>{% if smart_settings.ANYUSER_LOG %}
-                <a href="{% url "admin:admin_logentry_changelist" %}">{% trans 'Actions' %}</a>
+                {% url "admin:admin_logentry_changelist" as aaaa%}
+                <a href="{{ aaaa }}">{% trans 'Actions' %}</a>
                 {% get_admin_log 10 as admin_log %}
             {% else %}
                 <a href="">{% trans 'My actions' %}</a>
