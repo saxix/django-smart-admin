@@ -1,3 +1,13 @@
+Release 2.4
+-----------
+* fixes compat Django 4.1
+
+
+Release 2.3.1
+-------------
+* bug fixes
+
+
 Release 2.3
 -------------
 * add extra panels: email, redis, error pages, sentry

@@ -57,6 +57,8 @@ class SmartAdminSite(AdminSite):
 
     def each_context(self, request):
         context = super().each_context(request)
+        context['site_title'] = str(self.site_title)
+        context['site_header'] = str(self.site_header)
         context['groups'] = dict(self._get_menu(request)[0])
         context['sysinfo'] = self.sysinfo_url
         context['smart_settings'] = smart_settings
