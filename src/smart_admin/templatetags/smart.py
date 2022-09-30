@@ -52,15 +52,13 @@ def get_admin_link(record):
 
 
 @register.simple_tag()
-def get_admin_href(record, field=None):
-    opts = record._meta
-    url_name = admin_urlname(opts, "change")
+def get_admin_href(admin_site, record, field=None):
     if field:
         label = getattr(record, field)
     else:
         label = str(record)
     try:
-        url = reverse(url_name, args=[record.pk])
+        url = admin_site.reverse_object_url(record, "change")
         tag = f'<a href="{url}">{label}</a>'
     except NoReverseMatch:
         tag = label

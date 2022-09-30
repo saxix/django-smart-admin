@@ -51,7 +51,7 @@ def get_related(user, field, max_records=200):
         "to": field.model._meta.model_name,
         "field_name": field.name,
         "count": 0,
-        "link": admin_urlname(field.related_model._meta, "changelist"),
+        "link": admin_urlbasename(field.related_model._meta, "changelist"),
         "filter": "",
     }
     try:
@@ -81,3 +81,11 @@ def masker(value, request):
     if request.user.is_superuser:
         return value
     return "****"
+
+
+def admin_site_urlname(admin_site, value, arg):
+    return '%s:%s_%s_%s' % (admin_site.name, value.app_label, value.model_name, arg)
+
+
+def admin_urlbasename(value, arg):
+    return '%s_%s_%s' % (value.app_label, value.model_name, arg)

@@ -3,7 +3,7 @@
 {% block content %}
     {% for e in linked %}
         <fieldset class="module">
-            {% url e.link as changelist_url %}
+            {% url admin_site.name|add:e.link as changelist_url %}
             <h2 class="">{{ e.related_name }} ({{ e.field_name }}) | {{ e.count }} records
                 {% if changelist_url %}
                     <a href="{{ changelist_url }}?{{ e.filter }}">goto</a>
@@ -12,8 +12,8 @@
             <table>
                 {% for row in e.data %}
                     <tr>
-{#                        <td><a href="{{ row|get_admin_link }}">{{ row.pk }}</a></td>#}
-                        <td>{% get_admin_href row 'pk' %}</td>
+                        <td><a href="{{ row|get_admin_link }}">{{ row.pk }}</a></td>
+                        <td>{% get_admin_href admin_site row 'pk' %}</td>
                         <td>{{ row }}</td>
                     </tr>
                 {% endfor %}

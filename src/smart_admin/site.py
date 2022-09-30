@@ -75,6 +75,10 @@ class SmartAdminSite(AdminSite):
 
         return context
 
+    def reverse_object_url(self, obj, page):
+        url_name = '%s:%s_%s_%s' % (self.name, obj._meta.app_label, obj._meta.model_name, page)
+        return reverse(url_name)
+
     def register_panel(self, callable, url_name=None, label=None):
         if not label:
             label = getattr(callable, 'verbose_name', callable.__name__.title())
