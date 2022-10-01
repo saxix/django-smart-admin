@@ -1,4 +1,5 @@
 from admin_extra_buttons.api import ExtraButtonsMixin, button
+from admin_extra_buttons.decorators import view
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.filters import AllValuesComboFilter, PermissionPrefixFilter
 from adminfilters.mixin import AdminFiltersMixin
@@ -139,7 +140,7 @@ class UserAdmin(ExtraButtonsMixin, AdminFiltersMixin, _UserAdmin):
         context['permissions'] = sorted(context['original'].get_all_permissions())
         return render(request, 'admin/auth/user/permissions.html', context)
 
-    @button(urls=['redir_to_perm/(?P<perm>.*)/$'])
+    @view(urls=['redir_to_perm/(?P<perm>.*)/$'])
     def redir_to_perm(self, request, perm):
         app_label, codename = perm.split('.')
         perm = Permission.objects.get(codename=codename, )
