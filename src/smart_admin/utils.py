@@ -1,7 +1,6 @@
 import re
 from fnmatch import fnmatchcase
 
-from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import OneToOneRel
 
