@@ -1,8 +1,8 @@
 import re
 from fnmatch import fnmatchcase
 
-from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import OneToOneRel
 
 
 def as_bool(value):
@@ -51,13 +51,15 @@ def get_related(user, field, max_records=200):
         "to": field.model._meta.model_name,
         "field_name": field.name,
         "count": 0,
-        "link": admin_urlname(field.related_model._meta, "changelist"),
+        "link": admin_urlbasename(field.related_model._meta, "changelist"),
         "filter": "",
     }
     try:
         info["related_name"] = field.related_model._meta.verbose_name
         if field.related_name:
             related_attr = getattr(user, field.related_name)
+        elif isinstance(field, OneToOneRel):
+            related_attr = getattr(user, field.name)
         else:
             related_attr = getattr(user, f"{field.name}_set")
         info["filter"] = f"{field.field.name}={user.pk}"
@@ -81,3 +83,11 @@ def masker(value, request):
     if request.user.is_superuser:
         return value
     return "****"
+
+
+def admin_site_urlname(admin_site, value, arg):
+    return '%s:%s_%s_%s' % (admin_site.name, value.app_label, value.model_name, arg)
+
+
+def admin_urlbasename(value, arg):
+    return '%s_%s_%s' % (value.app_label, value.model_name, arg)

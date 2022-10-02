@@ -1,3 +1,8 @@
+Release 2.4.1
+-------------
+* Fixes LinkedObjectsMixin
+
+
 Release 2.4
 -----------
 * fixes compat Django 4.1
