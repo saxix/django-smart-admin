@@ -3,6 +3,7 @@ from fnmatch import fnmatchcase
 
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import OneToOneRel
 
 
 def as_bool(value):
@@ -58,6 +59,8 @@ def get_related(user, field, max_records=200):
         info["related_name"] = field.related_model._meta.verbose_name
         if field.related_name:
             related_attr = getattr(user, field.related_name)
+        elif isinstance(field, OneToOneRel):
+            related_attr = getattr(user, field.name)
         else:
             related_attr = getattr(user, f"{field.name}_set")
         info["filter"] = f"{field.field.name}={user.pk}"
