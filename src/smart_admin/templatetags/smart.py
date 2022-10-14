@@ -51,8 +51,9 @@ def get_admin_link(record):
     return reverse(url_name, args=[record.pk])
 
 
-@register.simple_tag()
-def get_admin_href(admin_site, record, field=None):
+@register.simple_tag(takes_context=True)
+def get_admin_href(context, record, field=None):
+    admin_site = context["admin_site"]
     if field:
         label = getattr(record, field)
     else:
@@ -63,3 +64,9 @@ def get_admin_href(admin_site, record, field=None):
     except NoReverseMatch:
         tag = label
     return mark_safe(tag)
+
+
+@register.simple_tag(takes_context=True)
+def get_admin_url_name(context, app_label, model_name, page, opts=None):
+    admin_site = context["admin_site"]
+    return '%s:%s_%s_%s' % (admin_site.name, app_label, model_name, page)

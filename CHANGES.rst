@@ -1,3 +1,11 @@
+Release 2.5
+-----------
+* add `SmartAdminSite.smart_index_template` and `SmartAdminSite.group_index_template`
+* minor refactoring of `SmartAdminSite`
+* fixes `LinkedObjectsMixin.linked_objects_hide_empty`
+* BACKWARD INCOMPATIBLE: change signature of `get_admin_href` template tags
+
+
 Release 2.4.1
 -------------
 * Fixes LinkedObjectsMixin

@@ -20,6 +20,7 @@
             </table>
         </fieldset>
     {% endfor %}
+    {% if show_empty %}
     <fieldset class="module">
         <h2 class="">Empty Relationships</h2>
         <ul>
@@ -28,6 +29,7 @@
             {% endfor %}
         </ul>
     </fieldset>
+    {% endif %}
 {% endblock content %}
 {% block footer %}
     <div id="footer"></div>

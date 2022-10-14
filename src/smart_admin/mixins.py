@@ -145,6 +145,7 @@ class LinkedObjectsMixin:
             else:
                 linked.append(info)
 
+        context["hide_empty"] = not self.linked_objects_hide_empty
         context["empty"] = sorted(empty, key=lambda x: x['related_name'].lower())
         context["linked"] = sorted(linked, key=lambda x: x['related_name'].lower())
         context["reverse"] = reverse

@@ -36,6 +36,7 @@ def page():
         def _inner(modeladmin, request, *args, **kwargs):
             ret = func(modeladmin, request, *args, **kwargs)
             return ret
+
         _inner.is_page = True
         return _inner
 
@@ -45,6 +46,8 @@ def page():
 class SmartAdminSite(AdminSite):
     sysinfo_url = False
     index_template = 'admin/index.html'
+    smart_index_template = 'admin/smart_index.html'
+    group_index_template = 'admin/group_index.html'
     site_title = get_setting_lazy('TITLE')
     site_header = get_setting_lazy('HEADER')
     panels = []
@@ -55,13 +58,16 @@ class SmartAdminSite(AdminSite):
             self.register_panel(func)
         super().__init__(name)
 
+    def get_smart_settings(self, request):
+        return smart_settings
+
     def each_context(self, request):
         context = super().each_context(request)
         context['site_title'] = str(self.site_title)
         context['site_header'] = str(self.site_header)
         context['groups'] = dict(self._get_menu(request)[0])
         context['sysinfo'] = self.sysinfo_url
-        context['smart_settings'] = smart_settings
+        context['smart_settings'] = self.get_smart_settings(request)
         context['enable_switch'] = smart_settings.ENABLE_SWITCH
         context['bookmarks'] = get_bookmarks(request)
         context['smart'] = self.is_smart_enabled(request)
@@ -218,7 +224,7 @@ class SmartAdminSite(AdminSite):
             'section': (group, section),
             **(extra_context or {}),
         }
-        return TemplateResponse(request, 'admin/group_index.html', context)
+        return TemplateResponse(request, self.group_index_template, context)
 
     @method_decorator(never_cache)
     def smart_index(self, request, extra_context=None):
@@ -227,4 +233,4 @@ class SmartAdminSite(AdminSite):
             **(extra_context or {}),
         }
         request.current_app = self.name
-        return TemplateResponse(request, 'admin/smart_index.html', context)
+        return TemplateResponse(request, self.smart_index_template, context)
