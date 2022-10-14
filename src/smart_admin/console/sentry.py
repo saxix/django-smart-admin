@@ -1,6 +1,7 @@
 import logging
 from urllib.parse import ParseResult, urlparse
 
+from admin_extra_buttons.utils import HttpResponseRedirectToReferrer
 from django import forms
 from django.conf import settings
 from django.contrib import messages
@@ -61,7 +62,12 @@ class SentryForm(forms.Form):
 
 
 def panel_sentry(self, request, extra_context=None):
-    import sentry_sdk
+    try:
+        import sentry_sdk
+    except ImportError as exc:
+        messages.add_message(request, messages.ERROR, f"{exc.__class__.__name__}: {exc}. Please remove `panel_sentry`.")
+        return HttpResponseRedirectToReferrer(request)
+
     context = self.each_context(request)
     context["title"] = "Sentry"
     context["info"] = {
