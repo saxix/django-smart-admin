@@ -22,7 +22,14 @@
                         </tr>
                     {% endfor %}
                 </table>
-                <a href="." class="button button-default">Retry</a>
+                <div>
+                <button class="button button-default">
+                    <a href=".">Retry</a>
+                </button>
+                <button class="button button-default">
+                    <a href=".">Back</a>
+                </button>
+            </div>
             {% else %}
                 <table>
                     {% for k,v in smtp.items %}

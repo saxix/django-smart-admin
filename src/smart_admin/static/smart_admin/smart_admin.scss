@@ -7,10 +7,12 @@
 
 .console-buttons{
   .button{
-    background-color: #79aec8;
+    //background-color: #79aec8;
+    &.hover{
+      //background-color: #114e6c;
+    }
     &.selected{
       background-color: #114e6c;
-
     }
   }
 
