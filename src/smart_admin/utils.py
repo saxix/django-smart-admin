@@ -3,7 +3,6 @@ from fnmatch import fnmatchcase
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import OneToOneRel
-from django.http import HttpResponseRedirect
 
 
 def as_bool(value):
