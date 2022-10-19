@@ -1,5 +1,6 @@
 import logging
 
+from admin_extra_buttons.utils import HttpResponseRedirectToReferrer
 from django import forms
 from django.conf import settings
 from django.contrib import messages
@@ -15,8 +16,13 @@ class RedisCLIForm(forms.Form):
 
 
 def panel_redis(self, request, extra_context=None):
-    from django_redis import get_redis_connection
-    from redis import ResponseError
+    try:
+        from django_redis import get_redis_connection
+        from redis import ResponseError
+    except ImportError as exc:
+        messages.add_message(request, messages.ERROR, f"{exc.__class__.__name__}: {exc}. Please remove `panel_redis`")
+        return HttpResponseRedirectToReferrer(request)
+
     context = self.each_context(request)
     context["title"] = "Redis CLI"
     if request.method == "POST":
