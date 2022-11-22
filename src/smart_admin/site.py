@@ -8,7 +8,7 @@ from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.core.cache import caches
 from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
-from django.urls import reverse, reverse_lazy, NoReverseMatch
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 

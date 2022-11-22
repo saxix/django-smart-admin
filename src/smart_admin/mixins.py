@@ -124,10 +124,10 @@ class LinkedObjectsMixin:
     linked_objects_filter = None
     linked_objects_link_to_changelist = True
 
-    def get_excluded_linked_objects(self, request):
+    def get_excluded_linked_objects(self, request) -> list:
         return self.linked_objects_exclude
 
-    def get_selected_linked_objects(self, request)-> list:
+    def get_selected_linked_objects(self, request) -> list:
         if self.linked_objects_filter is None:
             return [f for f in self.model._meta.get_fields() if f.auto_created and not f.concrete]
         else:
