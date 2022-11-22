@@ -1,5 +1,5 @@
 include README.md
-include CHANGES.rst
+include CHANGES.md
 include MANIFEST.in
 include setup.py
 include tox.ini
