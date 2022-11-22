@@ -8,7 +8,7 @@ from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.core.cache import caches
 from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy, NoReverseMatch
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 
@@ -83,7 +83,7 @@ class SmartAdminSite(AdminSite):
 
     def reverse_object_url(self, obj, page):
         url_name = '%s:%s_%s_%s' % (self.name, obj._meta.app_label, obj._meta.model_name, page)
-        return reverse(url_name)
+        return reverse(url_name, args=[obj.pk])
 
     def register_panel(self, callable, url_name=None, label=None):
         if not label:
