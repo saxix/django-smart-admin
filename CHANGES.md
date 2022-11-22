@@ -1,5 +1,6 @@
 Release 2.6
 -----------
+* drop support Django<3.x
 * fixes `reverse_object_url()`
 * updates LinkedObjectsMixin: 
   * `get_ignored_linked_objects` renamed `get_excluded_linked_objects`
