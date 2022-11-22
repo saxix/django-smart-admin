@@ -17,5 +17,5 @@ def panel_migrations(self, request):
     return render(request, "smart_admin/panels/migrations.html", context)
 
 
-panel_migrations.verbose_name = _("Migrations")
-panel_migrations.url_name = "migrations"
+panel_migrations.verbose_name = _("Migrations")  # type: ignore[attr-defined]
+panel_migrations.url_name = "migrations"  # type: ignore[attr-defined]

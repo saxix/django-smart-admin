@@ -44,5 +44,5 @@ def panel_error_page(self, request, extra_context=None):
     return render(request, "smart_admin/panels/sentry.html", context)
 
 
-panel_error_page.verbose_name = _("Error Pages")
-panel_error_page.url_name = "errors"
+panel_error_page.verbose_name = _("Error Pages")  # type: ignore[attr-defined]
+panel_error_page.url_name = "errors"  # type: ignore[attr-defined]

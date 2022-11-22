@@ -9,10 +9,10 @@ CLAUSES = {
 
 class TruncateMixin:
     def truncate(self, reset=True):
-        truncate_model_table(self.model, reset)
+        truncate_model_table(self.model, reset)  # type: ignore[attr-defined]
 
 
-def truncate_model_table(model, reset=True):
+def truncate_model_table(model, reset=True) -> None:
     conn = connections[model._default_manager.db]
     if reset and conn.vendor == "postgresql":
         restart = 'RESTART IDENTITY'

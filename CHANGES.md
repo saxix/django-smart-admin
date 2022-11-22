@@ -1,3 +1,16 @@
+Release 2.6
+-----------
+* drop support Django<3.x
+* fixes `reverse_object_url()`
+* updates LinkedObjectsMixin: 
+  * `get_ignored_linked_objects` renamed `get_excluded_linked_objects`
+  * `linked_objects_ignore` renamed `linked_objects_exclude`
+  * added `linked_objects_filter`
+    * `linked_objects_filter = None` display all reverse relations
+    * `linked_objects_filter = []` do not display reverse relations
+    * `linked_objects_filter = [a,b,...]` only display `a`,`b` reverse relations
+  
+
 Release 2.5
 -----------
 * add `SmartAdminSite.smart_index_template` and `SmartAdminSite.group_index_template`

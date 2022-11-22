@@ -118,5 +118,5 @@ def panel_sentry(self, request, extra_context=None):
     return render(request, "smart_admin/panels/sentry.html", context)
 
 
-panel_sentry.verbose_name = _("Sentry")
-panel_sentry.url_name = "sentry"
+panel_sentry.verbose_name = _("Sentry")  # type: ignore[attr-defined]
+panel_sentry.url_name = "sentry"  # type: ignore[attr-defined]

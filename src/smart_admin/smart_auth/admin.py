@@ -1,3 +1,5 @@
+from typing import Dict
+
 from admin_extra_buttons.api import ExtraButtonsMixin, button
 from admin_extra_buttons.decorators import view
 from adminfilters.autocomplete import AutoCompleteFilter
@@ -13,7 +15,7 @@ from django.contrib.contenttypes.management import get_contenttypes_and_models
 from django.contrib.contenttypes.management.commands.remove_stale_contenttypes import NoFastDeleteCollector
 from django.contrib.contenttypes.models import ContentType
 from django.db import DEFAULT_DB_ALIAS
-from django.db.models import Q
+from django.db.models import Model, Q
 from django.db.transaction import atomic
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -53,7 +55,7 @@ class ContentTypeAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin):
     @button(permission='contenttypes.delete_contenttype')
     def check_stale(self, request):  # noqa
         context = self.get_common_context(request, title='Stale')
-        to_remove = {}
+        to_remove: Dict[ContentType, Model] = {}
         if request.method == 'POST':
             cts = request.POST.getlist('ct')
             with atomic():

@@ -1,9 +1,10 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import cache_page
 
 
-def panel_sysinfo(self, request):
+def panel_sysinfo(self, request) -> HttpResponse:
     @cache_page(0)
     def _sysinfo(request):
         from django_sysinfo.api import get_sysinfo
@@ -22,5 +23,5 @@ def panel_sysinfo(self, request):
     return _sysinfo(request)
 
 
-panel_sysinfo.verbose_name = _("System Info")
-panel_sysinfo.url_name = "sysinfo"
+panel_sysinfo.verbose_name = _("System Info")  # type: ignore[attr-defined]
+panel_sysinfo.url_name = "sysinfo"  # type: ignore[attr-defined]

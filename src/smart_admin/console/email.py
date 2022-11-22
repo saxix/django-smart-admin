@@ -39,7 +39,6 @@ def panel_email(self, request, extra_context=None):
         "EMAIL_USE_TLS": settings.EMAIL_USE_TLS,
         "DEFAULT_FROM_EMAIL": settings.DEFAULT_FROM_EMAIL,
     }
-    results = {}
     logs = []
     if request.method == "POST":
         try:
@@ -69,9 +68,8 @@ def panel_email(self, request, extra_context=None):
             logger.exception(e)
             messages.add_message(request, messages.ERROR, f"{e.__class__.__name__}: {e}")
     context["logs"] = logs
-    context["results"] = results
     return render(request, "smart_admin/panels/email.html", context)
 
 
-panel_email.verbose_name = _("Test Email")
-panel_email.url_name = "email"
+panel_email.verbose_name = _("Test Email")  # type: ignore[attr-defined]
+panel_email.url_name = "email"  # type: ignore[attr-defined]

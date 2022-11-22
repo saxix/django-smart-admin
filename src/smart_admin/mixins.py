@@ -1,4 +1,5 @@
 from itertools import chain
+from typing import List, Tuple, Union
 
 from admin_extra_buttons.api import ExtraButtonsMixin, button
 from adminfilters.filters import AllValuesComboFilter, ChoicesFieldComboFilter, RelatedFieldComboFilter
@@ -27,7 +28,7 @@ class SmartFilterMixin:
         FieldListFilter.register(lambda f: isinstance(f, models.BooleanField), AllValuesComboFilter, True)
         FieldListFilter.register(lambda f: f.remote_field, RelatedFieldComboFilter, True)
 
-        super().__init__(model, admin_site)
+        super().__init__(model, admin_site)  # type: ignore[call-arg]
 
 
 class SmartAutoFilterMixin(SmartFilterMixin):
@@ -62,7 +63,7 @@ class DisplayAllMixin:
 class FieldsetMixin:
 
     def get_fields(self, request, obj=None):
-        return super().get_fields(request, obj)
+        return super().get_fields(request, obj)  # type: ignore[misc]
 
     def get_fieldsets(self, request, obj=None):
         all_fields = self.get_fields(request, obj)
@@ -99,7 +100,7 @@ class SmartModelAdminChecks(BaseModelAdminChecks):
 
 
 class ReadOnlyMixin:
-    readonly_fields = ('__all__',)
+    readonly_fields: Tuple[str] = ('__all__', )
     checks_class = SmartModelAdminChecks
 
     def get_readonly_fields(self, request, obj=None):
@@ -113,42 +114,49 @@ class ReadOnlyMixin:
 
 class SmartMixin(ReadOnlyMixin, ExtraButtonsMixin, FieldsetMixin, DisplayAllMixin, SmartChangeListMixin,
                  AdminFiltersMixin):
-    readonly_fields = ()
+    readonly_fields: Tuple[str] = ()  # type: ignore [assignment]
 
 
 class LinkedObjectsMixin:
     linked_objects_template = None
     linked_objects_hide_empty = True
     linked_objects_max_records = 200
-    linked_objects_ignore = []
+    linked_objects_exclude: List[str] = []
+    linked_objects_filter: Union[List[str], None] = None
     linked_objects_link_to_changelist = True
 
-    def get_ignored_linked_objects(self, request):
-        return self.linked_objects_ignore
+    def get_excluded_linked_objects(self, request) -> list:
+        return self.linked_objects_exclude
 
-    @button()
-    def linked_objects(self, request, pk):
-        ignored = self.get_ignored_linked_objects(request)
-        opts = self.model._meta
-        app_label = opts.app_label
-        context = self.get_common_context(request, pk, title="linked objects")
-        reverse = []
-        for f in self.model._meta.get_fields():
-            if f.auto_created and not f.concrete and f.name not in ignored:
-                reverse.append(f)
+    def get_selected_linked_objects(self, request) -> list:
+        if self.linked_objects_filter is None:
+            return [f for f in self.model._meta.get_fields() if f.auto_created and not f.concrete]
+        else:
+            return self.linked_objects_filter
+
+    def get_linked_objects(self, request, original):
+        ignored = self.get_excluded_linked_objects(request)
+        selection = self.get_selected_linked_objects(request)
+        filtered = [x for x in selection if (x not in ignored)]
         linked = []
         empty = []
-        for f in reverse:
-            info = get_related(context['original'], f, max_records=self.linked_objects_max_records)
+        for f in filtered:
+            info = get_related(original, f, max_records=self.linked_objects_max_records)
             if info['count'] == 0 and self.linked_objects_hide_empty:
                 empty.append(info)
             else:
                 linked.append(info)
+        return linked, empty
 
+    @button()
+    def linked_objects(self, request, pk):
+        opts = self.model._meta
+        app_label = opts.app_label
+        context = self.get_common_context(request, pk, title="linked objects")
+        linked, empty = self.get_linked_objects(request, context['original'])
         context["hide_empty"] = not self.linked_objects_hide_empty
         context["empty"] = sorted(empty, key=lambda x: x['related_name'].lower())
         context["linked"] = sorted(linked, key=lambda x: x['related_name'].lower())
-        context["reverse"] = reverse
 
         return TemplateResponse(request, self.linked_objects_template or [
             f"admin/{app_label}/{opts.model_name}/linked_objects.html",
