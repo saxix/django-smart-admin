@@ -30,7 +30,6 @@ class SmartChangeList(ChangeList):
 
 
 class SmartChangeListMixin:
-    readonly_fields = []
 
     def get_changelist(self, request, **kwargs):
         """

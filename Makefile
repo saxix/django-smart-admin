@@ -24,6 +24,9 @@ lint:
 	@flake8 src/ tests/
 	@isort src/ tests/
 
+mypy:
+	MYPYPATH=./.venv/lib/python3.9/site-packages/ \
+		mypy --config-file=mypy.ini src/
 
 .PHONY: build docs
 

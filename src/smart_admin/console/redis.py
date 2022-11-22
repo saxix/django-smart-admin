@@ -46,4 +46,4 @@ def panel_redis(self, request, extra_context=None):
     return render(request, "smart_admin/panels/redis.html", context)
 
 
-panel_redis.verbose_name = _("Redis CLI")
+panel_redis.verbose_name = _("Redis CLI")  # type: ignore[attr-defined]

@@ -1,3 +1,5 @@
+from typing import Dict, List, Callable, Union
+
 import time
 from collections import OrderedDict
 from functools import partial, update_wrapper
@@ -23,7 +25,7 @@ cache = caches['default']
 
 def _parse_section():
     base = smart_settings.SECTIONS
-    ret = {'_hidden_': []}
+    ret: Dict[str, list] = {'_hidden_': []}
     for name, entries in base.items():
         ret[name] = SmartList(entries)
     if 'Other' not in ret:
@@ -50,7 +52,7 @@ class SmartAdminSite(AdminSite):
     group_index_template = 'admin/group_index.html'
     site_title = get_setting_lazy('TITLE')
     site_header = get_setting_lazy('HEADER')
-    panels = []
+    panels: List[Callable] = []
 
     def __init__(self, name='admin'):
         self.console_panels = []
@@ -85,7 +87,7 @@ class SmartAdminSite(AdminSite):
         url_name = '%s:%s_%s_%s' % (self.name, obj._meta.app_label, obj._meta.model_name, page)
         return reverse(url_name, args=[obj.pk])
 
-    def register_panel(self, callable, url_name=None, label=None):
+    def register_panel(self, callable: Callable, url_name=None, label: Union[str, None] = None):
         if not label:
             label = getattr(callable, 'verbose_name', callable.__name__.title())
         if not url_name:

@@ -1,3 +1,5 @@
+from typing import List, Tuple, Union
+
 from itertools import chain
 
 from admin_extra_buttons.api import ExtraButtonsMixin, button
@@ -27,7 +29,7 @@ class SmartFilterMixin:
         FieldListFilter.register(lambda f: isinstance(f, models.BooleanField), AllValuesComboFilter, True)
         FieldListFilter.register(lambda f: f.remote_field, RelatedFieldComboFilter, True)
 
-        super().__init__(model, admin_site)
+        super().__init__(model, admin_site)  # type: ignore[call-arg]
 
 
 class SmartAutoFilterMixin(SmartFilterMixin):
@@ -62,7 +64,7 @@ class DisplayAllMixin:
 class FieldsetMixin:
 
     def get_fields(self, request, obj=None):
-        return super().get_fields(request, obj)
+        return super().get_fields(request, obj)  # type: ignore[misc]
 
     def get_fieldsets(self, request, obj=None):
         all_fields = self.get_fields(request, obj)
@@ -99,7 +101,7 @@ class SmartModelAdminChecks(BaseModelAdminChecks):
 
 
 class ReadOnlyMixin:
-    readonly_fields = ('__all__',)
+    readonly_fields: Tuple[str] = ('__all__', )
     checks_class = SmartModelAdminChecks
 
     def get_readonly_fields(self, request, obj=None):
@@ -113,15 +115,15 @@ class ReadOnlyMixin:
 
 class SmartMixin(ReadOnlyMixin, ExtraButtonsMixin, FieldsetMixin, DisplayAllMixin, SmartChangeListMixin,
                  AdminFiltersMixin):
-    readonly_fields = ()
+    readonly_fields: Tuple[str] = ()  # type: ignore [assignment]
 
 
 class LinkedObjectsMixin:
     linked_objects_template = None
     linked_objects_hide_empty = True
     linked_objects_max_records = 200
-    linked_objects_exclude = []
-    linked_objects_filter = None
+    linked_objects_exclude: List[str] = []
+    linked_objects_filter: Union[List[str], None] = None
     linked_objects_link_to_changelist = True
 
     def get_excluded_linked_objects(self, request) -> list:
