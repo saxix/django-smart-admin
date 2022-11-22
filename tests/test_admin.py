@@ -122,7 +122,7 @@ def test_archive_log(app, settings):
     LogEntryFactory(action_time=datetime.date(2000, 1, 1))
     res = app.get(url, user='sax')
     res = res.click("Archive")
-    if res.forms:
+    if pytest.DJANGO41:
         form = res.forms[1]
     else:
         form = res.form
@@ -137,7 +137,7 @@ def test_group_history(app, settings):
     g = GroupFactory()
     url = reverse(admin_urlname(Group._meta, 'change'), args=[g.id])
     res = app.get(url, user='sax')
-    if res.forms:
+    if pytest.DJANGO41:
         form = res.forms[1]
     else:
         form = res.form
@@ -157,7 +157,7 @@ def test_user_history(app, settings):
     url = reverse(admin_urlname(User._meta, 'change'), args=[u.id])
 
     res = app.get(url, user='sax')
-    if res.forms:
+    if pytest.DJANGO41:
         form = res.forms[1]
     else:
         form = res.form

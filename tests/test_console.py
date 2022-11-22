@@ -21,7 +21,7 @@ def test_email_panel(app, mailoutbox):
     res = app.get(url, user='sax')
     res = res.click("Console")
     res = res.click("Test Email")
-    if res.forms:
+    if pytest.DJANGO41:
         res = res.forms[1].submit()
     else:
         res = res.form.submit()
