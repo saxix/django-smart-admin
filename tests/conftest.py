@@ -1,6 +1,6 @@
-import django
 import sys
 
+import django
 import pytest
 from django.urls import reverse
 

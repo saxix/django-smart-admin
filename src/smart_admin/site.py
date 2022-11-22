@@ -1,8 +1,7 @@
-from typing import Dict, List, Callable, Union
-
 import time
 from collections import OrderedDict
 from functools import partial, update_wrapper
+from typing import Callable, Dict, List, Union
 
 from django.conf import settings
 from django.contrib.admin import AdminSite

@@ -1,6 +1,5 @@
-from typing import List, Tuple, Union
-
 from itertools import chain
+from typing import List, Tuple, Union
 
 from admin_extra_buttons.api import ExtraButtonsMixin, button
 from adminfilters.filters import AllValuesComboFilter, ChoicesFieldComboFilter, RelatedFieldComboFilter

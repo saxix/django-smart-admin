@@ -15,7 +15,7 @@ from django.contrib.contenttypes.management import get_contenttypes_and_models
 from django.contrib.contenttypes.management.commands.remove_stale_contenttypes import NoFastDeleteCollector
 from django.contrib.contenttypes.models import ContentType
 from django.db import DEFAULT_DB_ALIAS
-from django.db.models import Q, Model
+from django.db.models import Model, Q
 from django.db.transaction import atomic
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
