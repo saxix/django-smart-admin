@@ -86,12 +86,18 @@ class SmartAdminSite(AdminSite):
         url_name = '%s:%s_%s_%s' % (self.name, obj._meta.app_label, obj._meta.model_name, page)
         return reverse(url_name, args=[obj.pk])
 
-    def register_panel(self, callable: Callable, url_name=None, label: Union[str, None] = None):
+    def register_panel(self, func: Callable, url_name=None, label: Union[str, None] = None):
+        if hasattr(func, '__name__'):
+            default = func.__name__
+        else:
+            default = func.__class__.__name__
+
         if not label:
-            label = getattr(callable, 'verbose_name', callable.__name__.title())
+            label = getattr(func, 'verbose_name', default.title())
         if not url_name:
-            url_name = getattr(callable, 'url_name', callable.__name__.lower())
-        self.console_panels.append({"func": callable,
+            url_name = getattr(func, 'url_name', default.lower())
+
+        self.console_panels.append({"func": func,
                                     "label": str(label), "name": str(url_name)})
 
     def is_smart_enabled(self, request):

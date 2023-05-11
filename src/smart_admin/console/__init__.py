@@ -4,3 +4,4 @@ from .migrations import panel_migrations
 from .redis import panel_redis
 from .sentry import panel_sentry
 from .sysinfo import panel_sysinfo
+from .celery import panel_celery

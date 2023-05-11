@@ -1,0 +1,16 @@
+ul.table {
+  margin-left: 0;
+}
+ul.table li {
+  list-style-type: none;
+  margin-bottom: 2px;
+}
+ul.table li p {
+  display: inline-block;
+}
+ul.table li p.label {
+  min-width: 100px;
+  margin-right: 10px;
+}
+
+/*# sourceMappingURL=celery.css.map */
