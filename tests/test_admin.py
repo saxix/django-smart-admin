@@ -44,21 +44,20 @@ def test_index(app):
     assert res.pyquery('a:contains("Smart Index")')
 
     app.set_cookie('smart', "1")
-    res = app.get(reverse("admin:index"), user='sax')
+    res = app.get(url, user='sax')
     assert res.pyquery('a:contains("Standard Index")')
 
 
 @pytest.mark.django_db
 def test_applist(app):
-    url = reverse("admin:index")
+    url = reverse("admin:app_list", args=["auth"])
 
     res = app.get(url, user='sax')
     assert res.pyquery('a:contains("Smart Index")')
 
     app.set_cookie('smart', "1")
     res = app.get(url, user='sax')
-    assert res.pyquery('a:contains("Standard Index")')
-
+    assert res.pyquery('a:contains("Smart Index")')
 
 @pytest.mark.django_db
 def test_group_list(app):

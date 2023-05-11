@@ -1,2 +1,2 @@
-from smart_admin.apps import SmartLogsConfig as AppConfig  # noqa
+from smart_admin.apps import SmartLogsConfig  # noqa
 

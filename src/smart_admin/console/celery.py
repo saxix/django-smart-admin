@@ -1,10 +1,13 @@
 import json
 import logging
+import random
 import threading
 from inspect import getdoc, getmodule, signature
 from typing import Protocol
 
 import time
+
+from celery.result import AsyncResult
 from django.conf import settings
 from django.core.cache import cache
 from itertools import chain
@@ -24,40 +27,40 @@ logger = logging.getLogger(__name__)
 @current_app.task()
 def test(*args, **kwargs):
     """ Dummy Task just for testing"""
-    time.sleep(3600)
+    time.sleep(60)
 
-
-class CeleryActionForm(forms.Form):
-    ACTIONS = [
-        ("registered", _("Registered tasks")),
-        ("active_flat", _("Active tasks")),
-        ("scheduled", _("Scheduled tasks")),
-    ]
-
-    actions = forms.ChoiceField(label="Task actions", choices=ACTIONS, widget=forms.RadioSelect, required=False)
-
-    def execute(self, celery_app):
-        if self.errors:
-            raise ValueError("The action could not be executed because the data didn't validate.")
-
-        app_inspect = celery_app.control.inspect()
-
-        action = self.cleaned_data.get("actions")
-        if action == "active_flat":
-            active_tasks = app_inspect.active()
-            data = {task_info.pop("id"): task_info for task_info in list(chain(*active_tasks.values()))}
-        else:
-            data = getattr(app_inspect, action)()
-
-        return {dict(self.ACTIONS)[action]: data}
-
-    def _get_task_status(self, celery_app, task_id):
-        app_inspect = celery_app.control.inspect()
-        return app_inspect.query_task(task_id)
-
-
-def panel_celery_workers(request):
-    return {}
+#
+# class CeleryActionForm(forms.Form):
+#     ACTIONS = [
+#         ("registered", _("Registered tasks")),
+#         ("active_flat", _("Active tasks")),
+#         ("scheduled", _("Scheduled tasks")),
+#     ]
+#
+#     actions = forms.ChoiceField(label="Task actions", choices=ACTIONS, widget=forms.RadioSelect, required=False)
+#
+#     def execute(self, celery_app):
+#         if self.errors:
+#             raise ValueError("The action could not be executed because the data didn't validate.")
+#
+#         app_inspect = celery_app.control.inspect()
+#
+#         action = self.cleaned_data.get("actions")
+#         if action == "active_flat":
+#             active_tasks = app_inspect.active()
+#             data = {task_info.pop("id"): task_info for task_info in list(chain(*active_tasks.values()))}
+#         else:
+#             data = getattr(app_inspect, action)()
+#
+#         return {dict(self.ACTIONS)[action]: data}
+#
+#     def _get_task_status(self, celery_app, task_id):
+#         app_inspect = celery_app.control.inspect()
+#         return app_inspect.query_task(task_id)
+#
+#
+# def panel_celery_workers(request):
+#     return {}
 
 
 class Queue(Protocol):
@@ -72,54 +75,55 @@ class RedisQueue:
         keys = client.keys("celery-task-meta*")
         return len(keys)
 
-
-class Runner(threading.Thread):
-    def __init__(self, monitor):
-        threading.Thread.__init__(self)
-        self.monitor = monitor
-
-    def run(self):
-        print("Running...")
-        with self.monitor.app.connection() as connection:
-            recv = self.monitor.app.events.Receiver(connection, handlers={
-                'task-failed': self.monitor.handler,
-                'task-received': self.monitor.handler,
-                'task-rejected': self.monitor.handler,
-                'task-retried': self.monitor.handler,
-                'task-revoked': self.monitor.handler,
-                'task-sent': self.monitor.handler,
-                'task-started': self.monitor.handler,
-                'task-succeeded': self.monitor.handler,
-                # 'worker-online': self.monitor.handler,
-                # 'worker-heartbeat': self.monitor.handler,
-                # 'worker-offline': self.monitor.handler,
-            })
-            recv.capture(limit=None, timeout=None, wakeup=True)
-
-
-class Monitor:
-    def __init__(self, celery_app=None):
-        if celery_app is None:
-            from celery import current_app as celery_app
-
-        self.app = celery_app
-        self.state = self.app.events.State()
-        self.runner = Runner(monitor=self)
-        self.runner.start()
-
-    def handler(self, event):
-        self.state.event(event)
-        print("smart_admin/console/celery.py: 115", event)
-
+#
+# class Runner(threading.Thread):
+#     def __init__(self, monitor):
+#         threading.Thread.__init__(self)
+#         self.monitor = monitor
+#
+#     def run(self):
+#         print("Running...")
+#         with self.monitor.app.connection() as connection:
+#             recv = self.monitor.app.events.Receiver(connection, handlers={
+#                 'task-failed': self.monitor.handler,
+#                 'task-received': self.monitor.handler,
+#                 'task-rejected': self.monitor.handler,
+#                 'task-retried': self.monitor.handler,
+#                 'task-revoked': self.monitor.handler,
+#                 'task-sent': self.monitor.handler,
+#                 'task-started': self.monitor.handler,
+#                 'task-succeeded': self.monitor.handler,
+#                 # 'worker-online': self.monitor.handler,
+#                 # 'worker-heartbeat': self.monitor.handler,
+#                 # 'worker-offline': self.monitor.handler,
+#             })
+#             recv.capture(limit=None, timeout=None, wakeup=True)
+#
+#
+# class Monitor:
+#     def __init__(self, celery_app=None):
+#         if celery_app is None:
+#             from celery import current_app as celery_app
+#
+#         self.app = celery_app
+#         self.state = self.app.events.State()
+#         self.runner = Runner(monitor=self)
+#         self.runner.start()
+#
+#     def handler(self, event):
+#         self.state.event(event)
+#         print("smart_admin/console/celery.py: 115", event)
+#
 
 class Celery:
     verbose_name = "Celery"
     url_name = 'panel_celery'
     cache_key = 'smart_celery_monitor'
     cache_ttl = 30
+
     def __init__(self):
         self.hooks = {}
-
+        self.admin_site = None
     def add_hook(self, task_name, func):
         self.hooks[task_name] = func
 
@@ -133,27 +137,44 @@ class Celery:
             logger.exception(e)
             return {"error": str(e)}
 
+    def get_celery_app(self):
+        try:
+            celery_app = self.admin_site.get_celery_app()
+        except AttributeError:
+            # Just a fallback is method is not defined, known as a bad practice
+            from celery import current_app as celery_app
+        return celery_app
     @cached_property
     def data(self):
+        celery_app = self.get_celery_app()
+        c: Control = celery_app.control
+        i: Inspect = c.inspect()
         if (data := cache.get(self.cache_key, None)) is None:
             data = {"reserved": i.reserved() or {},
                     "registered": i.registered() or {},
                     "scheduled": i.scheduled() or {},
                     "active": i.active() or {},
                     "stats": i.stats() or {},
+                    "registered_tasks": i.registered_tasks() or {}
                     }
             cache.set(self.cache_key, data, timeout=self.cache_ttl)
         return data
 
     def do_test(self, request, body):
-        return {}
+        res: AsyncResult = test.delay(time.time(), a=random.randint(1, 100))
+        return {"pid": res.id}
 
     def do_stats(self, request, body):
         return {"stats": self.data['stats']}
 
-    def do_queue(self, request, body):
-        backend = RedisQueue()
-        return {"size": backend.len()}
+    def do_size(self, request, body):
+        if getattr(settings, "CELERY_BROKER_URL") and settings.CELERY_BROKER_URL.startswith("redis"):
+            backend = RedisQueue()
+            return {"size": backend.len()}
+        return {}
+
+    def do_tasks(self, request, body):
+        return {"tasks": self.data["registered_tasks"]}
 
     def do_worker(self, request, body):
         worker = body["name"]
@@ -161,10 +182,11 @@ class Celery:
                 "registered": self.data["registered"].get(worker, []),
                 "scheduled": self.data["scheduled"].get(worker, []),
                 "active": self.data["active"].get(worker, []),
+                "worker": worker
                 # **(i.stats() or {}).get(worker, {}),
                 }
 
-    def do_func(self, request, body, data):
+    def do_func(self, request, body):
         name = body["name"]
         try:
             if (response := cache.get(f"smart_celery_monitor:{name}", None)) is None:
@@ -172,6 +194,7 @@ class Celery:
                 response = {"doc": getdoc(f) or "",
                             "module": str(getmodule(f) or ""),
                             "signature": str(signature(f)),
+                            "func": name
                             }
                 cache.set(f"smart_celery_monitor:{name}", response, timeout=3600)
             return response
@@ -179,32 +202,18 @@ class Celery:
             logger.exception(e)
             return {"error": str(e)}
 
-    def __call__(self, modeladmin, request: HttpRequest, extra_context=None):
+    def __call__(self, admin_site, request: HttpRequest, extra_context=None):
         # def panel_celery(self, request: HttpRequest, extra_context=None):
-        context = modeladmin.each_context(request)
+        self.admin_site = admin_site
+        context = admin_site.each_context(request)
         context["title"] = "Celery"
-        try:
-            celery_app = modeladmin.get_celery_app()
-        except AttributeError:
-            # Just a fallback is method is not defined, known as a bad practice
-            from celery import current_app as celery_app
-        if request.is_ajax():
+        # if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             response = {}
-            c: Control = celery_app.control
-            i: Inspect = c.inspect()
-            if (data := cache.get("smart_celery_monitor", None)) is None:
-                data = {"reserved": i.reserved() or {},
-                        "registered": i.registered() or {},
-                        "scheduled": i.scheduled() or {},
-                        "active": i.active() or {},
-                        "stats": i.stats() or {},
-                        }
-                cache.set("smart_celery_monitor", data, timeout=10)
-
             try:
                 body = json.loads(request.body)
                 method = getattr(self, f"do_{body['op']}")
-                response = method(request, body, data)
+                response = method(request, body)
                 # if req["op"] == "test":
                 #     res: AsyncResult = test.delay(time.time(), a=random.randint(1, 100))
                 #     response = {"pid": res.id}
@@ -254,6 +263,7 @@ class Celery:
                 #                 # **(i.stats() or {}).get(worker, {}),
                 #                 }
             except Exception as e:
+                print("smart_admin/console/celery.py: 259", e)
                 logger.exception(e)
             return JsonResponse(response)
 

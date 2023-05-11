@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from smart_admin.mixins import LinkedObjectsMixin, SmartMixin
+from smart_admin.modeladmin import SmartModelAdmin
 from smart_admin.smart_auth.admin import UserAdmin as SmartUserAdmin
 
 from . import models
@@ -59,7 +60,7 @@ class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraButtonsMi
         if obj.user:
             return obj.user.email
 
-    @button(label='Refresh', permission='demo.add_demomodel1')
+    @button(label='Refresh', permission='demo.add_customer')
     def refresh(self, request):
         opts = self.model._meta
         self.message_user(request, 'refresh called')
@@ -92,7 +93,7 @@ class InvoiceItemInline(TabularInline):
 
 
 @register(models.Invoice)
-class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
+class InvoiceAdmin(FactoryMixin, SmartModelAdmin):
     list_display = ('customer', 'number', 'date')
     list_filter = (('number', NumberFilter),
                    ('customer', AutoCompleteFilter),

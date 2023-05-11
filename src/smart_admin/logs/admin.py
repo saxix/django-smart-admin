@@ -32,7 +32,7 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, ExtraButtonsMixin, admin.Mod
     def has_delete_permission(self, request, obj=None):
         return False
 
-    @link(change_list=False)
+    @link(change_list=False, change_form=True)
     def edit_original(self, button):
         button.href = button.original.get_admin_url()
         button.title = button.original.object_repr

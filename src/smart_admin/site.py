@@ -32,16 +32,16 @@ def _parse_section():
     return ret
 
 
-def page():
-    def action_decorator(func):
-        def _inner(modeladmin, request, *args, **kwargs):
-            ret = func(modeladmin, request, *args, **kwargs)
-            return ret
-
-        _inner.is_page = True
-        return _inner
-
-    return action_decorator
+# def page():
+#     def action_decorator(func):
+#         def _inner(modeladmin, request, *args, **kwargs):
+#             ret = func(modeladmin, request, *args, **kwargs)
+#             return ret
+#
+#         _inner.is_page = True
+#         return _inner
+#
+#     return action_decorator
 
 
 class SmartAdminSite(AdminSite):
@@ -114,12 +114,8 @@ class SmartAdminSite(AdminSite):
         return SmartAutocompleteJsonView.as_view(admin_site=self)(request)
 
     def app_index(self, request, app_label, extra_context=None):
-        groups, __ = self._get_menu(request)
-        if app_label not in groups:
-            request.COOKIES['smart'] = "0"
         if self.is_smart_enabled(request):
-            self.app_index_template = ['admin/%s/app_index.html' % app_label,
-                                       'admin/group_index.html']
+            request.COOKIES['smart'] = "0"
         response = super().app_index(request, app_label, extra_context)
         response.set_cookie("smart", "0")
         return response

@@ -48,6 +48,3 @@ heroku-reset: heroku
 	heroku pg:reset --confirm django-smart-admin
 	heroku run python tests/demoapp/manage.py migrate
 	heroku run python tests/demoapp/manage.py collectstatic --noinput
-
-coverage:
-	pytest tests/
