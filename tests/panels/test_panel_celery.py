@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 from django.urls import reverse
 
-from smart_admin.console import panel_celery, celery
+from smart_admin.console import panel_celery
 from smart_admin.console.celery import RedisQueue
 
 
@@ -44,7 +44,7 @@ DATA = [
 def test_panel_run(app, action, monkeypatch, settings):
     settings.CELERY_TASK_ALWAYS_EAGER = True
     settings.CELERY_BROKER_URL = "redis://redisserver"
-    monkeypatch.setattr(RedisQueue, 'len',  Mock(return_value=10))
+    monkeypatch.setattr(RedisQueue, 'len', Mock(return_value=10))
     monkeypatch.setattr(panel_celery, 'get_celery_app', lambda: CeleryApp())
 
     url = reverse("admin:panel_celery")

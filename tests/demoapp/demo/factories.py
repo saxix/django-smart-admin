@@ -51,10 +51,10 @@ class PermissionFactory(ModelFactory):
 class LogEntryFactory(ModelFactory):
     user = factory.SubFactory(UserFactory)
     content_type: ContentType = factory.Iterator([ContentType.objects.get_for_model(User),
-                                     ContentType.objects.get_for_model(models.Customer),
-                                     ContentType.objects.get_for_model(Permission),
-                                     ContentType.objects.get_for_model(models.Invoice),]
-                                    )
+                                                  ContentType.objects.get_for_model(models.Customer),
+                                                  ContentType.objects.get_for_model(Permission),
+                                                  ContentType.objects.get_for_model(models.Invoice), ]
+                                                 )
     action_flag = 1
 
     @factory.lazy_attribute

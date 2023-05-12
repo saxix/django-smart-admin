@@ -1,6 +1,6 @@
-from django.core.checks import Warning, register, Error
-from django.http import HttpRequest
 from django.apps import apps
+from django.core.checks import Error, Warning, register
+from django.http import HttpRequest
 
 from smart_admin.settings import get_bookmarks
 from smart_admin.site import _parse_section
@@ -27,7 +27,6 @@ def check_bookmarks(app_configs, **kwargs):
 @register()
 def check_groups(app_configs, **kwargs):
     errors = []
-    request = HttpRequest()
     sections = _parse_section()
     app_labels = [a.label for a in apps.app_configs.values()]
     for sect in sections:

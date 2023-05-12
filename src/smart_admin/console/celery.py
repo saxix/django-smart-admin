@@ -1,25 +1,19 @@
 import json
 import logging
 import random
-import threading
+import time
 from inspect import getdoc, getmodule, signature
 from typing import Protocol
 
-import time
-
+from celery import current_app
+from celery.app.control import Control, Inspect
 from celery.result import AsyncResult
 from django.conf import settings
 from django.core.cache import cache
-from itertools import chain
-
-from celery import current_app
-from django import forms
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
 from django.utils.functional import cached_property
 from django.utils.module_loading import import_string
-from django.utils.translation import gettext_lazy as _
-from celery.app.control import Inspect, Control
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +22,7 @@ logger = logging.getLogger(__name__)
 def test(*args, **kwargs):
     """ Dummy Task just for testing"""
     time.sleep(60)
+
 
 #
 # class CeleryActionForm(forms.Form):
@@ -74,6 +69,7 @@ class RedisQueue:
         client = from_url(settings.CELERY_BROKER_URL)
         keys = client.keys("celery-task-meta*")
         return len(keys)
+
 
 #
 # class Runner(threading.Thread):
@@ -124,6 +120,7 @@ class Celery:
     def __init__(self):
         self.hooks = {}
         self.admin_site = None
+
     def add_hook(self, task_name, func):
         self.hooks[task_name] = func
 
@@ -144,6 +141,7 @@ class Celery:
             # Just a fallback is method is not defined, known as a bad practice
             from celery import current_app as celery_app
         return celery_app
+
     @cached_property
     def data(self):
         celery_app = self.get_celery_app()

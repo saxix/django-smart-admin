@@ -59,6 +59,7 @@ def test_applist(app):
     res = app.get(url, user='sax')
     assert res.pyquery('a:contains("Smart Index")')
 
+
 @pytest.mark.django_db
 def test_group_list(app):
     url = reverse("admin:group_list", args=["Security"])
