@@ -1,0 +1,22 @@
+div.celery {
+
+}
+
+ul.table {
+  margin-left: 0;
+
+  li {
+    list-style-type: none;
+    margin-bottom: 2px;
+
+    p {
+      display: inline-block;
+
+      &.label {
+        min-width: 100px;
+        margin-right: 10px;
+      }
+
+    }
+  }
+}

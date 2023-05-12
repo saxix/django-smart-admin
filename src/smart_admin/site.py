@@ -32,16 +32,16 @@ def _parse_section():
     return ret
 
 
-def page():
-    def action_decorator(func):
-        def _inner(modeladmin, request, *args, **kwargs):
-            ret = func(modeladmin, request, *args, **kwargs)
-            return ret
-
-        _inner.is_page = True
-        return _inner
-
-    return action_decorator
+# def page():
+#     def action_decorator(func):
+#         def _inner(modeladmin, request, *args, **kwargs):
+#             ret = func(modeladmin, request, *args, **kwargs)
+#             return ret
+#
+#         _inner.is_page = True
+#         return _inner
+#
+#     return action_decorator
 
 
 class SmartAdminSite(AdminSite):
@@ -86,12 +86,18 @@ class SmartAdminSite(AdminSite):
         url_name = '%s:%s_%s_%s' % (self.name, obj._meta.app_label, obj._meta.model_name, page)
         return reverse(url_name, args=[obj.pk])
 
-    def register_panel(self, callable: Callable, url_name=None, label: Union[str, None] = None):
+    def register_panel(self, func: Callable, url_name=None, label: Union[str, None] = None):
+        if hasattr(func, '__name__'):
+            default = func.__name__
+        else:
+            default = func.__class__.__name__
+
         if not label:
-            label = getattr(callable, 'verbose_name', callable.__name__.title())
+            label = getattr(func, 'verbose_name', default.title())
         if not url_name:
-            url_name = getattr(callable, 'url_name', callable.__name__.lower())
-        self.console_panels.append({"func": callable,
+            url_name = getattr(func, 'url_name', default.lower())
+
+        self.console_panels.append({"func": func,
                                     "label": str(label), "name": str(url_name)})
 
     def is_smart_enabled(self, request):
@@ -108,12 +114,8 @@ class SmartAdminSite(AdminSite):
         return SmartAutocompleteJsonView.as_view(admin_site=self)(request)
 
     def app_index(self, request, app_label, extra_context=None):
-        groups, __ = self._get_menu(request)
-        if app_label not in groups:
-            request.COOKIES['smart'] = "0"
         if self.is_smart_enabled(request):
-            self.app_index_template = ['admin/%s/app_index.html' % app_label,
-                                       'admin/group_index.html']
+            request.COOKIES['smart'] = "0"
         response = super().app_index(request, app_label, extra_context)
         response.set_cookie("smart", "0")
         return response

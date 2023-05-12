@@ -16,5 +16,5 @@ def app(django_app):
     res = django_app.get(reverse('admin:login'))
     res.form['username'] = 'sax'
     res.form['password'] = '123'
-    res = res.form.submit()
+    res.form.submit()
     return django_app

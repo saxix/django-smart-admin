@@ -1,0 +1,126 @@
+{% extends "smart_admin/console.html" %}{% load static i18n %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "smart_admin/celery.css" %}">
+    <script type="text/javascript" src="{% static "smart_admin/knockout-3.5.1.js" %}"></script>
+    <script type="text/javascript" src="{% static "smart_admin/knockout.mapping-latest.js" %}"></script>
+    <script id="celery" data-token="{{ csrf_token }}" type="text/javascript" src="{% static "smart_admin/celery.min.js" %}"></script>
+{% endblock %}
+{% block buttons %}
+    <ul class="submit-row">
+        <li><a class="button" data-bind="click:$root.purge" href="#">Purge</a></li>
+        <li><a class="button" data-bind="click:$root.testTask" href="#">Test</a></li>
+        <li><a class="button" data-bind="click:terminate" href="#">Terminate All</a></li>
+        {#        <li><a class="button" data-bind="click:getTasks" href="#">Tasks</a></li>#}
+    </ul>
+    {{ block.super }}
+{% endblock %}
+{% block left %}
+    <div data-bind="text: message"></div>
+    <p>Refresh:
+        <select width="50"
+                data-bind="options: intervals, optionsText: function(item) {return item==0? 'No': item},value: interval"> </select>
+        <span data-bind="visible:loading">loading....</span>
+    </p>
+    <div lass="console module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+        <table data-bind="visible: fetched">
+            <thead>
+            <tr>
+                <td>worker</td>
+                <td>processes</td>
+                <td>utime</td>
+                <td>stime</td>
+            </tr>
+            </thead>
+            <tbody data-bind="foreach: workers">
+            <tr>
+                <td><a href="#" data-bind="text:name,click:inspect"></a></td>
+                <td data-bind="text:pool.processes"></td>
+                <td data-bind="text:rusage.utime"></td>
+                <td data-bind="text:rusage.stime"></td>
+            </tr>
+            <tr>
+                <td colspan="5">
+                    <table data-bind="visible: registered().length>0">
+                        <tr>
+                            <td><a href="#" data-bind="click: function(){tab(1)}">active</a></td>
+                            <td><a href="#" data-bind="click: function(){tab(2)}">reserved</a></td>
+                            <td><a href="#" data-bind="click: function(){tab(3)}">registered</a></td>
+                            <td><a href="#" data-bind="click: function(){tab(4)}">scheduled</a></td>
+                        </tr>
+                        <tr data-bind="visible:display() == 'func_details'">
+                            <td colspan="4">
+                                <a href="#" data-bind="click: function(){display('summary')}">{% trans "Back" %}</a>
+                                <ul class="table" data-bind="with:selectedFunc">
+                                    <li><p class="label">Name</p>
+                                        <p class="value" data-bind="text:name()"></p></li>
+                                    <li><p class="label">Doc</p>
+                                        <p class="value" data-bind="text:doc()"></p></li>
+                                    <li><p class="label">Signature</p>
+                                        <p class="value" data-bind="text:signature()"></p></li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr data-bind="visible:display() == 'task_details'">
+                            <td colspan="4">
+                                <a href="#" data-bind="click: function(){display('summary')}">{% trans "Back" %}</a>
+                                <ul class="table" data-bind="with:selectedTask">
+                                        <li><p class="label">Name</p><p class="value" data-bind="text:name"></p></li>
+{#                                    <span data-bind="with:info">#}
+                                        <li><p class="label">Id</p><p class="value" data-bind="text:id"></p></li>
+                                        <li><p class="label">Args</p><p class="value" data-bind="text:args"></p></li>
+                                        <li><p class="label">Kwargs</p><p class="value"
+                                                                          data-bind="text:kwargs"></p></li>
+{#                                    </span>#}
+                                    <span data-bind="foreach: Object.keys($data.extra())">
+                                         <li><p class="label" data-bind="text:$data"></p>
+                                             <p class="value" data-bind="text : $parent.extra()[$data]"></p></li>
+                                    </span>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr data-bind="visible:display() == 'summary'">
+                            <td colspan="4" data-bind="visible: tab()==1">
+                                <ol data-bind="foreach: active">
+                                    <li>
+                                        <a href="#" data-bind="text:name, click:$data.inspect"></a>
+                                        (&nbsp;<span data-bind="text: args"></span>, <span
+                                            data-bind="text: JSON.stringify($data.kwargs)"></span>)
+                                        <span data-bind="text: start"></span>&nbsp;)
+                                    </li>
+                                </ol>
+                            </td>
+                            <td colspan="4" data-bind="visible: tab()==2">
+                                <ol data-bind="foreach: reserved">
+                                    <li data-bind="text: $data"></li>
+                                </ol>
+                            </td>
+                            <td colspan="4" data-bind="visible: tab()==3">
+                                <ol data-bind="foreach: registered">
+                                    <li>
+                                        <a href="#" data-bind="text: name, click:inspect"></a>
+                                    </li>
+                                </ol>
+                            </td>
+                            <td colspan="4" data-bind="visible: tab()==4">
+                                <ol data-bind="foreach: scheduled">
+                                    <li data-bind="text: $data"></li>
+                                </ol>
+
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock left %}
+{% block footer %}{{ block.super }}
+    <script>
+        var m = new CeleryModel();
+        ko.applyBindings(m);
+        m.stats();
+    </script>
+{% endblock %}

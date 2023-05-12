@@ -4,6 +4,7 @@ source = smart_admin
 include =
 
 omit = smart_admin/__init__.py
+       **/migrations/*.py
 
 [report]
 # Regexes for lines to exclude from consideration

@@ -15,7 +15,7 @@ env = environ.Env(
     DATABASE_URL=(str, "sqlite:///smart_admin.db"),
     ROOT_TOKEN=(str, uuid4().hex),
 )
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DEBUG = env('DEBUG')
 USE_TZ = False
 STATIC_URL = '/static/'
@@ -41,7 +41,7 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'adminfilters.depot',
                   'admin_extra_buttons',
 
-                  'smart_admin.apps.SmartLogsConfig',
+                  'smart_admin.logs.apps.SmartLogsConfig',
                   'smart_admin.apps.SmartTemplateConfig',
                   'smart_admin.apps.SmartAuthConfig',
                   'smart_admin.apps.SmartConfig',
@@ -86,7 +86,6 @@ SMART_ADMIN_SECTIONS = {
     'Security': ['auth',
                  'auth.User',
                  ],
-
     'Logs': ['admin.LogEntry',
              ],
     'Other': [],

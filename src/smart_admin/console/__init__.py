@@ -1,3 +1,4 @@
+from .celery import panel_celery
 from .email import panel_email
 from .error_pages import panel_error_page
 from .migrations import panel_migrations
