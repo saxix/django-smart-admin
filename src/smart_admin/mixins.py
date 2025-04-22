@@ -119,7 +119,7 @@ class ReadOnlyMixin:
 class SmartMixin(
     ReadOnlyMixin, ExtraButtonsMixin, FieldsetMixin, DisplayAllMixin, SmartChangeListMixin, AdminFiltersMixin
 ):
-    readonly_fields: tuple[str] = ()  # type: ignore [assignment]
+    readonly_fields: tuple[str] = ()
 
 
 class LinkedObjectsMixin:

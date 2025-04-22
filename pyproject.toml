@@ -17,14 +17,14 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
 ]
-dependencies = [
-  "django-admin-extra-buttons>=2.1",
-  "django-adminfilters>=2.6",
-]
 dynamic = [
   "version",
 ]
 
+dependencies = [
+  "django-admin-extra-buttons>=2.1",
+  "django-adminfilters>=2.6",
+]
 optional-dependencies.sysinfo = [
   "django-sysinfo>=2.7",
 ]
@@ -63,4 +63,7 @@ include = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/smart_admin"]
+packages = [ "src/smart_admin" ]
+
+[tool.uv.sources]
+django-admin-extra-buttons = { path = "../django-admin-extra-buttons", editable = true }

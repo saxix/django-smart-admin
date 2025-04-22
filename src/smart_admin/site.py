@@ -157,12 +157,12 @@ class SmartAdminSite(AdminSite):
 
     def _get_menu(self, request):
         if settings.DEBUG:  # pragma: no cover
-            ver = time.time
+            ver = time.time()
         else:
             ver = VERSION
         sections = _parse_section()
-        key1 = f"{hash(repr(sections))}:groups:{ver()}"
-        key2 = f"{hash(repr(sections))}:models:{ver()}"
+        key1 = f"{hash(repr(sections))}:groups:{ver}"
+        key2 = f"{hash(repr(sections))}:models:{ver}"
 
         groups = cache.get(key1)
         model_to_section = cache.get(key2)

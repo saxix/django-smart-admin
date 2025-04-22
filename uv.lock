@@ -157,15 +157,48 @@ wheels = [
 
 [[package]]
 name = "django-admin-extra-buttons"
-version = "2.1"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../django-admin-extra-buttons" }
 dependencies = [
     { name = "django-stubs" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a6/71/287eda9e4b3281b65712a929f9931b297ec0f6c632006517388d3e520d12/django_admin_extra_buttons-2.1.tar.gz", hash = "sha256:488c53e8f61c60ec3eb9bec10dbdbb8181a3d15dbf4ae42381efd8944db9671d", size = 13980 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/bd/d2/90415b15a8e7dec4aea8035e3de70c1bbdf6363b91dfccae993928fe618c/django_admin_extra_buttons-2.1-py3-none-any.whl", hash = "sha256:1fd57628f478034e7da673ce58062b5f3a67921afbbadf77cbf41475599b4c66", size = 21732 },
+
+[package.metadata]
+requires-dist = [{ name = "django-stubs", specifier = ">=5.1.3" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "covdefaults", specifier = ">=2.3" },
+    { name = "django-webtest", specifier = ">=1.9.13" },
+    { name = "factory-boy", specifier = ">=3.3.1" },
+    { name = "pdbpp", specifier = ">=0.10.3" },
+    { name = "pyquery", specifier = ">=2.0.1" },
+    { name = "pytest", specifier = ">=8.3.3" },
+    { name = "pytest-cov", specifier = ">=5" },
+    { name = "pytest-django", specifier = ">=4.9" },
+    { name = "pytest-echo", specifier = ">=1.8.1" },
+    { name = "ruff", specifier = ">=0.9.9" },
+    { name = "toml", specifier = ">=0.10.2" },
+    { name = "tox", specifier = ">=4.20" },
 ]
+dj = [{ name = "django" }]
+docs = [
+    { name = "markdown-include", specifier = ">=0.8.1" },
+    { name = "mdx-gh-links", specifier = ">=0.4" },
+    { name = "mkdocs", specifier = ">=1.6.1" },
+    { name = "mkdocs-autolinks-plugin", specifier = ">=0.7.1" },
+    { name = "mkdocs-autorefs", specifier = ">=1.3.1" },
+    { name = "mkdocs-awesome-pages-plugin", specifier = ">=2.10.1" },
+    { name = "mkdocs-ezlinks-plugin", specifier = ">=0.1.14" },
+    { name = "mkdocs-glightbox", specifier = ">=0.4" },
+    { name = "mkdocs-include-markdown-plugin", specifier = ">=6.2.2" },
+    { name = "mkdocs-macros-plugin", specifier = ">=1.3.7" },
+    { name = "mkdocs-markdownextradata-plugin", specifier = ">=0.2.6" },
+    { name = "mkdocs-material", specifier = ">=9.6.5" },
+    { name = "mkdocs-material-extensions", specifier = ">=1.3.1" },
+    { name = "mkdocstrings", specifier = ">=0.28.1" },
+    { name = "mkdocstrings-python", specifier = ">=1.16.1" },
+]
+type-check = [{ name = "mypy", specifier = "<1.15" }]
 
 [[package]]
 name = "django-adminactions"
@@ -227,7 +260,6 @@ wheels = [
 
 [[package]]
 name = "django-smart-admin"
-version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "django-admin-extra-buttons" },
@@ -260,7 +292,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "django-admin-extra-buttons", specifier = ">=2.1" },
+    { name = "django-admin-extra-buttons", editable = "../django-admin-extra-buttons" },
     { name = "django-adminfilters", specifier = ">=2.6" },
     { name = "django-sysinfo", marker = "extra == 'sysinfo'", specifier = ">=2.7" },
 ]
@@ -268,9 +300,9 @@ provides-extras = ["sysinfo"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "django-adminactions", specifier = ">=2.3.0" },
+    { name = "django-adminactions", specifier = ">=2.3" },
     { name = "django-constance", specifier = ">=4.3.2" },
-    { name = "django-environ", specifier = ">=0.12.0" },
+    { name = "django-environ", specifier = ">=0.12" },
     { name = "django-picklefield", specifier = ">=3.3" },
     { name = "django-webtest", specifier = ">=1.9.13" },
     { name = "factory-boy", specifier = ">=3.3.3" },
@@ -279,10 +311,10 @@ dev = [
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-cov", specifier = ">=6.1.1" },
     { name = "pytest-django", specifier = ">=4.11.1" },
-    { name = "pytest-echo", specifier = ">=2.0" },
+    { name = "pytest-echo", specifier = ">=2" },
     { name = "ruff", specifier = ">=0.11.6" },
-    { name = "tox", specifier = ">=4.25.0" },
-    { name = "whitenoise", specifier = ">=6.9.0" },
+    { name = "tox", specifier = ">=4.25" },
+    { name = "whitenoise", specifier = ">=6.9" },
 ]
 
 [[package]]

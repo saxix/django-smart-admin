@@ -72,13 +72,13 @@ class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraButtonsMi
             self,
             request,
             _action,
-            "Confirm action",
-            "Successfully executed",
+            message="Confirm action",
+            success_message="Successfully executed",
         )
 
 
 @register(models.Product)
-class ProductAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
+class ProductAdmin(FactoryMixin, SmartMixin, admin.ModelAdmin):
     list_display = ("name", "price", "family")
     list_filter = ("family",)
     search_fields = ("name",)
