@@ -3,6 +3,8 @@ import logging
 from django.contrib.admin.options import IncorrectLookupParameters
 from django.contrib.admin.views.main import ChangeList
 
+from smart_admin.compat import IS_DJANGO4
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,18 +23,17 @@ class SmartChangeList(ChangeList):
             logger.exception(e)
             raise
 
-    def get_queryset(self, request):
+    def get_queryset(self, request, exclude_parameters=None):
         try:
-            return super().get_queryset(request)
+            if IS_DJANGO4:
+                return super().get_queryset(request)
+            return super().get_queryset(request, exclude_parameters)
         except IncorrectLookupParameters as e:
             logger.exception(e)
             raise
 
 
 class SmartChangeListMixin:
-
     def get_changelist(self, request, **kwargs):
-        """
-        Return the ChangeList class for use on the changelist page.
-        """
+        """Return the ChangeList class for use on the changelist page."""
         return SmartChangeList

@@ -8,50 +8,64 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  changes:
     runs-on: ubuntu-latest
+    timeout-minutes: 1
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      run_tests: ${{steps.changes.outputs.run_tests }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip tox
-      - name: Lint with flake8
-        run: |
-          tox -e lint
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+      - id: changes
+        name: Check for file changes
+        uses: dorny/paths-filter@v3
+        with:
+          base: ${{ github.ref }}
+          token: ${{ github.token }}
+          filters: .github/file-filters.yml
 
   test:
-    #        if: ${{github.event}} && ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    needs: [ changes ]
+    if: needs.changes.outputs.run_tests
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: smart_admin
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.9", "3.10" ]
-        django-version: [ "3.2", "4.0", "4.1" ]
+        python-version: [ "3.12", "3.13" ]
+        django-version: [ "4.2", "5.2" ]
     env:
-      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/smart_admin
       PY_VER: ${{ matrix.python-version}}
       DJ_VER: ${{ matrix.django-version}}
-    steps:
-      - uses: actions/checkout@v2
 
-      - name: Install dependencies
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: sysinfo
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install tox
         run: python -m pip install --upgrade pip tox
 
-      - name: Test with tox
-        run: tox -e d${DJ_VER//.}-py${PY_VER//.}
+      - name: Test with
+        run: tox -e "py${PY_VER//.}-d${DJ_VER//.}"
 
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v5
         with:
-          verbose: true # optional (default = false)
+          verbose: true
+          slug: saxix/django-smart-admin

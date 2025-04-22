@@ -4,3 +4,5 @@ from .migrations import panel_migrations
 from .redis import panel_redis
 from .sentry import panel_sentry
 from .sysinfo import panel_sysinfo
+
+__all__ = ["panel_sysinfo", "panel_redis", "panel_migrations", "panel_sentry", "panel_email", "panel_error_page"]

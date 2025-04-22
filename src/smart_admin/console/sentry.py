@@ -27,7 +27,7 @@ def get_sentry_host():
 def get_sentry_dashboard():
     if getattr(settings, "SENTRY_PROJECT", None):
         return f"{get_sentry_host()}/{settings.SENTRY_PROJECT}"
-    return 'N/A'
+    return "N/A"
 
 
 def get_event_url(event_id):
@@ -72,8 +72,8 @@ def panel_sentry(self, request, extra_context=None):
     context["title"] = "Sentry"
     context["info"] = {
         "SENTRY_DSN": settings.SENTRY_DSN,
-        "SENTRY_SERVER_URL": mark_safe(urlize(get_sentry_host())),
-        "SENTRY_DASHBOARD": mark_safe(urlize(get_sentry_dashboard())),
+        "SENTRY_SERVER_URL": mark_safe(urlize(get_sentry_host())),  # noqa: S308
+        "SENTRY_DASHBOARD": mark_safe(urlize(get_sentry_dashboard())),  # noqa: S308
         "SENTRY_PROJECT": getattr(settings, "SENTRY_PROJECT", "N/A") or "N/A",
         "SENTRY_ENVIRONMENT": getattr(settings, "SENTRY_ENVIRONMENT", "N/A") or "N/A",
     }
@@ -96,6 +96,7 @@ def panel_sentry(self, request, extra_context=None):
                     last_event_id = sentry_sdk.last_event_id()
             elif opt in ["400", "403", "404", "500"]:
                 from django.conf.urls import handler400, handler403, handler404, handler500
+
                 mapping = {
                     "400": (ValidationError, handler400),
                     "403": (PermissionDenied, handler403),
@@ -109,8 +110,7 @@ def panel_sentry(self, request, extra_context=None):
                     logger.exception(e)
                     last_event_id = sentry_sdk.last_event_id()
                     handler(request, e)
-            messages.add_message(request, messages.SUCCESS,
-                                 mark_safe(f"Sentry ID: {make_sentry_link(last_event_id)}"))
+            messages.add_message(request, messages.SUCCESS, mark_safe(f"Sentry ID: {make_sentry_link(last_event_id)}"))  # noqa: S308
 
     else:
         form = SentryForm()

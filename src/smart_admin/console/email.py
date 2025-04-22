@@ -1,3 +1,4 @@
+# noqa: A005
 import concurrent.futures
 import logging
 import threading
@@ -43,9 +44,11 @@ def panel_email(self, request, extra_context=None):
     if request.method == "POST":
         try:
             from django.core.mail import get_connection
+
             conn = get_connection()
             context["connection"] = conn
             from django.core.mail import send_mail
+
             kwargs = {
                 "subject": "Send email test: 'django.core.mail.send_mail'",
                 "from_email": None,

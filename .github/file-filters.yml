@@ -1,0 +1,40 @@
+# This is used by the action https://github.com/dorny/paths-filter
+
+dependencies: &dependencies
+  - 'pdm.lock'
+  - 'pyproject.toml'
+
+actions: &actions
+  - added|modified: './.github/**/*'
+
+python: &python
+  - added|modified: 'src/**'
+  - added|modified: 'tests/**'
+  - 'manage.py'
+
+changelog:
+  - added|modified: 'changes/**'
+  - 'CHANGES.md'
+
+mypy:
+  - *python
+  - 'mypy.ini'
+
+run_tests:
+  - *actions
+  - *python
+  - *dependencies
+  - 'pytest.ini'
+
+migrations:
+  - added|modified: 'src/**/migrations/*'
+
+lint:
+  - *python
+  - '.flake8'
+  - 'pyproject.toml'
+
+docs:
+  - added|modified: './docs/**/*'
+  - modified: './github/workflows/docs.yml'
+  - modified: './github/file-filters.yml'

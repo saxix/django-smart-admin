@@ -8,17 +8,20 @@ def panel_sysinfo(self, request) -> HttpResponse:
     @cache_page(0)
     def _sysinfo(request):
         from django_sysinfo.api import get_sysinfo
+
         infos = get_sysinfo(request)
-        infos.setdefault('extra', {})
-        infos.setdefault('checks', {})
+        infos.setdefault("extra", {})
+        infos.setdefault("checks", {})
         context = self.each_context(request)
-        context.update({'title': 'sysinfo',
-                        'infos': infos,
-                        'enable_switch': True,
-                        'has_permission': True,
-                        })
-        return render(request,
-                      'smart_admin/panels/sysinfo.html', context)
+        context.update(
+            {
+                "title": "sysinfo",
+                "infos": infos,
+                "enable_switch": True,
+                "has_permission": True,
+            }
+        )
+        return render(request, "smart_admin/panels/sysinfo.html", context)
 
     return _sysinfo(request)
 

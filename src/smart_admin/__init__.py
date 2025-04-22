@@ -1,5 +1,3 @@
-VERSION = "2.6.0"
+from .version import __version__
 
-
-def get_full_version():
-    return VERSION
+VERSION = __version__

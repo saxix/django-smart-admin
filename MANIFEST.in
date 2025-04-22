@@ -1,8 +1,9 @@
 include README.md
 include CHANGES.md
 include MANIFEST.in
-include setup.py
-include tox.ini
+
+exclude tox.ini
+
 recursive-include src *
 recursive-include tests *.coveragerc
 recursive-include tests *.py

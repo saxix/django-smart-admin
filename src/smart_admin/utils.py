@@ -9,17 +9,17 @@ def as_bool(value):
     return value not in ["", "0", "None", 0, None, "on"]
 
 
-class match(str):
+class MatchString(str):
     def __repr__(self):
-        return f'm[{self}]'
+        return f"m[{self}]"
 
 
-class regex(str):
+class RegexString(str):
     def __init__(self, pattern, options=0):
         self._rex = re.compile(pattern, options)
 
     def __repr__(self):
-        return f'r[{self._rex.pattern}]'
+        return f"r[{self._rex.pattern}]"
 
     def __str__(self):
         return self._rex.pattern
@@ -29,14 +29,14 @@ class SmartList(list):
     def __contains__(self, target):
         t = str(target)
         for entry in self:
-            if isinstance(entry, match):
+            if isinstance(entry, MatchString):
                 if fnmatchcase(target, entry):
                     return True
             elif isinstance(entry, re.Pattern):
                 m = entry.match(t)
                 if m and m.group():
                     return bool(m)
-            elif isinstance(entry, regex):
+            elif isinstance(entry, RegexString):
                 m = entry._rex.match(t)
                 if m and m.group():
                     return bool(m)
@@ -64,8 +64,8 @@ def get_related(user, field, max_records=200):
             related_attr = getattr(user, f"{field.name}_set")
         info["filter"] = f"{field.field.name}={user.pk}"
 
-        if hasattr(related_attr, 'all') and callable(related_attr.all):
-            related = related_attr.all()[:max_records or 200]
+        if hasattr(related_attr, "all") and callable(related_attr.all):
+            related = related_attr.all()[: max_records or 200]
             count = related_attr.all().count()
         else:
             related = [related_attr]
@@ -86,8 +86,8 @@ def masker(value, request):
 
 
 def admin_site_urlname(admin_site, value, arg):
-    return '%s:%s_%s_%s' % (admin_site.name, value.app_label, value.model_name, arg)
+    return "%s:%s_%s_%s" % (admin_site.name, value.app_label, value.model_name, arg)
 
 
 def admin_urlbasename(value, arg):
-    return '%s_%s_%s' % (value.app_label, value.model_name, arg)
+    return "%s_%s_%s" % (value.app_label, value.model_name, arg)

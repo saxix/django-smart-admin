@@ -5,15 +5,18 @@ from django.utils.translation import gettext_lazy as _
 
 
 class SmartTemplateConfig(AppConfig):
-    name = 'smart_admin'
+    name = "smart_admin"
+    default_auto_field = "django.db.models.BigAutoField"
 
 
 class SmartLogsConfig(AppConfig):
-    name = 'smart_admin.logs'
+    name = "smart_admin.logs"
+    default_auto_field = "django.db.models.BigAutoField"
 
 
 class SmartAuthConfig(AppConfig):
-    name = 'smart_admin.smart_auth'
+    name = "smart_admin.smart_auth"
+    default_auto_field = "django.db.models.BigAutoField"
 
     def ready(self):
         from django.contrib.auth.models import Group, Permission
@@ -29,7 +32,9 @@ class SmartAuthConfig(AppConfig):
 
 
 class SmartConfig(SimpleAdminConfig):
-    default_site = 'smart_admin.site.SmartAdminSite'
+    default_site = "smart_admin.site.SmartAdminSite"
+    default_auto_field = "django.db.models.BigAutoField"
+
     verbose_name = _("Smart Admin")
     default = True
 
