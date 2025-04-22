@@ -1,5 +1,4 @@
 from itertools import chain
-from typing import List, Tuple, Union
 
 from admin_extra_buttons.api import ExtraButtonsMixin, button
 from adminfilters.filters import AllValuesComboFilter, ChoicesFieldComboFilter, RelatedFieldComboFilter
@@ -40,28 +39,30 @@ class SmartAutoFilterMixin(SmartFilterMixin):
     def _get_list_filter(self):
         if self.list_filter:
             return self.list_filter
-        return [field.name for field in self.model._meta.fields
-                if field.db_index and not isinstance(field, (AutoField,
-                                                             RelatedField,
-                                                             # ManyToManyField,
-                                                             # ForeignKey,
-                                                             TextField))
-                ]
+        return [
+            field.name
+            for field in self.model._meta.fields
+            if field.db_index
+            and not isinstance(
+                field,
+                AutoField | RelatedField | TextField,
+            )
+        ]
 
 
 class DisplayAllMixin:
     def get_list_display(self, request):  # pragma: no cover
-        if self.list_display == ('__str__',):
-            return [field.name for field in self.model._meta.fields
-                    if not isinstance(field, (AutoField,
-                                              ForeignKey,
-                                              TextField, ManyToManyField))]
+        if self.list_display == ("__str__",):
+            return [
+                field.name
+                for field in self.model._meta.fields
+                if not isinstance(field, AutoField | ForeignKey | TextField | ManyToManyField)
+            ]
 
         return self.list_display
 
 
 class FieldsetMixin:
-
     def get_fields(self, request, obj=None):
         return super().get_fields(request, obj)  # type: ignore[misc]
 
@@ -72,57 +73,61 @@ class FieldsetMixin:
         if self.fieldsets:
             fieldsets = list(self.fieldsets)
         else:
-            fieldsets = [(None, {'fields': all_fields})]
+            fieldsets = [(None, {"fields": all_fields})]
 
         for e in fieldsets:
-            selected.extend(flatten(e[1]['fields']))
+            selected.extend(flatten(e[1]["fields"]))
         __all = [e for e in all_fields if e not in selected]
         for e in fieldsets:
-            if e[1]['fields'] == ('__others__',):
-                e[1]['fields'] = __all
+            if e[1]["fields"] == ("__others__",):
+                e[1]["fields"] = __all
         return fieldsets
 
 
 class SmartModelAdminChecks(BaseModelAdminChecks):
     def _check_readonly_fields(self, obj):
-        """ Check that readonly_fields refers to proper attribute or field. """
-        if obj.readonly_fields == ('__all__',):
+        """Check that readonly_fields refers to proper attribute or field."""
+        if obj.readonly_fields == ("__all__",):
             return []
         if obj.readonly_fields == ():
             return []
-        elif not isinstance(obj.readonly_fields, (list, tuple)):
-            return must_be('a list or tuple', option='readonly_fields', obj=obj, id='admin.E034')
-        else:
-            return list(chain.from_iterable(
+        if not isinstance(obj.readonly_fields, list | tuple):
+            return must_be("a list or tuple", option="readonly_fields", obj=obj, id="admin.E034")
+        return list(
+            chain.from_iterable(
                 self._check_readonly_fields_item(obj, field_name, "readonly_fields[%d]" % index)
                 for index, field_name in enumerate(obj.readonly_fields)
-            ))
+            )
+        )
 
 
 class ReadOnlyMixin:
-    readonly_fields: Tuple[str] = ('__all__', )
+    readonly_fields: tuple[str] = ("__all__",)
     checks_class = SmartModelAdminChecks
 
     def get_readonly_fields(self, request, obj=None):
-        if self.readonly_fields and self.readonly_fields == ('__all__',):
-            return list(set(
-                [field.name for field in self.opts.local_fields] +
-                [field.name for field in self.opts.local_many_to_many]
-            ))
+        if self.readonly_fields and self.readonly_fields == ("__all__",):
+            return list(
+                set(
+                    [field.name for field in self.opts.local_fields]
+                    + [field.name for field in self.opts.local_many_to_many]
+                )
+            )
         return self.readonly_fields
 
 
-class SmartMixin(ReadOnlyMixin, ExtraButtonsMixin, FieldsetMixin, DisplayAllMixin, SmartChangeListMixin,
-                 AdminFiltersMixin):
-    readonly_fields: Tuple[str] = ()  # type: ignore [assignment]
+class SmartMixin(
+    ReadOnlyMixin, ExtraButtonsMixin, FieldsetMixin, DisplayAllMixin, SmartChangeListMixin, AdminFiltersMixin
+):
+    readonly_fields: tuple[str] = ()  # type: ignore [assignment]
 
 
 class LinkedObjectsMixin:
     linked_objects_template = None
     linked_objects_hide_empty = True
     linked_objects_max_records = 200
-    linked_objects_exclude: List[str] = []
-    linked_objects_filter: Union[List[str], None] = None
+    linked_objects_exclude: list[str] = []
+    linked_objects_filter: list[str] | None = None
     linked_objects_link_to_changelist = True
 
     def get_excluded_linked_objects(self, request) -> list:
@@ -131,8 +136,7 @@ class LinkedObjectsMixin:
     def get_selected_linked_objects(self, request) -> list:
         if self.linked_objects_filter is None:
             return [f for f in self.model._meta.get_fields() if f.auto_created and not f.concrete]
-        else:
-            return self.linked_objects_filter
+        return self.linked_objects_filter
 
     def get_linked_objects(self, request, original):
         ignored = self.get_excluded_linked_objects(request)
@@ -142,7 +146,7 @@ class LinkedObjectsMixin:
         empty = []
         for f in filtered:
             info = get_related(original, f, max_records=self.linked_objects_max_records)
-            if info['count'] == 0 and self.linked_objects_hide_empty:
+            if info["count"] == 0 and self.linked_objects_hide_empty:
                 empty.append(info)
             else:
                 linked.append(info)
@@ -153,20 +157,26 @@ class LinkedObjectsMixin:
         opts = self.model._meta
         app_label = opts.app_label
         context = self.get_common_context(request, pk, title="linked objects")
-        linked, empty = self.get_linked_objects(request, context['original'])
+        linked, empty = self.get_linked_objects(request, context["original"])
         context["hide_empty"] = not self.linked_objects_hide_empty
-        context["empty"] = sorted(empty, key=lambda x: x['related_name'].lower())
-        context["linked"] = sorted(linked, key=lambda x: x['related_name'].lower())
+        context["empty"] = sorted(empty, key=lambda x: x["related_name"].lower())
+        context["linked"] = sorted(linked, key=lambda x: x["related_name"].lower())
 
-        return TemplateResponse(request, self.linked_objects_template or [
-            f"admin/{app_label}/{opts.model_name}/linked_objects.html",
-            "admin/%s/linked_objects.html" % app_label,
-            "smart_admin/linked_objects.html"
-        ], context)
+        return TemplateResponse(
+            request,
+            self.linked_objects_template
+            or [
+                f"admin/{app_label}/{opts.model_name}/linked_objects.html",
+                "admin/%s/linked_objects.html" % app_label,
+                "smart_admin/linked_objects.html",
+            ],
+            context,
+        )
 
 
 def log_truncate(request, model):
     from django.contrib.admin.models import DELETION, LogEntry
+
     LogEntry.objects.log_action(
         user_id=request.user.pk,
         content_type_id=ContentType.objects.get_for_model(model).pk,
@@ -195,17 +205,3 @@ class TruncateAdminMixin:
                 return HttpResponseRedirect(url)
         else:
             return TemplateResponse(request, self.truncate_table_template, context)
-
-#             return confirm_action(
-#                 self,
-#                 request,
-#                 self.truncate,
-#                 mark_safe("""
-# <h1 class="color-red"><b>This is a low level system feature</b></h1>
-# <h1 class="color-red"><b>Continuing irreversibly delete all table content</b></h1>
-#
-#                                        """),
-#                 "Successfully executed",
-#                 title="Truncate table",
-#                 extra_context={"original": None, "add": False},
-#             )

@@ -1,0 +1,66 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = [
+  "hatch-vcs>=0.4",
+  "hatchling>=1.25",
+]
+
+[project]
+name = "django-smart-admin"
+description = "Collection of small Django Admin utilities that aims to remove some of the common annoying configuration issues"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  "django-admin-extra-buttons>=2.1",
+  "django-adminfilters>=2.6",
+]
+dynamic = [
+  "version",
+]
+
+optional-dependencies.sysinfo = [
+  "django-sysinfo>=2.7",
+]
+
+[dependency-groups]
+dev = [
+  "django-adminactions>=2.3",
+  "django-constance>=4.3.2",
+  "django-environ>=0.12",
+  "django-picklefield>=3.3",
+  "django-webtest>=1.9.13",
+  "factory-boy>=3.3.3",
+  "psycopg2>=2.9.10",
+  "pyquery>=2.0.1",
+  "pytest>=8.3.5",
+  "pytest-cov>=6.1.1",
+  "pytest-django>=4.11.1",
+  "pytest-echo>=2",
+  "ruff>=0.11.6",
+  "tox>=4.25",
+  "whitenoise>=6.9",
+]
+
+[tool.distutils.bdist_wheel]
+universal = 1
+
+[tool.hatch]
+build.hooks.vcs.version-file = "src/smart_admin/version.py"
+version.source = "vcs"
+raw-options = { root = "../.." }
+
+[tool.hatch.build.targets.sdist]
+ignore-vcs = true
+include = [
+  "src/smart_admin/**/*.*",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/smart_admin"]

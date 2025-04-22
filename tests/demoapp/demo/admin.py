@@ -1,8 +1,7 @@
 from admin_extra_buttons.api import ExtraButtonsMixin, button, confirm_action
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.depot.widget import DepotManager
-from adminfilters.filters import MultiValueFilter, NumberFilter, ValueFilter
-from adminfilters.json import JsonFieldFilter
+from adminfilters.filters import JsonFieldFilter, MultiValueFilter, NumberFilter, ValueFilter
 from adminfilters.querystring import QueryStringFilter
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin, TabularInline, register
@@ -32,13 +31,12 @@ class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraButtonsMi
     list_filter = (
         DepotManager,
         QueryStringFilter,
-        ('user', AutoCompleteFilter),
-        ('flags', JsonFieldFilter),
-        ('user__email', MultiValueFilter),
-        # TextFieldFilter.factory('user__email'),
-        ('email', ValueFilter)
+        ("user", AutoCompleteFilter),
+        ("flags", JsonFieldFilter),
+        ("user__email", MultiValueFilter),
+        ("email", ValueFilter),
     )
-    readonly_fields = ('user',)
+    readonly_fields = ("user",)
     fieldsets = [
         (None, {"fields": (("name", "email"),)}),
         (
@@ -59,31 +57,36 @@ class CustomerAdmin(FactoryMixin, LinkedObjectsMixin, SmartMixin, ExtraButtonsMi
         if obj.user:
             return obj.user.email
 
-    @button(label='Refresh', permission='demo.add_demomodel1')
+    @button(label="Refresh", permission="demo.change_customer")
     def refresh(self, request):
         opts = self.model._meta
-        self.message_user(request, 'refresh called')
-        return HttpResponseRedirect(reverse(admin_urlname(opts, 'changelist')))
+        self.message_user(request, "refresh called")
+        return HttpResponseRedirect(reverse(admin_urlname(opts, "changelist")))
 
     @button(html_attrs={"style": "background-color:#CAA61B;font-weight:bold"})
     def confirm(self, request):
         def _action(request):
             pass
 
-        return confirm_action(self, request, _action, "Confirm action",
-                              "Successfully executed", )
+        return confirm_action(
+            self,
+            request,
+            _action,
+            "Confirm action",
+            "Successfully executed",
+        )
 
 
 @register(models.Product)
 class ProductAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ('name', 'price', 'family')
-    list_filter = ('family',)
-    search_fields = ('name',)
+    list_display = ("name", "price", "family")
+    list_filter = ("family",)
+    search_fields = ("name",)
 
 
 @register(models.ProductFamily)
 class ProductFamilyAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ("name",)
 
 
 class InvoiceItemInline(TabularInline):
@@ -93,21 +96,22 @@ class InvoiceItemInline(TabularInline):
 
 @register(models.Invoice)
 class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ('customer', 'number', 'date')
-    list_filter = (('number', NumberFilter),
-                   ('customer', AutoCompleteFilter),
-                   ('items__product', AutoCompleteFilter),
-                   )
-    search_fields = ('number',)
+    list_display = ("customer", "number", "date")
+    list_filter = (
+        ("number", NumberFilter),
+        ("customer", AutoCompleteFilter),
+        ("items__product", AutoCompleteFilter),
+    )
+    search_fields = ("number",)
     inlines = [InvoiceItemInline]
 
 
 @register(models.InvoiceItem)
 class InvoiceItemAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ('product', 'qty')
-    list_filter = (('invoice', AutoCompleteFilter),)
-    search_fields = ('qty', "product__name")
-    autocomplete_fields = ('product', 'invoice')
+    list_display = ("product", "qty")
+    list_filter = (("invoice", AutoCompleteFilter),)
+    search_fields = ("qty", "product__name")
+    autocomplete_fields = ("product", "invoice")
 
 
 class UserAdmin(LinkedObjectsMixin, FactoryMixin, SmartUserAdmin):

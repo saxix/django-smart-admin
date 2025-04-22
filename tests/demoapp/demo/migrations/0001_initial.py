@@ -9,8 +9,8 @@ try:
 except:
     from django.contrib.postgres.fields import JSONField
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
@@ -19,49 +19,59 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Customer',
+            name="Customer",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('registration_date', models.DateField(auto_created=True)),
-                ('name', models.CharField(max_length=255)),
-                ('email', models.EmailField(max_length=254, verbose_name='Other email')),
-                ('active', models.BooleanField()),
-                ('flags', JSONField(default=dict)),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("registration_date", models.DateField(auto_created=True)),
+                ("name", models.CharField(max_length=255)),
+                ("email", models.EmailField(max_length=254, verbose_name="Other email")),
+                ("active", models.BooleanField()),
+                ("flags", JSONField(default=dict)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Invoice',
+            name="Invoice",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateField(blank=True, null=True)),
-                ('number', models.IntegerField(blank=True, null=True)),
-                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='demo.Customer')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("date", models.DateField(blank=True, null=True)),
+                ("number", models.IntegerField(blank=True, null=True)),
+                ("customer", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="demo.Customer")),
             ],
         ),
         migrations.CreateModel(
-            name='ProductFamily',
+            name="ProductFamily",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('price', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True)),
-                ('family', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='demo.ProductFamily')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255)),
+                ("price", models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True)),
+                ("family", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="demo.ProductFamily")),
             ],
         ),
         migrations.CreateModel(
-            name='InvoiceItem',
+            name="InvoiceItem",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('qty', models.IntegerField(default=1)),
-                ('invoice', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='demo.Invoice')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='demo.Product')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("qty", models.IntegerField(default=1)),
+                (
+                    "invoice",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="items", to="demo.Invoice"
+                    ),
+                ),
+                ("product", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="demo.Product")),
             ],
         ),
     ]

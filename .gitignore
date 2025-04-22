@@ -6,11 +6,9 @@ poetry.lock
 build
 !.github
 !.gitignore
-!.travis.yml
-!.flake8
-!.isort.cfg
-!.bumpversion.cfg
+!.pre-commit-config.yaml
 !tests/.coveragerc
+src/smart_admin/version.py
 smart_admin.db
 __pycache__
 /manage.py

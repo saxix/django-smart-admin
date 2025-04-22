@@ -6,16 +6,18 @@ from django.http import Http404, JsonResponse
 
 class SmartAutocompleteJsonView(AutocompleteJsonView):
     """Handle AutocompleteWidget's AJAX requests for data."""
+
     paginate_by = 20
     admin_site = None
 
     def get(self, request, *args, **kwargs):
-        """
-        Return a JsonResponse with search results of the form:
+        """Return a JsonResponse.
+
+        Results are returned in the form:
         {
             results: [{id: "123" text: "foo"}],
             pagination: {more: true}
-        }
+        }.
         """
         try:
             self.term, self.model_admin, self.source_field, to_field_name = self.process_request(request)
@@ -29,19 +31,20 @@ class SmartAutocompleteJsonView(AutocompleteJsonView):
         context = self.get_context_data()
 
         def get_label(obj):
-            if hasattr(self.model_admin, 'autocomplete_label'):
+            if hasattr(self.model_admin, "autocomplete_label"):
                 return getattr(obj, self.model_admin.autocomplete_label)
-            elif hasattr(self.model_admin, 'get_autocomplete_label'):
+            if hasattr(self.model_admin, "get_autocomplete_label"):
                 return self.model_admin.get_autocomplete_label(obj)
             return str(obj)
 
-        return JsonResponse({
-            'results': [
-                {'id': str(getattr(obj, to_field_name)), 'text': get_label(obj)}
-                for obj in context['object_list']
-            ],
-            'pagination': {'more': context['page_obj'].has_next()},
-        })
+        return JsonResponse(
+            {
+                "results": [
+                    {"id": str(getattr(obj, to_field_name)), "text": get_label(obj)} for obj in context["object_list"]
+                ],
+                "pagination": {"more": context["page_obj"].has_next()},
+            }
+        )
 
     def get_paginator(self, *args, **kwargs):
         """Use the ModelAdmin's paginator."""
@@ -50,7 +53,7 @@ class SmartAutocompleteJsonView(AutocompleteJsonView):
     def get_queryset(self):
         """Return queryset based on ModelAdmin.get_search_results()."""
         qs = self.model_admin.get_queryset(self.request)
-        if hasattr(self.source_field, 'get_limit_choices_to'):
+        if hasattr(self.source_field, "get_limit_choices_to"):
             qs = qs.complex_filter(self.source_field.get_limit_choices_to())
         qs, search_use_distinct = self.model_admin.get_search_results(self.request, qs, self.term)
         if search_use_distinct:
@@ -68,11 +71,11 @@ class SmartAutocompleteJsonView(AutocompleteJsonView):
         Raise Http404 if the target model admin is not configured properly with
         search_fields.
         """
-        term = request.GET.get('term', '')
+        term = request.GET.get("term", "")
         try:
-            app_label = request.GET['app_label']
-            model_name = request.GET['model_name']
-            field_name = request.GET['field_name']
+            app_label = request.GET["app_label"]
+            model_name = request.GET["model_name"]
+            field_name = request.GET["field_name"]
         except KeyError as e:
             raise PermissionDenied from e
 
@@ -104,12 +107,9 @@ class SmartAutocompleteJsonView(AutocompleteJsonView):
 
         # Validate suitability of objects.
         if not model_admin.get_search_fields(request):
-            raise Http404(
-                '%s must have search_fields for the autocomplete_view.' %
-                type(model_admin).__qualname__
-            )
+            raise Http404("%s must have search_fields for the autocomplete_view." % type(model_admin).__qualname__)
 
-        to_field_name = getattr(source_field.remote_field, 'field_name', remote_model._meta.pk.attname)
+        to_field_name = getattr(source_field.remote_field, "field_name", remote_model._meta.pk.attname)
         to_field_name = remote_model._meta.get_field(to_field_name).attname
         if not model_admin.to_field_allowed(request, to_field_name):
             raise PermissionDenied

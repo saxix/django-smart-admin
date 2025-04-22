@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class RedisCLIForm(forms.Form):
     command = forms.CharField()
-    connection = forms.ChoiceField(choices=zip(settings.CACHES.keys(), settings.CACHES.keys()))
+    connection = forms.ChoiceField(choices=zip(settings.CACHES.keys(), settings.CACHES.keys(), strict=False))
 
 
 def panel_redis(self, request, extra_context=None):

@@ -19,9 +19,9 @@ def section(model_to_section, opts):
 
 @register.simple_tag(takes_context=True)
 def smart_toggler(context):
-    request = context['request']
+    request = context["request"]
     page = urllib.parse.quote(request.path)
-    if as_bool(request.COOKIES.get('smart', "0")):
+    if as_bool(request.COOKIES.get("smart", "0")):
         label = _("Standard Index")
         t = "on"
     else:
@@ -29,7 +29,7 @@ def smart_toggler(context):
         t = "off"
 
     toggler = reverse("admin:smart_toggle", args=[t])
-    return mark_safe(f'<a href="{toggler}?from={page}">{label}</a>')
+    return mark_safe(f'<a href="{toggler}?from={page}">{label}</a>')  # noqa: S308
 
 
 @register.simple_tag()
@@ -38,7 +38,7 @@ def get_changed(message, entry):
         change_message = json.loads(message)
         # if isinstance(change_message, (list, tuple)) and change_message:
         #     if 'changed' in change_message[0] and 'permissions' in change_message[0]['changed']:
-        return change_message[0]['changed'][entry]
+        return change_message[0]["changed"][entry]
     except (json.JSONDecodeError, KeyError, IndexError):
         pass
     return ""
@@ -63,10 +63,10 @@ def get_admin_href(context, record, field=None):
         tag = f'<a href="{url}">{label}</a>'
     except NoReverseMatch:
         tag = label
-    return mark_safe(tag)
+    return mark_safe(tag)  # noqa: S308
 
 
 @register.simple_tag(takes_context=True)
 def get_admin_url_name(context, app_label, model_name, page, opts=None):
     admin_site = context["admin_site"]
-    return '%s:%s_%s_%s' % (admin_site.name, app_label, model_name, page)
+    return "%s:%s_%s_%s" % (admin_site.name, app_label, model_name, page)

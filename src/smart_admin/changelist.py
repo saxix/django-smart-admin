@@ -30,9 +30,6 @@ class SmartChangeList(ChangeList):
 
 
 class SmartChangeListMixin:
-
     def get_changelist(self, request, **kwargs):
-        """
-        Return the ChangeList class for use on the changelist page.
-        """
+        """Return the ChangeList class for use on the changelist page."""
         return SmartChangeList

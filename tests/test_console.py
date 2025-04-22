@@ -6,7 +6,7 @@ from django.urls import reverse
 def test_index(app):
     url = reverse("admin:index")
 
-    res = app.get(url, user='sax')
+    res = app.get(url, user="sax")
     assert res.pyquery('a:contains("Smart Index")')
     res = res.click("Console")
     res = res.click("Migrations")
@@ -18,7 +18,7 @@ def test_index(app):
 def test_email_panel(app, mailoutbox):
     url = reverse("admin:index")
 
-    res = app.get(url, user='sax')
+    res = app.get(url, user="sax")
     res = res.click("Console")
     res = res.click("Test Email")
     if pytest.DJANGO41:
@@ -33,7 +33,7 @@ def test_email_panel(app, mailoutbox):
 @pytest.mark.django_db
 def test_migrations(app, mailoutbox):
     url = reverse("admin:index")
-    res = app.get(url, user='sax')
+    res = app.get(url, user="sax")
     res = res.click("Console")
     res = res.click("Migrations")
     assert res.status_code == 200

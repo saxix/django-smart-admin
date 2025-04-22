@@ -10,7 +10,7 @@ else:
 
 class Customer(models.Model):
     name = models.CharField(max_length=255)
-    email = models.EmailField(verbose_name='Other email')
+    email = models.EmailField(verbose_name="Other email")
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     registration_date = models.DateField(auto_created=True)
     active = models.BooleanField()
@@ -47,6 +47,9 @@ class Invoice(models.Model):
 
 
 class InvoiceItem(models.Model):
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="items")
     qty = models.IntegerField(default=1)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.pk)
