@@ -64,6 +64,3 @@ include = [
 
 [tool.hatch.build.targets.wheel]
 packages = [ "src/smart_admin" ]
-
-[tool.uv.sources]
-django-admin-extra-buttons = { path = "../django-admin-extra-buttons", editable = true }
