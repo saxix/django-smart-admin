@@ -1,9 +1,18 @@
 from django.db import connections
 
 CLAUSES = {
-    "sqlite": "DELETE FROM {0};",
-    "postgresql": 'TRUNCATE TABLE "{0}" {1} CASCADE;',
-    "mysql": 'TRUNCATE TABLE "{0}" {1} CASCADE;',
+    "sqlite": [
+        "DELETE FROM {table_name};",
+        "DELETE FROM SQLITE_SEQUENCE WHERE name='{table_name}'",
+    ],
+    "postgresql": [
+        'TRUNCATE TABLE "{table_name}" CASCADE;',
+        "ALTER TABLE {table_name} ALTER COLUMN {pk_column} RESTART SET START 1;",
+    ],
+    "mysql": [
+        'TRUNCATE TABLE "{table_name}" CASCADE;',
+        'ALTER TABLE "{table_name}" AUTO_INCREMENT = 1',
+    ],
 }
 
 
@@ -14,9 +23,16 @@ class TruncateMixin:
 
 def truncate_model_table(model, reset=True) -> None:
     conn = connections[model._default_manager.db]
-    if reset and conn.vendor == "postgresql":
-        restart = "RESTART IDENTITY"
+    info = {
+        "table_name": model._meta.db_table,
+        "pk_column": model._meta.pk.column,
+    }
+    if reset:
+        sqls = CLAUSES[conn.vendor][0:2]
     else:
-        restart = ""
+        sqls = CLAUSES[conn.vendor][1:1]
+
     with conn.cursor() as cursor:
-        cursor.execute(CLAUSES[conn.vendor].format(model._meta.db_table, restart))
+        for tpl in sqls:
+            c = tpl.format(**info)
+            cursor.execute(c)
