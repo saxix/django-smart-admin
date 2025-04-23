@@ -65,7 +65,22 @@ jobs:
       - name: Test with
         run: tox -e "py${PY_VER//.}-d${DJ_VER//.}"
 
-      - uses: codecov/codecov-action@v5
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v4
         with:
-          verbose: true
-          slug: saxix/django-smart-admin
+          name: pytest-results-${{ matrix.python }}-${{matrix.django}}
+          path: junit-${{ matrix.python }}-${{matrix.django}}.xml
+        if: ${{ always() }}
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: matrix.python-version }} == 3.12
+        continue-on-error: true
+        with:
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          flags: unittests
+          files: ./coverage.xml
+          verbose: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          name: codecov-${{env.GITHUB_REF_NAME}}
