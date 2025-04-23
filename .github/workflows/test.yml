@@ -68,7 +68,7 @@ jobs:
       - name: Upload pytest test results
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-results-${{ matrix.python }}-${{matrix.django}}
+          name: pytest-results-${{ matrix.python-version }}-${{matrix.django-version}}
           path: junit.xml
         if: ${{ always() }}
 
