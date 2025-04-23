@@ -1,4 +1,5 @@
 import logging
+from django.urls import reverse
 from urllib.parse import ParseResult, urlparse
 
 from admin_extra_buttons.utils import HttpResponseRedirectToReferrer
@@ -6,11 +7,12 @@ from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.html import urlize
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django.conf.urls import handler400, handler403, handler404, handler500
 
 logger = logging.getLogger(__name__)
 
@@ -33,16 +35,13 @@ def get_sentry_dashboard():
 def get_event_url(event_id):
     try:
         return f"{get_sentry_host()}/{settings.SENTRY_PROJECT}/?query={event_id}"
-    except Exception as e:
+    except AttributeError as e:
         logger.exception(e)
 
 
 def make_sentry_link(event_id):
-    if getattr(settings, "SENTRY_PROJECT", ""):
-        try:
-            return f'<a href="{get_event_url(event_id)}">{event_id}</a>'
-        except Exception as e:
-            logger.exception(e)
+    if getattr(settings, "SENTRY_PROJECT", "") and (url:=get_event_url(event_id)):
+        return f'<a href="{url}">{event_id}</a>'
     return event_id
 
 
@@ -67,16 +66,20 @@ def panel_sentry(self, request, extra_context=None):
     except ImportError as exc:
         messages.add_message(request, messages.ERROR, f"{exc.__class__.__name__}: {exc}. Please remove `panel_sentry`.")
         return HttpResponseRedirectToReferrer(request)
-
     context = self.each_context(request)
     context["title"] = "Sentry"
-    context["info"] = {
-        "SENTRY_DSN": settings.SENTRY_DSN,
-        "SENTRY_SERVER_URL": mark_safe(urlize(get_sentry_host())),  # noqa: S308
-        "SENTRY_DASHBOARD": mark_safe(urlize(get_sentry_dashboard())),  # noqa: S308
-        "SENTRY_PROJECT": getattr(settings, "SENTRY_PROJECT", "N/A") or "N/A",
-        "SENTRY_ENVIRONMENT": getattr(settings, "SENTRY_ENVIRONMENT", "N/A") or "N/A",
-    }
+    try:
+        context["info"] = {
+            "SENTRY_DSN": settings.SENTRY_DSN,
+            "SENTRY_SERVER_URL": mark_safe(urlize(get_sentry_host())),  # noqa: S308
+            "SENTRY_DASHBOARD": mark_safe(urlize(get_sentry_dashboard())),  # noqa: S308
+            "SENTRY_PROJECT": getattr(settings, "SENTRY_PROJECT", "N/A") or "N/A",
+            "SENTRY_ENVIRONMENT": getattr(settings, "SENTRY_ENVIRONMENT", "N/A") or "N/A",
+        }
+    except AttributeError as exc:
+        messages.add_message(request, messages.ERROR, "Sentry not configured. Please remove 'panel_sentry'.")
+        return HttpResponseRedirect(reverse("admin:console"))
+
     if request.method == "POST":
         form = SentryForm(request.POST)
         if form.is_valid():
@@ -94,9 +97,7 @@ def panel_sentry(self, request, extra_context=None):
                 except Exception as e:
                     logger.exception(e)
                     last_event_id = sentry_sdk.last_event_id()
-            elif opt in ["400", "403", "404", "500"]:
-                from django.conf.urls import handler400, handler403, handler404, handler500
-
+            else: #  opt in ["400", "403", "404", "500"]:
                 mapping = {
                     "400": (ValidationError, handler400),
                     "403": (PermissionDenied, handler403),

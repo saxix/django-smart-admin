@@ -141,11 +141,12 @@ class SmartAdminSite(AdminSite):
         urlpatterns = [
             path("~groups/<str:group>/", wrap(self.smart_section), name="group_list"),
             path("smart/<str:on_off>/", wrap(self.smart_toggle), name="smart_toggle"),
-            path("console/", wrap(self.console), name="console"),
+            path("~console/", wrap(self.console), name="console"),
         ]
         urlpatterns.extend(
             [
-                path(f"{entry['name']}/", wrap(partial(self.show_panel, entry["func"])), name=entry["name"])
+                path(f"~console/{entry['name']}/", wrap(partial(self.show_panel, entry["func"])),
+                     name=f"console-{entry["name"]}")
                 for entry in self.console_panels
             ]
         )

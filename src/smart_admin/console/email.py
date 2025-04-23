@@ -14,17 +14,17 @@ from smart_admin.utils import masker
 logger = logging.getLogger(__name__)
 
 
-class ThreadWithReturnValue(threading.Thread):
-    def __init__(self, *init_args, **init_kwargs):
-        threading.Thread.__init__(self, *init_args, **init_kwargs)
-        self._return = None
-
-    def run(self):
-        self._return = self._target(*self._args, **self._kwargs)
-
-    def join(self, timeout=None):
-        threading.Thread.join(self)
-        return self._return
+# class ThreadWithReturnValue(threading.Thread):
+#     def __init__(self, *init_args, **init_kwargs):
+#         threading.Thread.__init__(self, *init_args, **init_kwargs)
+#         self._return = None
+#
+#     def run(self):
+#         self._return = self._target(*self._args, **self._kwargs)
+#
+#     def join(self, timeout=None):
+#         threading.Thread.join(self)
+#         return self._return
 
 
 def panel_email(self, request, extra_context=None):
@@ -60,16 +60,20 @@ def panel_email(self, request, extra_context=None):
                 future = executor.submit(send_mail, **kwargs)
                 exc = future.exception()
                 if exc:
-                    messages.add_message(request, messages.ERROR, f"{exc.__class__.__name__}: {exc}")
+                    logger.error(exc)
+                    messages.add_message(request, messages.ERROR, "Error sending email.")
                     logs.append([timezone.now(), f"Thread error {exc}"])
                 else:
                     return_value = future.result()
                     logs.append([timezone.now(), f"Thread completed {return_value}"])
                     if return_value == 1:
                         messages.add_message(request, messages.SUCCESS, f"Email sent to {request.user.email}")
+                    else:
+                        messages.add_message(request, messages.SUCCESS, f"No errors raised but no messages sent to {request.user.email}")
+
         except Exception as e:
             logger.exception(e)
-            messages.add_message(request, messages.ERROR, f"{e.__class__.__name__}: {e}")
+            messages.add_message(request, messages.ERROR, "Error sending email.")
     context["logs"] = logs
     return render(request, "smart_admin/panels/email.html", context)
 

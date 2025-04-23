@@ -24,7 +24,7 @@
                 {% block buttons %}
                     <ul class="submit-row">
                         {% for panel in panels %}
-                            {% with "admin:"|add:panel.name as href %}
+                            {% with "admin:console-"|add:panel.name as href %}
                             <li><a class="button" href="{% url href %}{{ panel.url }}">{{ panel.label }}</a></li>
                             {% endwith %}
                         {% endfor %}

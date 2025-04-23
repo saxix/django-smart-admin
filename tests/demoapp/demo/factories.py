@@ -19,11 +19,11 @@ class AutoRegisterFactoryMetaClass(FactoryMetaClass):
         return new_class
 
 
-class ModelFactory(factory.django.DjangoModelFactory, metaclass=AutoRegisterFactoryMetaClass):
+class AutoRegisterModelFactory(factory.django.DjangoModelFactory, metaclass=AutoRegisterFactoryMetaClass):
     pass
 
 
-class UserFactory(ModelFactory):
+class UserFactory(AutoRegisterModelFactory):
     username = factory.Sequence(lambda d: "username-%s" % d)
     email = factory.Faker("email")
     first_name = factory.Faker("name")
@@ -34,12 +34,12 @@ class UserFactory(ModelFactory):
         django_get_or_create = ("username",)
 
 
-class ContentTypeFactory(ModelFactory):
+class ContentTypeFactory(AutoRegisterModelFactory):
     class Meta:
         model = ContentType
 
 
-class PermissionFactory(ModelFactory):
+class PermissionFactory(AutoRegisterModelFactory):
     content_type = factory.SubFactory(ContentTypeFactory)
     codename = "perm1"
 
@@ -48,7 +48,7 @@ class PermissionFactory(ModelFactory):
         django_get_or_create = ("codename",)
 
 
-class LogEntryFactory(ModelFactory):
+class LogEntryFactory(AutoRegisterModelFactory):
     user = factory.SubFactory(UserFactory)
     content_type = factory.Iterator(ContentType.objects.all())
     action_flag = 1
@@ -57,14 +57,14 @@ class LogEntryFactory(ModelFactory):
         model = LogEntry
 
 
-class GroupFactory(ModelFactory):
+class GroupFactory(AutoRegisterModelFactory):
     name = factory.Sequence(lambda d: "Group %s" % d)
 
     class Meta:
         model = Group
 
 
-class CustomerFactory(ModelFactory):
+class CustomerFactory(AutoRegisterModelFactory):
     name = factory.Faker("name")
     email = factory.Faker("email")
     user = factory.SubFactory(UserFactory)
@@ -99,7 +99,7 @@ class CustomerFactory(ModelFactory):
         return base
 
 
-class ProductFamilyFactory(ModelFactory):
+class ProductFamilyFactory(AutoRegisterModelFactory):
     name = factory.LazyFunction(lambda: "Family %s" % random.choice([0, 1, 3]))
 
     class Meta:
@@ -107,7 +107,7 @@ class ProductFamilyFactory(ModelFactory):
         django_get_or_create = ("name",)
 
 
-class ProductFactory(ModelFactory):
+class ProductFactory(AutoRegisterModelFactory):
     name = factory.LazyFunction(lambda: random.choice(["Brooks Ghost 13", "ASICS Gel-Trabuco 9", "New Balance"]))
     price = factory.fuzzy.FuzzyDecimal(100, 10000)
     family = factory.SubFactory(ProductFamilyFactory)
@@ -117,7 +117,7 @@ class ProductFactory(ModelFactory):
         django_get_or_create = ("name",)
 
 
-class InvoiceFactory(ModelFactory):
+class InvoiceFactory(AutoRegisterModelFactory):
     customer = factory.SubFactory(CustomerFactory)
     number = factory.LazyFunction(lambda: random.choice(range(100)))
     date = factory.LazyFunction(timezone.now)
@@ -127,7 +127,7 @@ class InvoiceFactory(ModelFactory):
         django_get_or_create = ("number",)
 
 
-class InvoiceItemFactory(ModelFactory):
+class InvoiceItemFactory(AutoRegisterModelFactory):
     invoice = factory.SubFactory(InvoiceFactory)
     product = factory.SubFactory(ProductFactory)
 
@@ -141,4 +141,4 @@ def get_factory_for_model(_model):
 
     if _model in factories_registry:
         return factories_registry[_model]
-    return type("AAA", (ModelFactory,), {"Meta": Meta})
+    return type("AAA", (AutoRegisterModelFactory,), {"Meta": Meta})

@@ -46,4 +46,4 @@ def panel_error_page(self, request, extra_context=None):
 
 
 panel_error_page.verbose_name = _("Error Pages")  # type: ignore[attr-defined]
-panel_error_page.url_name = "errors"  # type: ignore[attr-defined]
+panel_error_page.url_name = "error_page"  # type: ignore[attr-defined]

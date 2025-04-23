@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "adminfilters",
     "adminfilters.depot",
     "admin_extra_buttons",
-    "smart_admin.apps.SmartLogsConfig",
+    "smart_admin.logs",
     "smart_admin.apps.SmartTemplateConfig",
     "smart_admin.apps.SmartAuthConfig",
     "smart_admin.apps.SmartConfig",
@@ -127,3 +127,5 @@ CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 AA_PERMISSION_HANDLER = consts.AA_PERMISSION_CREATE_USE_COMMAND
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+SENTRY_DSN = "http://abc.example.com/123"
