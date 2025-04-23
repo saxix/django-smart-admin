@@ -9,7 +9,7 @@ from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from smart_admin.mixins import LinkedObjectsMixin, SmartMixin
+from smart_admin.mixins import LinkedObjectsMixin, SmartAutoFilterMixin, SmartMixin
 from smart_admin.smart_auth.admin import UserAdmin as SmartUserAdmin
 
 from . import models
@@ -107,7 +107,7 @@ class InvoiceAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin
 
 
 @register(models.InvoiceItem)
-class InvoiceItemAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, admin.ModelAdmin):
+class InvoiceItemAdmin(FactoryMixin, SmartMixin, ExtraButtonsMixin, SmartAutoFilterMixin, admin.ModelAdmin):
     list_display = ("product", "qty")
     list_filter = (("invoice", AutoCompleteFilter),)
     search_fields = ("qty", "product__name")

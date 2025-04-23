@@ -1,9 +1,9 @@
+import builtins
 from unittest.mock import Mock
 
-from pyquery import PyQuery
-import builtins
 import pytest
 from django.urls import reverse
+from pyquery import PyQuery
 from redis import ResponseError
 
 
@@ -14,18 +14,18 @@ class MockedRedis:
     def get_connection_kwargs(self):
         return {}
 
-    def execute_command(self, cmd: str) -> str:
+    def execute_command(self, cmd: str) -> list[str]:
         if self.exc:
             raise self.exc
         return [f"Output for {cmd}"]
 
 
-@pytest.fixture()
+@pytest.fixture
 def fail_redis():
-    def myimport(name, globals, locals, fromlist, level):
+    def myimport(name, globals_, locals_, fromlist, level):
         if "django_redis" in name:
             raise ModuleNotFoundError("No module named 'django_redis'")
-        return realimport(name, globals, locals, fromlist, level)
+        return realimport(name, globals_, locals_, fromlist, level)
 
     realimport = builtins.__import__
     builtins.__import__ = myimport

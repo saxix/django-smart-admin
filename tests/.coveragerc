@@ -3,11 +3,13 @@ branch = True
 source = smart_admin
 include =
 
-omit = smart_admin/__init__.py
+omit =
+    src/smart_admin/*/migrations/*.py
+    src/smart_admin/version.py
 
 [report]
 # Regexes for lines to exclude from consideration
-exclude_lines =
+exclude_also =
     # Have to re-enable the standard pragma
     pragma: no cover
     # Don't complain about missing debug-only code:

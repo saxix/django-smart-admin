@@ -9,6 +9,7 @@ def test_index(app):
     res = app.get(url, user="sax")
     assert res.pyquery('a:contains("Smart Index")')
     res = res.click("Console")
+
     res = res.click("Migrations")
     res = res.click("System Info")
     assert res.status_code == 200

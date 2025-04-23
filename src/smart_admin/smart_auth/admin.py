@@ -22,14 +22,9 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from ..views import SmartAutocompleteJsonView
+# from ..views import SmartAutocompleteJsonView
 
 User = get_user_model()
-
-
-class SmartContentTypeJsonView(SmartAutocompleteJsonView):
-    def get_label(self, obj):
-        return f"{obj.name.title()} ({obj.app_label})"
 
 
 # @smart_register(ContentType)
@@ -46,9 +41,6 @@ class ContentTypeAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-
-    def autocomplete_view(self, request):
-        return SmartContentTypeJsonView.as_view(model_admin=self)(request)
 
     @button(permission="contenttypes.delete_contenttype")
     def check_stale(self, request):  # noqa

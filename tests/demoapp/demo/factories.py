@@ -5,6 +5,7 @@ from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
+from factory import PostGenerationMethodCall
 from factory.base import FactoryMetaClass
 
 from . import models
@@ -25,13 +26,25 @@ class AutoRegisterModelFactory(factory.django.DjangoModelFactory, metaclass=Auto
 
 class UserFactory(AutoRegisterModelFactory):
     username = factory.Sequence(lambda d: "username-%s" % d)
-    email = factory.Faker("email")
+    email = factory.Sequence(lambda n: "username%03d@example.com" % n)
     first_name = factory.Faker("name")
     last_name = factory.Faker("last_name")
+    password = PostGenerationMethodCall("set_password", "password")
 
     class Meta:
         model = User
         django_get_or_create = ("username",)
+
+    @classmethod
+    def _after_postgeneration(cls, instance, create, results=None):
+        instance.save()
+        instance._password = "password"
+
+
+class SuperUserFactory(UserFactory):
+    is_superuser = True
+    is_staff = True
+    is_active = True
 
 
 class ContentTypeFactory(AutoRegisterModelFactory):

@@ -16,7 +16,8 @@ from django.views.decorators.cache import never_cache
 
 from . import VERSION
 from . import settings as smart_settings
-from .autocomplete import SmartAutocompleteJsonView
+
+# from .autocomplete import SmartAutocompleteJsonView
 from .settings import get_bookmarks, get_setting_lazy
 from .templatetags.smart import as_bool
 from .utils import SmartList
@@ -102,8 +103,8 @@ class SmartAdminSite(AdminSite):
             return self.smart_index(request)
         return super().index(request)
 
-    def autocomplete_view(self, request):
-        return SmartAutocompleteJsonView.as_view(admin_site=self)(request)
+    # def autocomplete_view(self, request):
+    #     return SmartAutocompleteJsonView.as_view(admin_site=self)(request)
 
     def app_index(self, request, app_label, extra_context=None):
         groups, __ = self._get_menu(request)
