@@ -1,7 +1,6 @@
 # noqa: A005
 import concurrent.futures
 import logging
-import threading
 
 from django.conf import settings
 from django.contrib import messages
@@ -12,19 +11,6 @@ from django.utils.translation import gettext_lazy as _
 from smart_admin.utils import masker
 
 logger = logging.getLogger(__name__)
-
-
-# class ThreadWithReturnValue(threading.Thread):
-#     def __init__(self, *init_args, **init_kwargs):
-#         threading.Thread.__init__(self, *init_args, **init_kwargs)
-#         self._return = None
-#
-#     def run(self):
-#         self._return = self._target(*self._args, **self._kwargs)
-#
-#     def join(self, timeout=None):
-#         threading.Thread.join(self)
-#         return self._return
 
 
 def panel_email(self, request, extra_context=None):
@@ -69,7 +55,9 @@ def panel_email(self, request, extra_context=None):
                     if return_value == 1:
                         messages.add_message(request, messages.SUCCESS, f"Email sent to {request.user.email}")
                     else:
-                        messages.add_message(request, messages.SUCCESS, f"No errors raised but no messages sent to {request.user.email}")
+                        messages.add_message(
+                            request, messages.SUCCESS, f"No errors raised but no messages sent to {request.user.email}"
+                        )
 
         except Exception as e:
             logger.exception(e)

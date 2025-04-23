@@ -1,6 +1,6 @@
 import re
 
-from smart_admin.utils import SmartList, MatchString, RegexString
+from smart_admin.utils import MatchString, RegexString, SmartList
 
 
 def test_smartlist():

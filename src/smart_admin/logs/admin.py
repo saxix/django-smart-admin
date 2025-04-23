@@ -1,13 +1,12 @@
 import datetime
 
-
+from admin_extra_buttons.api import button, confirm_action, link
 from adminfilters.autocomplete import AutoCompleteFilter
 from django.contrib import admin
 from django.contrib.admin import register
 from django.contrib.admin.models import LogEntry
 from django.utils.translation import gettext as _
 
-from admin_extra_buttons.api import link, button, confirm_action
 from smart_admin.mixins import SmartMixin, TruncateAdminMixin
 from smart_admin.settings import check_logentry_archive_perm
 

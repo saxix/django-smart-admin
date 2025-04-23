@@ -1,7 +1,7 @@
-import pytest
-from django.urls import reverse
 from unittest import mock
 
+import pytest
+from django.urls import reverse
 from pyquery import PyQuery
 
 
@@ -16,6 +16,7 @@ def test_email_panel(app, mailoutbox):
     assert res.status_code == 200
     assert len(mailoutbox) == 1
     assert mailoutbox[0].subject == "Send email test: 'django.core.mail.send_mail'"
+
 
 @pytest.mark.django_db
 def test_email_panel_none_sent(app, mailoutbox):
@@ -38,7 +39,6 @@ def test_email_panel_error(app, mailoutbox):
         assert res.status_code == 200
         assert len(mailoutbox) == 0
         assert PyQuery(res.text)("ul.messagelist").text() == "Error sending email."
-
 
 
 @pytest.mark.django_db

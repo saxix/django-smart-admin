@@ -9,70 +9,80 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
+        ("contenttypes", "0002_remove_content_type_name"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('price', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255)),
+                ("price", models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='ProductFamily',
+            name="ProductFamily",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='ContentTypeOwner',
+            name="ContentTypeOwner",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('content_type',
-                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "content_type",
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="contenttypes.contenttype"),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Customer',
+            name="Customer",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('registration_date', models.DateField(auto_created=True)),
-                ('name', models.CharField(max_length=255)),
-                ('email', models.EmailField(max_length=254, verbose_name='Other email')),
-                ('active', models.BooleanField()),
-                ('flags', models.JSONField(default=dict)),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
-                                           to=settings.AUTH_USER_MODEL)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("registration_date", models.DateField(auto_created=True)),
+                ("name", models.CharField(max_length=255)),
+                ("email", models.EmailField(max_length=254, verbose_name="Other email")),
+                ("active", models.BooleanField()),
+                ("flags", models.JSONField(default=dict)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Invoice',
+            name="Invoice",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateField(blank=True, null=True)),
-                ('number', models.IntegerField(blank=True, null=True)),
-                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='demo.customer')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("date", models.DateField(blank=True, null=True)),
+                ("number", models.IntegerField(blank=True, null=True)),
+                ("customer", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="demo.customer")),
             ],
         ),
         migrations.CreateModel(
-            name='InvoiceItem',
+            name="InvoiceItem",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('qty', models.IntegerField(default=1)),
-                ('invoice', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items',
-                                              to='demo.invoice')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='demo.product')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("qty", models.IntegerField(default=1)),
+                (
+                    "invoice",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="items", to="demo.invoice"
+                    ),
+                ),
+                ("product", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="demo.product")),
             ],
         ),
         migrations.AddField(
-            model_name='product',
-            name='family',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='demo.productfamily'),
+            model_name="product",
+            name="family",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="demo.productfamily"),
         ),
     ]

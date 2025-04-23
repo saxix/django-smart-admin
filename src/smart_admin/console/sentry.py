@@ -1,18 +1,18 @@
 import logging
-from django.urls import reverse
 from urllib.parse import ParseResult, urlparse
 
 from admin_extra_buttons.utils import HttpResponseRedirectToReferrer
 from django import forms
 from django.conf import settings
+from django.conf.urls import handler400, handler403, handler404, handler500
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.html import urlize
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from django.conf.urls import handler400, handler403, handler404, handler500
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ def get_event_url(event_id):
 
 
 def make_sentry_link(event_id):
-    if getattr(settings, "SENTRY_PROJECT", "") and (url:=get_event_url(event_id)):
+    if getattr(settings, "SENTRY_PROJECT", "") and (url := get_event_url(event_id)):
         return f'<a href="{url}">{event_id}</a>'
     return event_id
 
@@ -76,7 +76,7 @@ def panel_sentry(self, request, extra_context=None):
             "SENTRY_PROJECT": getattr(settings, "SENTRY_PROJECT", "N/A") or "N/A",
             "SENTRY_ENVIRONMENT": getattr(settings, "SENTRY_ENVIRONMENT", "N/A") or "N/A",
         }
-    except AttributeError as exc:
+    except AttributeError:
         messages.add_message(request, messages.ERROR, "Sentry not configured. Please remove 'panel_sentry'.")
         return HttpResponseRedirect(reverse("admin:console"))
 
@@ -97,7 +97,7 @@ def panel_sentry(self, request, extra_context=None):
                 except Exception as e:
                     logger.exception(e)
                     last_event_id = sentry_sdk.last_event_id()
-            else: #  opt in ["400", "403", "404", "500"]:
+            else:  #  opt in ["400", "403", "404", "500"]:
                 mapping = {
                     "400": (ValidationError, handler400),
                     "403": (PermissionDenied, handler403),

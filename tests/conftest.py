@@ -1,8 +1,8 @@
 import sys
 
-import django
 import pytest
 from django.urls import reverse
+
 
 def pytest_configure(config):
     sys._called_from_pytest = True

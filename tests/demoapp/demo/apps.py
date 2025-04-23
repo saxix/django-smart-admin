@@ -8,7 +8,14 @@ class Config(AppConfig):
         super().ready()
         from django.contrib.admin import site
 
-        from smart_admin.console import panel_email, panel_migrations, panel_redis, panel_sentry, panel_sysinfo, panel_error_page
+        from smart_admin.console import (
+            panel_email,
+            panel_error_page,
+            panel_migrations,
+            panel_redis,
+            panel_sentry,
+            panel_sysinfo,
+        )
 
         site.register_panel(panel_migrations)
         site.register_panel(panel_sysinfo)

@@ -145,8 +145,11 @@ class SmartAdminSite(AdminSite):
         ]
         urlpatterns.extend(
             [
-                path(f"~console/{entry['name']}/", wrap(partial(self.show_panel, entry["func"])),
-                     name=f"console-{entry["name"]}")
+                path(
+                    f"~console/{entry['name']}/",
+                    wrap(partial(self.show_panel, entry["func"])),
+                    name=f"console-{entry['name']}",
+                )
                 for entry in self.console_panels
             ]
         )
