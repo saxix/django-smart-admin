@@ -35,6 +35,7 @@ dev = [
   "django-constance>=4.3.2",
   "django-environ>=0.12",
   "django-picklefield>=3.3",
+  "django-redis>=5.4.0",
   "django-webtest>=1.9.13",
   "factory-boy>=3.3.3",
   "psycopg2-binary>=2.9.10",
