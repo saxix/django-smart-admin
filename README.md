@@ -31,9 +31,6 @@ need to be copied/pasted in each project.
 - user defined "site panels"
 
 
-Demo is available at https://django-smart-admin.herokuapp.com/.
-(Any user/password combination is accepted)
-
 ## Components
 
 - LinkedObjectsMixin
