@@ -1,5 +1,6 @@
 .*
 ~*
+*.xml
 *.egg-info
 dist
 poetry.lock
