@@ -4,6 +4,8 @@
 *.egg-info
 dist
 poetry.lock
+/latest_logs
+/downloaded_files
 build
 !.github
 !.gitignore

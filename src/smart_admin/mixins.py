@@ -1,9 +1,9 @@
-from django.contrib import admin
 from itertools import chain
 
 from admin_extra_buttons.api import ExtraButtonsMixin, button
 from adminfilters.filters import AllValuesComboFilter, ChoicesFieldComboFilter, RelatedFieldComboFilter
 from adminfilters.mixin import AdminFiltersMixin
+from django.contrib import admin, messages
 from django.contrib.admin import FieldListFilter
 from django.contrib.admin.checks import BaseModelAdminChecks, must_be
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
@@ -193,8 +193,10 @@ class TruncateAdminMixin:
                 transaction.on_commit(lambda: log_truncate(request, self.model))
                 try:
                     truncate_model_table(self.model)
+                    self.message_user(request, "Table truncated", messages.SUCCESS)
                 except OperationalError:
                     self.get_queryset(request).delete()
+                    self.message_user(request, "Truncate failed. All records deleted", messages.WARNING)
                 url = reverse(admin_urlname(opts, "changelist"))
                 return HttpResponseRedirect(url)
         else:

@@ -140,3 +140,18 @@ def test_group_change(app: DjangoTestApp, settings):
     res = res.click("History")
     details = PyQuery(res.text)("#change-history tbody tr:last-child td:nth-child(4)").text()
     assert "Removed permissions: delete_user" in details
+
+
+@pytest.mark.django_db
+def test_group_history(app, settings):
+    settings.SMART_LOGS_RETENTION_DAYS = 1
+    g = GroupFactory()
+    url = reverse(admin_urlname(Group._meta, "change"), args=[g.id])
+    res = app.get(url, user="sax")
+    form = res.forms[1]
+    form["permissions"] = [Permission.objects.first().pk]
+    res = form.submit()
+
+    res = app.get(url, user="sax")
+    res = res.click("History")
+    assert "Added permissions" in res.content.decode()

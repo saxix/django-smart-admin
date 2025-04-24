@@ -13,7 +13,8 @@ def pytest_configure(config):
 @pytest.fixture
 def app(db, django_app_factory) -> DjangoTestApp:
     u = SuperUserFactory(username="sax")
-    django_app = django_app_factory(csrf_checks=False)
+    django_app: DjangoTestApp = django_app_factory(csrf_checks=False)
+    django_app._user = u
     res = django_app.get(reverse("admin:login"))
     res.form["username"] = u.username
     res.form["password"] = u._password

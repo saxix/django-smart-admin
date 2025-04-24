@@ -44,39 +44,3 @@
         });
     </script>
 {% endblock %}
-{#{% block content %}#}
-{#    <div class="redis-cli" id="changelist">#}
-{#        <div class="changelist-form-container">#}
-{#            <form method="POST" id="redisForm">#}
-{#                {% csrf_token %}#}
-{#                <table>#}
-{#                    {{ form.connection }}#}
-{#                    {{ form.command }}#}
-{#                </table>#}
-{#                <div class="submit-row">#}
-{#                    <input type="submit" value="Execute">#}
-{#                </div>#}
-{#            </form>#}
-{#            <pre class="code">#}
-{#        {% for line in stdout %}#}
-{# {{ forloop.counter }}) {{ line|striptags }}{% endfor %}#}
-{#        </pre>#}
-{#        </div>#}
-{#        <div id="changelist-filter" class="console-buttons">#}
-{#            <ul class="submit-row">#}
-{#                <li><a class="button" href="https://redis.io/commands/">Commands</a></li>#}
-{#            </ul>#}
-{#            <ul class="submit-row">#}
-{#                <li><a class="button redis-cli-command" href="#">FLUSHALL ASYNC</a></li>#}
-{#                <li><a class="button redis-cli-command" href="#">KEYS *</a></li>#}
-{#                <li><a class="button redis-cli-command" href="#">CONFIG GET *</a></li>#}
-{#            </ul>#}
-{#        </div>#}
-{#    </div>#}
-{#    <script>#}
-{#        $(".redis-cli-command").on("click", function () {#}
-{#            $("#id_command").val($(this).text());#}
-{#            $("#redisForm").submit();#}
-{#        });#}
-{#    </script>#}
-{#{% endblock content %}#}

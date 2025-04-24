@@ -1,7 +1,7 @@
 from django.apps import apps
 from django.contrib.admin.views.autocomplete import AutocompleteJsonView
 from django.core.exceptions import FieldDoesNotExist, PermissionDenied
-from django.http import Http404, JsonResponse
+from django.http import Http404
 
 
 class SmartAutocompleteJsonView(AutocompleteJsonView):
@@ -10,48 +10,14 @@ class SmartAutocompleteJsonView(AutocompleteJsonView):
     paginate_by = 20
     admin_site = None
 
-    def __get(self, request, *args, **kwargs):
-        """Return a JsonResponse.
-
-        Results are returned in the form:
-        {
-            results: [{id: "123" text: "foo"}],
-            pagination: {more: true}
-        }.
-        """
-        try:
-            self.term, self.model_admin, self.source_field, to_field_name = self.process_request(request)
-        except Exception as e:
-            raise e
-
-        if not self.has_perm(request):
-            raise PermissionDenied
-
-        self.object_list = self.get_queryset()
-        context = self.get_context_data()
-
-        def get_label(obj):
-            if hasattr(self.model_admin, "autocomplete_label"):
-                return getattr(obj, self.model_admin.autocomplete_label)
-            if hasattr(self.model_admin, "get_autocomplete_label"):
-                return self.model_admin.get_autocomplete_label(obj)
-            return str(obj)
-
-        return JsonResponse(
-            {
-                "results": [
-                    {"id": str(getattr(obj, to_field_name)), "text": get_label(obj)} for obj in context["object_list"]
-                ],
-                "pagination": {"more": context["page_obj"].has_next()},
-            }
-        )
-
-    def get_paginator(self, *args, **kwargs):
-        """Use the ModelAdmin's paginator."""
-        return self.model_admin.get_paginator(self.request, *args, **kwargs)
+    def serialize_result(self, obj, to_field_name):
+        self._labelize = str
+        if hasattr(self.model_admin, "get_autocomplete_label"):
+            return self.model_admin.get_autocomplete_label
+        return {"id": str(getattr(obj, to_field_name)), "text": self._labelize(obj)}
 
     def get_queryset(self):
-        """Return queryset based on ModelAdmin.get_search_results()."""
+        """Overriden to work also with fields without `choices` attribute."""
         qs = self.model_admin.get_queryset(self.request)
         if hasattr(self.source_field, "get_limit_choices_to"):
             qs = qs.complex_filter(self.source_field.get_limit_choices_to())
@@ -60,7 +26,7 @@ class SmartAutocompleteJsonView(AutocompleteJsonView):
             qs = qs.distinct()
         return qs
 
-    def __process_request(self, request):  # noqa C901
+    def process_request(self, request):  # noqa C901
         """
         Validate request integrity, extract and return request parameters.
 

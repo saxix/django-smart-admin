@@ -1,8 +1,8 @@
 import re
-from django.db import models
 from fnmatch import fnmatchcase
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
 from django.db.models import OneToOneRel
 
 

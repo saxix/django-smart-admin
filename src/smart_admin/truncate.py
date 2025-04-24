@@ -1,4 +1,4 @@
-from django.db import connections
+from django.db import connections, models
 
 CLAUSES = {
     "sqlite": [
@@ -21,7 +21,7 @@ class TruncateMixin:
         truncate_model_table(self.model, reset)  # type: ignore[attr-defined]
 
 
-def truncate_model_table(model, reset=True) -> None:
+def truncate_model_table(model: models.Model, reset: bool = True) -> None:
     conn = connections[model._default_manager.db]
     info = {
         "table_name": model._meta.db_table,
@@ -33,6 +33,8 @@ def truncate_model_table(model, reset=True) -> None:
         sqls = CLAUSES[conn.vendor][1:1]
 
     with conn.cursor() as cursor:
+        if conn.vendor == "sqlite":
+            cursor.execute("PRAGMA foreign_keys = ON")
         for tpl in sqls:
             c = tpl.format(**info)
             cursor.execute(c)

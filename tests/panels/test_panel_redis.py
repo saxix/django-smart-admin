@@ -22,10 +22,10 @@ class MockedRedis:
 
 @pytest.fixture
 def fail_redis():
-    def myimport(name, globals_, locals_, fromlist, level):
+    def myimport(name, *more):
         if "django_redis" in name:
             raise ModuleNotFoundError("No module named 'django_redis'")
-        return realimport(name, globals_, locals_, fromlist, level)
+        return realimport(name, *more)
 
     realimport = builtins.__import__
     builtins.__import__ = myimport
@@ -53,11 +53,18 @@ def test_redis_command(app, exc, message, monkeypatch):
     url = reverse("admin:console-panel_redis")
 
     res = app.get(url)
-    res.forms[1]["command"] = "dummy_command"
+    res.forms["redisForm"]["command"] = "dummy_command"
 
     monkeypatch.setattr("django_redis.get_redis_connection", Mock(return_value=MockedRedis(exc)))
-    res = res.forms[1].submit()
+    res = res.forms["redisForm"].submit()
     if message:
         assert PyQuery(res.text)("ul.messagelist").text() == message
     else:
         assert PyQuery(res.text)("pre.code").text() == "1) Output for dummy_command"
+
+
+@pytest.mark.django_db
+def test_redis_invalid(app):
+    url = reverse("admin:console-panel_redis")
+    res = app.post(url, {}, expect_errors=True)
+    assert res.status_code == 200

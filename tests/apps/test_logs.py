@@ -1,12 +1,14 @@
 import datetime
 from typing import TYPE_CHECKING
+from unittest import mock
 
 import pytest
-from demo.factories import GroupFactory, LogEntryFactory
+from demo.factories import LogEntryFactory
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.contrib.auth.models import Group, Permission
+from django.db import OperationalError
 from django.urls import reverse
+from pyquery import PyQuery
 
 if TYPE_CHECKING:
     from django.db.models.options import Options
@@ -42,16 +44,28 @@ def test_archive_log(app, settings):
     assert LogEntry.objects.count() == 1
 
 
-@pytest.mark.django_db
-def test_group_history(app, settings):
+@pytest.mark.django_db(transaction=True)
+def test_truncate_log(app, settings):
     settings.SMART_LOGS_RETENTION_DAYS = 1
-    g = GroupFactory()
-    url = reverse(admin_urlname(Group._meta, "change"), args=[g.id])
+    url = reverse(admin_urlname(LogEntry._meta, "changelist"))
+    LogEntryFactory()
+    LogEntryFactory(action_time=datetime.date(2000, 1, 1))
     res = app.get(url, user="sax")
-    form = res.forms[1]
-    form["permissions"] = [Permission.objects.first().pk]
-    res = form.submit()
+    res = res.click("Truncate")
+    form = res.forms["truncate-form"]
+    res = form.submit().follow()
+    assert PyQuery(res.text)("ul.messagelist").text() == "Table truncated"
 
-    res = app.get(url, user="sax")
-    res = res.click("History")
-    assert "Added permissions" in res.content.decode()
+
+@pytest.mark.django_db(transaction=True)
+def test_truncate_log_fallback(app, settings):
+    settings.SMART_LOGS_RETENTION_DAYS = 1
+    url = reverse(admin_urlname(LogEntry._meta, "changelist"))
+    LogEntryFactory()
+    LogEntryFactory(action_time=datetime.date(2000, 1, 1))
+    with mock.patch("smart_admin.mixins.truncate_model_table", side_effect=OperationalError):
+        res = app.get(url, user="sax")
+        res = res.click("Truncate")
+        form = res.forms["truncate-form"]
+        res = form.submit().follow()
+        assert PyQuery(res.text)("ul.messagelist").text() == "Truncate failed. All records deleted"

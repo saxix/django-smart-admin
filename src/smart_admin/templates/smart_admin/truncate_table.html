@@ -19,7 +19,7 @@
     <div><h3>{{ description }}</h3></div>
     <hr>
     <br><br><br><br><br>
-    <form method="post">
+    <form method="post" id="truncate-form">
         {% csrf_token %}
         <input type="submit" class="btn btn-large btn-danger" value="Confirm">
         <input type="button" class="btn btn-large btn-success"
