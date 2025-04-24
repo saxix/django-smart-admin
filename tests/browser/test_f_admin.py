@@ -5,17 +5,32 @@ from django.urls import reverse
 pytestmark = pytest.mark.functional
 
 
-def test_console(browser: TestBrowser):
+def test_console_index(browser: TestBrowser):
     browser.login()
     browser.open(reverse("admin:index"))
+    browser.open(reverse("admin:console"))
+
+
+def test_console_migrations(browser: TestBrowser):
+    browser.login()
     browser.open(reverse("admin:console"))
 
     browser.click_link_text("Migrations")
     browser.click_link_text("LIST")
     browser.click_link_text("PLAN")
 
+
+def test_console_sysinfo(browser: TestBrowser):
+    browser.login()
+    browser.open(reverse("admin:console"))
+
     browser.click_link_text("System Info")
     browser.type("#filterInput", "database")
+
+
+def test_console_sentry(browser: TestBrowser):
+    browser.login()
+    browser.open(reverse("admin:console"))
 
     browser.click_link_text("Sentry")
     browser.click("input[type=radio][value='capture_event']")
