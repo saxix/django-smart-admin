@@ -46,10 +46,8 @@ def test_archive_log(app, settings):
 
 @pytest.mark.django_db(transaction=True)
 def test_truncate_log(app, settings):
-    settings.SMART_LOGS_RETENTION_DAYS = 1
     url = reverse(admin_urlname(LogEntry._meta, "changelist"))
     LogEntryFactory()
-    LogEntryFactory(action_time=datetime.date(2000, 1, 1))
     res = app.get(url, user="sax")
     res = res.click("Truncate")
     form = res.forms["truncate-form"]
@@ -59,13 +57,10 @@ def test_truncate_log(app, settings):
 
 @pytest.mark.django_db(transaction=True)
 def test_truncate_log_fallback(app, settings):
-    settings.SMART_LOGS_RETENTION_DAYS = 1
     url = reverse(admin_urlname(LogEntry._meta, "changelist"))
-    LogEntryFactory()
-    LogEntryFactory(action_time=datetime.date(2000, 1, 1))
+    res = app.get(url, user="sax")
+    res = res.click("Truncate")
     with mock.patch("smart_admin.mixins.truncate_model_table", side_effect=OperationalError):
-        res = app.get(url, user="sax")
-        res = res.click("Truncate")
         form = res.forms["truncate-form"]
         res = form.submit().follow()
-        assert PyQuery(res.text)("ul.messagelist").text() == "Truncate failed. All records deleted"
+        assert PyQuery(res.text)("ul.messagelist").text() == "Truncate failed."

@@ -9,7 +9,7 @@ from django.contrib.admin.checks import BaseModelAdminChecks, must_be
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.admin.utils import flatten
 from django.contrib.contenttypes.models import ContentType
-from django.db import OperationalError, models, transaction
+from django.db import OperationalError, models, transaction, IntegrityError
 from django.db.models import AutoField, ForeignKey, ManyToManyField, TextField
 from django.db.models.fields.related import RelatedField
 from django.http import HttpResponseRedirect
@@ -194,9 +194,8 @@ class TruncateAdminMixin:
                 try:
                     truncate_model_table(self.model)
                     self.message_user(request, "Table truncated", messages.SUCCESS)
-                except OperationalError:
-                    self.get_queryset(request).delete()
-                    self.message_user(request, "Truncate failed. All records deleted", messages.WARNING)
+                except (OperationalError, IntegrityError):
+                    self.message_user(request, "Truncate failed.", messages.WARNING)
                 url = reverse(admin_urlname(opts, "changelist"))
                 return HttpResponseRedirect(url)
         else:
