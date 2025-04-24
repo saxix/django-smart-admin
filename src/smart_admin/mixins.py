@@ -1,3 +1,4 @@
+from django.contrib import admin
 from itertools import chain
 
 from admin_extra_buttons.api import ExtraButtonsMixin, button
@@ -85,7 +86,7 @@ class FieldsetMixin:
 
 
 class SmartModelAdminChecks(BaseModelAdminChecks):
-    def _check_readonly_fields(self, obj):
+    def _check_readonly_fields(self, obj: admin.ModelAdmin):
         """Check that readonly_fields refers to proper attribute or field."""
         if obj.readonly_fields == ("__all__",):
             return []
@@ -101,7 +102,7 @@ class SmartModelAdminChecks(BaseModelAdminChecks):
         )
 
 
-class ReadOnlyMixin:
+class ReadOnlyMixin(admin.ModelAdmin):
     readonly_fields: tuple[str] = ("__all__",)
     checks_class = SmartModelAdminChecks
 
