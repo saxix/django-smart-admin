@@ -1,0 +1,3 @@
+ignore:
+    - src/smart_admin/version.py
+    - "src/smart_admin/**/migrations/*.py"         # glob accepted
