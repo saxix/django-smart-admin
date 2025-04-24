@@ -1,5 +1,6 @@
 import datetime
 from typing import TYPE_CHECKING
+from unittest.mock import Mock, patch
 
 import pytest
 from demo.factories import GroupFactory, LogEntryFactory, get_factory_for_model
@@ -8,6 +9,8 @@ from django.contrib.admin.sites import site
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.auth.models import Group, Permission
 from django.urls import reverse
+from django.contrib.admin.options import IncorrectLookupParameters
+
 
 if TYPE_CHECKING:
     from django.db.models.options import Options
@@ -85,6 +88,29 @@ def test_changelist(app, modeladmin, record):
     app.set_cookie("smart", "1")
     res = app.get(url, user="sax")
     assert res.pyquery('a:contains("Standard Index")')
+
+
+@patch("logging.Logger.exception")
+@pytest.mark.parametrize(
+    "method",
+    [
+        "get_filters",
+        "get_results",
+        "get_queryset",
+    ],
+)
+def test_changelist_logging_exception(logger, monkeypatch, method):
+    exception = IncorrectLookupParameters("dummy exception")
+    mocked_method = Mock(side_effect=exception)
+    monkeypatch.setattr(f"django.contrib.admin.views.main.ChangeList.{method}", mocked_method)
+    monkeypatch.setattr("django.contrib.admin.views.main.ChangeList.__init__", lambda x: None)
+    from smart_admin.changelist import SmartChangeList
+
+    mocked_changelist = SmartChangeList()
+    with pytest.raises(IncorrectLookupParameters):
+        getattr(mocked_changelist, method)("dummy_request")
+    assert logger.call_count == 1
+    assert logger.call_args.args == (exception,)
 
 
 @pytest.mark.django_db
