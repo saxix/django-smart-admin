@@ -40,6 +40,30 @@ class UserFactory(AutoRegisterModelFactory):
         instance.save()
         instance._password = "password"
 
+    @factory.post_generation
+    def groups(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for group in extracted:
+                if isinstance(group, Group):
+                    self.groups.add(group)
+                else:
+                    self.groups.add(Group.objects.get(name=group))
+
+    @factory.post_generation
+    def permissions(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for perm in extracted:
+                if isinstance(perm, Permission):
+                    self.user_permissions.add(perm)
+                else:
+                    self.user_permissions.add(Permission.objects.get(codename=perm))
+
 
 class SuperUserFactory(UserFactory):
     is_superuser = True
@@ -75,6 +99,18 @@ class GroupFactory(AutoRegisterModelFactory):
 
     class Meta:
         model = Group
+
+    @factory.post_generation
+    def permissions(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for perm in extracted:
+                if isinstance(perm, Permission):
+                    self.permissions.add(perm)
+                else:
+                    self.permissions.add(Permission.objects.get(codename=perm))
 
 
 class CustomerFactory(AutoRegisterModelFactory):

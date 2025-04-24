@@ -1,10 +1,11 @@
 from contextlib import nullcontext as does_not_raise
-import pytest
 
+import pytest
 from demo.admin import CustomerAdmin
 from demo.models import Customer
-from smart_admin.decorators import smart_register
 from django.contrib.admin.sites import site as default_site
+
+from smart_admin.decorators import smart_register
 
 
 @pytest.mark.parametrize(

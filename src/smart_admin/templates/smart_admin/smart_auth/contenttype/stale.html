@@ -2,11 +2,11 @@
 {% block action-content %}
     <h1>ContentTypes</h1>
     {% if to_remove %}
-        <form method="post">
+        <form method="post" id="cleanStaleForm">
             {% csrf_token %}
             <input type="submit" value="Remove Selected">
 
-            <table>
+            <table id="staled-list">
                 <tr>
                     <th></th>
                     <th>App</th>

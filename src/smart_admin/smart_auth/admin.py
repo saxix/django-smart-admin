@@ -189,7 +189,7 @@ class GroupAdmin(ExtraButtonsMixin, _GroupAdmin):
         users = User.objects.filter(groups=group).distinct()
         context["title"] = _("Members")
         context["user_opts"] = User._meta
-        context["data"] = users
+        context["members"] = users
         return render(request, "admin/auth/group/members.html", context)
 
     def _perms(self, request, object_id) -> set:
@@ -202,7 +202,15 @@ class GroupAdmin(ExtraButtonsMixin, _GroupAdmin):
 
     def construct_change_message(self, request, form, formsets, add=False):
         change_message = construct_change_message(form, formsets, add)
-        if not add and "permissions" in form.changed_data:
+        if add and "permissions" in form.changed_data:
+            perms = self._perms(request, form.instance.id)
+            change_message[0]["added"]["name"] = str(Group._meta.verbose_name)
+            change_message[0]["added"]["object"] = form.instance.name
+            change_message[0]["added"]["permissions"] = {
+                "set": sorted(perms),
+            }
+
+        elif not add and "permissions" in form.changed_data:
             new_perms = self._perms(request, form.instance.id)
             change_message[0]["changed"]["permissions"] = {
                 "added": sorted(new_perms.difference(self.existing_perms)),

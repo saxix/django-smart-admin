@@ -3,6 +3,7 @@ import sys
 import pytest
 from demo.factories import SuperUserFactory
 from django.urls import reverse
+from django_webtest import DjangoTestApp
 
 
 def pytest_configure(config):
@@ -10,7 +11,7 @@ def pytest_configure(config):
 
 
 @pytest.fixture
-def app(db, django_app_factory):
+def app(db, django_app_factory) -> DjangoTestApp:
     u = SuperUserFactory(username="sax")
     django_app = django_app_factory(csrf_checks=False)
     res = django_app.get(reverse("admin:login"))

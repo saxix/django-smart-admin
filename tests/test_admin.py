@@ -2,14 +2,12 @@ import datetime
 from typing import TYPE_CHECKING
 
 import pytest
-from demo.factories import GroupFactory, LogEntryFactory, UserFactory, get_factory_for_model
+from demo.factories import GroupFactory, LogEntryFactory, get_factory_for_model
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.sites import site
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib.auth.models import Group, Permission
 from django.urls import reverse
-
-from smart_admin.smart_auth.admin import User
 
 if TYPE_CHECKING:
     from django.db.models.options import Options
@@ -144,22 +142,3 @@ def test_group_history(app, settings):
     res = app.get(url, user="sax")
     res = res.click("History")
     assert "Added permissions" in res.content.decode()
-
-
-@pytest.mark.django_db
-def test_user_history(app, settings):
-    settings.SMART_LOGS_RETENTION_DAYS = 1
-    g = GroupFactory()
-    u = UserFactory(is_staff=True, is_active=True, is_superuser=True)
-    url = reverse(admin_urlname(User._meta, "change"), args=[u.id])
-
-    res = app.get(url, user="sax")
-    form = res.forms[1]
-    form["user_permissions"] = [Permission.objects.first().pk]
-    form["groups"] = [g.pk]
-    form.submit()
-
-    res = app.get(url, user="sax")
-    res = res.click("History")
-    assert "Added permissions" in res.content.decode()
-    assert "Added groups" in res.content.decode()

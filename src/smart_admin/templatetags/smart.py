@@ -33,12 +33,10 @@ def smart_toggler(context):
 
 
 @register.simple_tag()
-def get_changed(message, entry):
+def get_message_details(message):
     try:
-        change_message = json.loads(message)
-        # if isinstance(change_message, (list, tuple)) and change_message:
-        #     if 'changed' in change_message[0] and 'permissions' in change_message[0]['changed']:
-        return change_message[0]["changed"][entry]
+        messages = json.loads(message)
+        return messages[0]
     except (json.JSONDecodeError, KeyError, IndexError):
         pass
     return ""

@@ -16,7 +16,6 @@ from django.views.decorators.cache import never_cache
 
 from . import VERSION
 from . import settings as smart_settings
-
 from .autocomplete import SmartAutocompleteJsonView
 from .settings import get_bookmarks, get_setting_lazy
 from .templatetags.smart import as_bool
