@@ -1,5 +1,9 @@
-from django.contrib.auth.models import User
 from unittest.mock import Mock
+
+from demo.factories import InvoiceFactory
+from django.contrib.auth.models import User
+from django.urls import reverse
+from pyquery import PyQuery
 
 from smart_admin.mixins import ReadOnlyMixin
 
@@ -19,3 +23,13 @@ def test_read_only_checks():
 
     o.readonly_fields = ("username",)
     assert [m.msg for m in o.check()] == []
+
+
+def test_linked_objects(app):
+    i = InvoiceFactory()
+    url = reverse("admin:demo_customer_change", args=(i.customer.pk,))
+    res = app.get(url, user="sax")
+    res = res.click("Linked Objects")
+    info = PyQuery(res.text)("#linked-objects table tbody tr:first-child")
+    assert info("td:first-child a").text() == str(i.pk)
+    assert info("td:nth-child(2)").text() == str(i)

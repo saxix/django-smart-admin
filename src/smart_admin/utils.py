@@ -1,4 +1,5 @@
 import re
+from django.db import models
 from fnmatch import fnmatchcase
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -45,6 +46,28 @@ class SmartList(list):
         return False
 
 
+def get_linked_objects(
+    original: models.Model,
+    ignored: list[str] | None = None,
+    selection: list[str] | None = None,
+    max_records=200,
+    include_empty: bool = False,
+) -> tuple[list, list]:
+    ignored = ignored or []
+    selection = selection or [f for f in original._meta.get_fields() if f.auto_created and not f.concrete]
+    filtered = [x for x in selection if (x not in ignored)]
+    linked = []
+    empty = []
+    for f in filtered:
+        info = get_related(original, f, max_records=max_records)
+        if info["count"] == 0:
+            if include_empty:
+                empty.append(info)
+        else:
+            linked.append(info)
+    return linked, empty
+
+
 def get_related(user, field, max_records=200):
     info = {
         "owner": user,
@@ -53,6 +76,7 @@ def get_related(user, field, max_records=200):
         "count": 0,
         "link": admin_urlbasename(field.related_model._meta, "changelist"),
         "filter": "",
+        "data": [],
     }
     try:
         info["related_name"] = field.related_model._meta.verbose_name
@@ -61,17 +85,18 @@ def get_related(user, field, max_records=200):
         elif isinstance(field, OneToOneRel):
             related_attr = getattr(user, field.name)
         else:
-            related_attr = getattr(user, f"{field.name}_set")
-        info["filter"] = f"{field.field.name}={user.pk}"
+            related_attr = getattr(user, f"{field.name}_set", None)
+        if related_attr:
+            info["filter"] = f"{field.field.name}={user.pk}"
 
-        if hasattr(related_attr, "all") and callable(related_attr.all):
-            related = related_attr.all()[: max_records or 200]
-            count = related_attr.all().count()
-        else:
-            related = [related_attr]
-            count = 1
-        info["data"] = related
-        info["count"] = count
+            if hasattr(related_attr, "all") and callable(related_attr.all):
+                related = related_attr.all()[: max_records or 200]
+                count = related_attr.all().count()
+            else:
+                related = [related_attr]
+                count = 1
+            info["data"] = related
+            info["count"] = count
     except ObjectDoesNotExist:
         info["data"] = []
         info["related_name"] = field.related_model._meta.verbose_name

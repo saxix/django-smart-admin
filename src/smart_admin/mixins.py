@@ -123,7 +123,7 @@ class SmartMixin(
     readonly_fields: tuple[str] = ()
 
 
-class LinkedObjectsMixin:
+class LinkedObjectsMixin(admin.ModelAdmin):
     linked_objects_template = None
     linked_objects_hide_empty = True
     linked_objects_max_records = 200
@@ -154,7 +154,7 @@ class LinkedObjectsMixin:
         return linked, empty
 
     @button()
-    def linked_objects(self, request, pk):
+    def linked_objects(self, request, pk) -> TemplateResponse:
         opts = self.model._meta
         app_label = opts.app_label
         context = self.get_common_context(request, pk, title="linked objects")
