@@ -22,16 +22,13 @@ class RegexString(str):
     def __repr__(self):
         return f"r[{self._rex.pattern}]"
 
-    def __str__(self):
-        return self._rex.pattern
-
 
 class SmartList(list):
-    def __contains__(self, target):
+    def __contains__(self, target: str):
         t = str(target)
         for entry in self:
             if isinstance(entry, MatchString):
-                if fnmatchcase(target, entry):
+                if fnmatchcase(t, entry):
                     return True
             elif isinstance(entry, re.Pattern):
                 m = entry.match(t)

@@ -7,13 +7,15 @@ from smart_admin.utils import MatchString, RegexString, SmartList, get_linked_ob
 
 
 def test_smartlist():
-    smart_list = SmartList(["abc", re.compile("x.."), RegexString("x.."), MatchString("1*")])
+    smart_list = SmartList(["abc", re.compile("x.."), RegexString("y.."), MatchString("1*")])
     assert "abc" in smart_list
     assert "xyz" in smart_list
     assert "123" in smart_list
+    assert "y12" in smart_list
 
     assert "ac" not in smart_list
     assert "xy" not in smart_list
+    assert re.compile("x..") not in smart_list
 
 
 def test_get_related(db):

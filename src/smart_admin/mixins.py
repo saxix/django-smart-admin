@@ -17,7 +17,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 
 from smart_admin.truncate import truncate_model_table
-from smart_admin.utils import get_related
+from smart_admin.utils import get_linked_objects
 
 from .changelist import SmartChangeListMixin
 
@@ -135,23 +135,16 @@ class LinkedObjectsMixin(admin.ModelAdmin):
         return self.linked_objects_exclude
 
     def get_selected_linked_objects(self, request) -> list:
-        if self.linked_objects_filter is None:
-            return [f for f in self.model._meta.get_fields() if f.auto_created and not f.concrete]
         return self.linked_objects_filter
 
     def get_linked_objects(self, request, original):
-        ignored = self.get_excluded_linked_objects(request)
-        selection = self.get_selected_linked_objects(request)
-        filtered = [x for x in selection if (x not in ignored)]
-        linked = []
-        empty = []
-        for f in filtered:
-            info = get_related(original, f, max_records=self.linked_objects_max_records)
-            if info["count"] == 0 and self.linked_objects_hide_empty:
-                empty.append(info)
-            else:
-                linked.append(info)
-        return linked, empty
+        return get_linked_objects(
+            original,
+            self.get_excluded_linked_objects(request),
+            self.get_selected_linked_objects(request),
+            max_records=self.linked_objects_max_records,
+            include_empty=not self.linked_objects_hide_empty,
+        )
 
     @button()
     def linked_objects(self, request, pk) -> TemplateResponse:
