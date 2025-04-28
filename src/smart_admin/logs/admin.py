@@ -1,4 +1,7 @@
 import datetime
+import pytz
+from django.conf import settings
+from django.http import HttpRequest
 
 from admin_extra_buttons.api import button, confirm_action, link
 from adminfilters.autocomplete import AutoCompleteFilter
@@ -34,14 +37,19 @@ class LogEntryAdmin(SmartMixin, TruncateAdminMixin, admin.ModelAdmin):
         button.title = button.original.object_repr
 
     @button(permission=check_logentry_archive_perm, html_attrs={"class": "aeb-danger"})
-    def archive(self, request):
-        offset = datetime.date.today() - datetime.timedelta(days=365)
+    def archive(self, request: HttpRequest):
+        tz = pytz.timezone(settings.TIME_ZONE)
+        today = datetime.datetime.today()
+        offset = datetime.datetime.combine(
+            today - datetime.timedelta(days=365), datetime.datetime.max.time()
+        ).astimezone(tz)
+
         offset_label = offset.strftime("%a, %b %d %Y")
         count = LogEntry.objects.filter(action_time__lt=offset).count()
 
-        def _doit(request):
+        def _doit(req: HttpRequest):
             LogEntry.objects.filter(action_time__lt=offset).delete()
-            self.message_user(request, _("Records before %s have been removed") % offset_label)
+            self.message_user(req, _("Records before %s have been removed") % offset_label)
 
         ctx = {"original": None, "offset": offset_label}
 
