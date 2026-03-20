@@ -62,7 +62,7 @@ class SentryForm(forms.Form):
 
 def panel_sentry(self, request, extra_context=None):
     try:
-        import sentry_sdk
+        import sentry_sdk  # noqa
     except ImportError as exc:
         messages.add_message(request, messages.ERROR, f"{exc.__class__.__name__}: {exc}. Please remove `panel_sentry`.")
         return HttpResponseRedirectToReferrer(request)

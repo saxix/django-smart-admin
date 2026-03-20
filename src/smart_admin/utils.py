@@ -2,7 +2,7 @@ import re
 from fnmatch import fnmatchcase
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
+from django.db import models, router
 from django.db.models import OneToOneRel
 
 
@@ -113,3 +113,14 @@ def admin_site_urlname(admin_site, value, arg):
 
 def admin_urlbasename(value, arg):
     return "%s_%s_%s" % (value.app_label, value.model_name, arg)
+
+
+def get_contenttypes_and_models(app_config, using, ContentType):  # noqa
+    if not router.allow_migrate_model(using, ContentType):  # noqa
+        return None, None
+
+    ContentType.objects.clear_cache()
+
+    content_types = {ct.model: ct for ct in ContentType.objects.using(using).filter(app_label=app_config.label)}
+    app_models = {model._meta.model_name: model for model in app_config.get_models()}
+    return content_types, app_models

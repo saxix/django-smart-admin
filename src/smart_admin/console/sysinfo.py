@@ -7,7 +7,7 @@ from django.views.decorators.cache import cache_page
 def panel_sysinfo(self, request) -> HttpResponse:
     @cache_page(0)
     def _sysinfo(request):
-        from django_sysinfo.api import get_sysinfo
+        from django_sysinfo.api import get_sysinfo  # noqa
 
         infos = get_sysinfo(request)
         infos.setdefault("extra", {})

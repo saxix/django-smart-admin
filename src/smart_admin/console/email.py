@@ -29,11 +29,11 @@ def panel_email(self, request, extra_context=None):
     logs = []
     if request.method == "POST":
         try:
-            from django.core.mail import get_connection
+            from django.core.mail import get_connection  # noqa
 
             conn = get_connection()
             context["connection"] = conn
-            from django.core.mail import send_mail
+            from django.core.mail import send_mail  # noqa
 
             kwargs = {
                 "subject": "Send email test: 'django.core.mail.send_mail'",

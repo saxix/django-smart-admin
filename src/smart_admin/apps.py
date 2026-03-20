@@ -19,11 +19,11 @@ class SmartAuthConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
 
     def ready(self):
-        from django.contrib.auth.models import Group, Permission
-        from django.contrib.contenttypes.models import ContentType
+        from django.contrib.auth.models import Group, Permission  # noqa
+        from django.contrib.contenttypes.models import ContentType  # noqa
 
-        from smart_admin.decorators import smart_register
-        from smart_admin.smart_auth.admin import ContentTypeAdmin, GroupAdmin, PermissionAdmin, UserAdmin
+        from smart_admin.decorators import smart_register  # noqa
+        from smart_admin.smart_auth.admin import ContentTypeAdmin, GroupAdmin, PermissionAdmin, UserAdmin  # noqa
 
         smart_register(Group)(GroupAdmin)
         smart_register(get_user_model())(UserAdmin)

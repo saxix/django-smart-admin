@@ -29,7 +29,7 @@ def panel_error_page(self, request, extra_context=None):
         if form.is_valid():
             opt = form.cleaned_data["action"]
             if opt in ["400", "403", "404", "500"]:
-                from django.conf.urls import handler400, handler403, handler404, handler500
+                from django.conf.urls import handler400, handler403, handler404, handler500  # noqa
 
                 mapping = {
                     "400": (ValidationError, partial(handler400, exception=ValidationError("Test Error"))),
