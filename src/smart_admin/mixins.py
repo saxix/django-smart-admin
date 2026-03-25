@@ -171,24 +171,18 @@ class LinkedObjectsMixin(admin.ModelAdmin):
 def log_truncate(request, model):
     from django.contrib.admin.models import DELETION, LogEntry  # noqa
 
+    params = {
+        "user_id": request.user.pk,
+        "content_type_id": ContentType.objects.get_for_model(model).pk,
+        "object_id": None,
+        "object_repr": f"truncate table {model._meta.verbose_name}",
+        "action_flag": DELETION,
+        "change_message": "truncate table",
+    }
     if hasattr(LogEntry.objects, "log_actions"):
-        LogEntry.objects.create(
-            user_id=request.user.pk,
-            content_type_id=ContentType.objects.get_for_model(model).pk,
-            object_id=None,
-            object_repr=f"truncate table {model._meta.verbose_name}",
-            action_flag=DELETION,
-            change_message="truncate table",
-        )
+        LogEntry.objects.create(**params)
     else:
-        LogEntry.objects.log_action(
-            user_id=request.user.pk,
-            content_type_id=ContentType.objects.get_for_model(model).pk,
-            object_id=None,
-            object_repr=f"truncate table {model._meta.verbose_name}",
-            action_flag=DELETION,
-            change_message="truncate table",
-        )
+        LogEntry.objects.log_action(**params)
 
 
 class TruncateAdminMixin:
