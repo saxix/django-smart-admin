@@ -1,3 +1,9 @@
+Release 3.1
+-----------
+* add compatibility for python 3.14
+* add compatibility for django 6
+
+
 Release 3.0
 -----------
 * properly handle timezones
