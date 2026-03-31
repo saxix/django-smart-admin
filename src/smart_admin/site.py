@@ -129,7 +129,7 @@ class SmartAdminSite(AdminSite):
         return TemplateResponse(request, "smart_admin/console.html", context)
 
     def get_urls(self):
-        from django.urls import path
+        from django.urls import path  # noqa
 
         def wrap(view, cacheable=False):
             def wrapper(*args, **kwargs):

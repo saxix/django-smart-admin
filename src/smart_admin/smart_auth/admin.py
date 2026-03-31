@@ -10,7 +10,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import GroupAdmin as _GroupAdmin
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.management import get_contenttypes_and_models
 from django.contrib.contenttypes.management.commands.remove_stale_contenttypes import NoFastDeleteCollector
 from django.contrib.contenttypes.models import ContentType
 from django.db import DEFAULT_DB_ALIAS
@@ -21,6 +20,8 @@ from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
+
+from smart_admin.utils import get_contenttypes_and_models
 
 User = get_user_model()
 

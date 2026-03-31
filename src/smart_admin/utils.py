@@ -113,3 +113,18 @@ def admin_site_urlname(admin_site, value, arg):
 
 def admin_urlbasename(value, arg):
     return "%s_%s_%s" % (value.app_label, value.model_name, arg)
+
+
+def get_contenttypes_and_models(app_config, using, content_type_class):
+    """Return a dictionary mapping model to ContentTypes for the given app_config.
+
+    A dictionary mapping model names to model classes.
+    This is a compatibility shim for a function removed from Django.
+    """
+    models = app_config.get_models()
+    if not models:
+        return {}, {}
+    cts_map = content_type_class.objects.db_manager(using).get_for_models(*models, for_concrete_models=False)
+    content_types = {ct.model: ct for ct in cts_map.values()}
+    app_models = {model._meta.model_name: model for model in models}
+    return content_types, app_models

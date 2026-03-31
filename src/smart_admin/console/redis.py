@@ -17,8 +17,8 @@ class RedisCLIForm(forms.Form):
 
 def panel_redis(self, request, extra_context=None):
     try:
-        from django_redis import get_redis_connection
-        from redis import ResponseError
+        from django_redis import get_redis_connection  # noqa
+        from redis import ResponseError  # noqa
     except ImportError as exc:
         messages.add_message(request, messages.ERROR, f"{exc.__class__.__name__}: {exc}. Please remove `panel_redis`")
         return HttpResponseRedirectToReferrer(request)

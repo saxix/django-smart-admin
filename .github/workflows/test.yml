@@ -34,8 +34,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.12", "3.13" ]
-        django-version: [ "4.2", "5.2" ]
+        python-version: [ "3.12", "3.13", "3.14" ]
+        django-version: [ "4.2", "5.2", "6.0" ]
+        exclude:
+          - python-version: "3.14"
+            django-version: "4.2"
+
     env:
       PY_VER: ${{ matrix.python-version}}
       DJ_VER: ${{ matrix.django-version}}
@@ -72,8 +76,8 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        if: matrix.python-version == 3.12
+        uses: codecov/codecov-action@v6
+        if: matrix.python-version == 3.13
         continue-on-error: true
         with:
           env_vars: OS,PYTHON

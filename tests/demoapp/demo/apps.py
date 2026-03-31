@@ -6,9 +6,9 @@ class Config(AppConfig):
 
     def ready(self):
         super().ready()
-        from django.contrib.admin import site
+        from django.contrib.admin import site  # noqa
 
-        from smart_admin.console import (
+        from smart_admin.console import (  # noqa
             panel_email,
             panel_error_page,
             panel_migrations,

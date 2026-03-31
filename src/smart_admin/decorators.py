@@ -1,7 +1,7 @@
 def smart_register(*models, site=None, force=True):
-    from django.contrib.admin import ModelAdmin
-    from django.contrib.admin.sites import AdminSite
-    from django.contrib.admin.sites import site as default_site
+    from django.contrib.admin import ModelAdmin  # noqa
+    from django.contrib.admin.sites import AdminSite  # noqa
+    from django.contrib.admin.sites import site as default_site  # noqa
 
     def _model_admin_wrapper(admin_class):
         if not models:
